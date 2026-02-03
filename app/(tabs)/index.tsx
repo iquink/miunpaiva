@@ -68,15 +68,15 @@ export default function DashboardScreen() {
 
   // Helper: Check if habit should be shown on selected date
   const shouldShowHabit = (habit: Habit): boolean => {
-    const selectedDateStart = startOfDay(selectedDate);
+    const selectedDateEnd = endOfDay(selectedDate);
 
     // 1. Habit must have been created before or on selected date
-    if (habit.createdAt && new Date(habit.createdAt) > selectedDateStart) {
+    if (habit.createdAt && new Date(habit.createdAt) > selectedDateEnd) {
       return false;
     }
 
     // 2. Check end date (for daily/weekly)
-    if (habit.endDate && new Date(habit.endDate) < selectedDateStart) {
+    if (habit.endDate && new Date(habit.endDate) < selectedDateEnd) {
       return false;
     }
 
@@ -84,6 +84,7 @@ export default function DashboardScreen() {
     if (habit.frequency === "once") {
       // One-time: only show on exact target date
       if (!habit.targetDate) return false;
+      const selectedDateStart = startOfDay(selectedDate);
       const targetDateStart = startOfDay(new Date(habit.targetDate));
       return targetDateStart.getTime() === selectedDateStart.getTime();
     } else if (habit.frequency === "weekly") {
