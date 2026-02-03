@@ -18,6 +18,7 @@ export const habits = sqliteTable("habits", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
+  description: text("description"),
   type: text("type", { enum: ["boolean", "counter"] }).notNull(),
   dailyGoal: integer("daily_goal"),
   unit: text("unit"),
@@ -45,22 +46,31 @@ export const logs = sqliteTable(
   }),
 );
 
-// Achievements table
+// Achievements table (refactored - now just a container/badge)
 export const achievements = sqliteTable("achievements", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   userId: integer("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
+  description: text("description"),
   iconSlug: text("icon_slug").notNull().default("medal"),
+});
+
+// Achievement Criteria table (NEW - multi-criteria system)
+export const achievementCriteria = sqliteTable("achievement_criteria", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  achievementId: integer("achievement_id")
+    .notNull()
+    .references(() => achievements.id, { onDelete: "cascade" }),
+  habitId: integer("habit_id")
+    .notNull()
+    .references(() => habits.id, { onDelete: "cascade" }),
   ruleType: text("rule_type", {
     enum: ["streak", "total_count", "sum_value"],
   }).notNull(),
   targetValue: integer("target_value").notNull(),
   daysPeriod: integer("days_period").notNull().default(0), // 0 = all time
-  linkedHabitId: integer("linked_habit_id").references(() => habits.id, {
-    onDelete: "cascade",
-  }),
 });
 
 // User achievements (unlocked status)
@@ -89,6 +99,9 @@ export type NewLog = typeof logs.$inferInsert;
 
 export type Achievement = typeof achievements.$inferSelect;
 export type NewAchievement = typeof achievements.$inferInsert;
+
+export type AchievementCriterion = typeof achievementCriteria.$inferSelect;
+export type NewAchievementCriterion = typeof achievementCriteria.$inferInsert;
 
 export type UserAchievement = typeof userAchievements.$inferSelect;
 export type NewUserAchievement = typeof userAchievements.$inferInsert;

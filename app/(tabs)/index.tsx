@@ -9,13 +9,13 @@ import {
   RefreshControl,
 } from "react-native";
 import { format, startOfToday } from "date-fns";
-import { eq, and, desc } from "drizzle-orm";
-import { Plus, Check, X, ChevronLeft, ChevronRight } from "lucide-react-native";
+import { eq, and, desc, sql } from "drizzle-orm";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useAuthStore } from "../../store/authStore";
 import { db } from "../../db";
 import { habits, logs, type Habit, type Log } from "../../db/schema";
 import { checkAchievements } from "../../services/achievementService";
-import React from "react";
+import HabitCard from "../../components/HabitCard";
 
 export default function DashboardScreen() {
   const user = useAuthStore((state) => state.user);
@@ -24,9 +24,12 @@ export default function DashboardScreen() {
   const [habitLogs, setHabitLogs] = useState<Map<number, Log>>(new Map());
   const [showAddHabit, setShowAddHabit] = useState(false);
   const [newHabitTitle, setNewHabitTitle] = useState("");
+  const [newHabitDescription, setNewHabitDescription] = useState("");
   const [newHabitType, setNewHabitType] = useState<"boolean" | "counter">(
     "boolean",
   );
+  const [newHabitUnit, setNewHabitUnit] = useState("");
+  const [newHabitGoal, setNewHabitGoal] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
   const dateStr = format(selectedDate, "yyyy-MM-dd");
@@ -86,10 +89,22 @@ export default function DashboardScreen() {
       await db.insert(habits).values({
         userId: user.id,
         title: newHabitTitle.trim(),
+        description: newHabitDescription.trim() || null,
         type: newHabitType,
+        unit:
+          newHabitType === "counter" && newHabitUnit
+            ? newHabitUnit.trim()
+            : null,
+        dailyGoal:
+          newHabitType === "counter" && newHabitGoal
+            ? parseInt(newHabitGoal, 10)
+            : null,
       });
 
       setNewHabitTitle("");
+      setNewHabitDescription("");
+      setNewHabitUnit("");
+      setNewHabitGoal("");
       setShowAddHabit(false);
       await loadHabits();
     } catch (error) {
@@ -98,7 +113,7 @@ export default function DashboardScreen() {
     }
   };
 
-  const toggleHabit = async (habit: Habit) => {
+  const toggleBooleanHabit = async (habit: Habit) => {
     if (!user) return;
 
     try {
@@ -122,7 +137,7 @@ export default function DashboardScreen() {
             habitId: habit.id,
             date: dateStr,
             completed: true,
-            value: habit.type === "counter" ? 1 : 0,
+            value: 0,
           })
           .returning();
 
@@ -130,10 +145,55 @@ export default function DashboardScreen() {
       }
 
       // Check for achievement unlocks
-      await checkAchievements(user.id, habit.id);
+      await checkAchievements(user.id);
     } catch (error) {
       console.error("Error toggling habit:", error);
       Alert.alert("Error", "Failed to update habit");
+    }
+  };
+
+  const updateCounterValue = async (habit: Habit, value: number) => {
+    if (!user) return;
+
+    try {
+      const existingLog = habitLogs.get(habit.id);
+
+      if (existingLog) {
+        // Update existing log value
+        await db
+          .update(logs)
+          .set({
+            value,
+            completed: habit.dailyGoal ? value >= habit.dailyGoal : value > 0,
+          })
+          .where(eq(logs.id, existingLog.id));
+
+        const updatedLog = {
+          ...existingLog,
+          value,
+          completed: habit.dailyGoal ? value >= habit.dailyGoal : value > 0,
+        };
+        setHabitLogs((prev) => new Map(prev).set(habit.id, updatedLog));
+      } else {
+        // Create new log
+        const [newLog] = await db
+          .insert(logs)
+          .values({
+            habitId: habit.id,
+            date: dateStr,
+            value,
+            completed: habit.dailyGoal ? value >= habit.dailyGoal : value > 0,
+          })
+          .returning();
+
+        setHabitLogs((prev) => new Map(prev).set(habit.id, newLog));
+      }
+
+      // Check for achievement unlocks
+      await checkAchievements(user.id);
+    } catch (error) {
+      console.error("Error updating counter:", error);
+      Alert.alert("Error", "Failed to update counter");
     }
   };
 
@@ -207,46 +267,16 @@ export default function DashboardScreen() {
             </Text>
           </View>
         ) : (
-          userHabits.map((habit) => {
-            const log = habitLogs.get(habit.id);
-            const isCompleted = log?.completed || false;
-
-            return (
-              <TouchableOpacity
-                key={habit.id}
-                onPress={() => toggleHabit(habit)}
-                onLongPress={() => deleteHabit(habit.id)}
-                className={`mb-3 flex-row items-center justify-between rounded-xl p-4 ${
-                  isCompleted ? "bg-green-100" : "bg-white"
-                }`}
-              >
-                <View className="flex-1">
-                  <Text
-                    className={`text-base font-semibold ${
-                      isCompleted ? "text-green-800" : "text-gray-900"
-                    }`}
-                  >
-                    {habit.title}
-                  </Text>
-                  <Text className="mt-1 text-xs text-gray-500">
-                    {habit.type === "counter" ? "Counter" : "Boolean"}
-                  </Text>
-                </View>
-
-                <View
-                  className={`h-10 w-10 items-center justify-center rounded-full ${
-                    isCompleted ? "bg-green-500" : "bg-gray-200"
-                  }`}
-                >
-                  {isCompleted ? (
-                    <Check color="white" size={20} />
-                  ) : (
-                    <X color="#9ca3af" size={20} />
-                  )}
-                </View>
-              </TouchableOpacity>
-            );
-          })
+          userHabits.map((habit) => (
+            <HabitCard
+              key={habit.id}
+              habit={habit}
+              log={habitLogs.get(habit.id)}
+              onToggle={toggleBooleanHabit}
+              onUpdateValue={updateCounterValue}
+              onLongPress={deleteHabit}
+            />
+          ))
         )}
       </ScrollView>
 
@@ -268,11 +298,20 @@ export default function DashboardScreen() {
           </Text>
 
           <TextInput
-            className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
+            className="mb-3 rounded-lg border border-gray-300 px-4 py-3"
             placeholder="Habit name"
             value={newHabitTitle}
             onChangeText={setNewHabitTitle}
             autoFocus
+          />
+
+          <TextInput
+            className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
+            placeholder="Description (optional)"
+            value={newHabitDescription}
+            onChangeText={setNewHabitDescription}
+            multiline
+            numberOfLines={2}
           />
 
           <View className="mb-4 flex-row gap-2">
@@ -311,11 +350,33 @@ export default function DashboardScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* Counter-specific fields */}
+          {newHabitType === "counter" && (
+            <View className="mb-4 space-y-3">
+              <TextInput
+                className="rounded-lg border border-gray-300 px-4 py-3"
+                placeholder="Unit (e.g., km, pages, liters)"
+                value={newHabitUnit}
+                onChangeText={setNewHabitUnit}
+              />
+              <TextInput
+                className="rounded-lg border border-gray-300 px-4 py-3"
+                placeholder="Daily goal (optional)"
+                value={newHabitGoal}
+                onChangeText={setNewHabitGoal}
+                keyboardType="numeric"
+              />
+            </View>
+          )}
+
           <View className="flex-row gap-2">
             <TouchableOpacity
               onPress={() => {
                 setShowAddHabit(false);
                 setNewHabitTitle("");
+                setNewHabitDescription("");
+                setNewHabitUnit("");
+                setNewHabitGoal("");
               }}
               className="flex-1 rounded-lg border border-gray-300 py-3"
             >
