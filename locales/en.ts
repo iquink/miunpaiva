@@ -6,6 +6,7 @@ export default {
 
   // Dashboard
   dashboard_subtitle: "Track your daily tasks",
+  today: "Today",
   no_habits: "No tasks yet. Add your first one!",
   add_habit: "Add Task",
   new_habit: "New Task",

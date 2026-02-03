@@ -58,6 +58,7 @@ export default function DashboardScreen() {
   const [showEndPicker, setShowEndPicker] = useState(false);
 
   const dateStr = format(selectedDate, "yyyy-MM-dd");
+  const todayStr = format(startOfToday(), "yyyy-MM-dd");
 
   // Helper: Toggle weekday selection
   const toggleWeekday = (day: number) => {
@@ -386,7 +387,9 @@ export default function DashboardScreen() {
         </TouchableOpacity>
 
         <Text className="text-lg font-semibold text-gray-900">
-          {format(selectedDate, "MMM dd, yyyy")}
+          {dateStr === todayStr
+            ? t("today")
+            : format(selectedDate, "MMM dd, yyyy")}
         </Text>
 
         <TouchableOpacity

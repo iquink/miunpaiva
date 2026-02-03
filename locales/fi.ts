@@ -6,6 +6,7 @@ export default {
 
   // Dashboard
   dashboard_subtitle: "Seuraa päivittäisiä toimintoja",
+  today: "Tänään",
   no_habits: "Ei vielä toimintoja. Lisää ensimmäinen!",
   add_habit: "Lisää toiminta",
   new_habit: "Uusi toiminta",
