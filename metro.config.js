@@ -4,6 +4,6 @@ const { withNativeWind } = require('nativewind/metro');
 const config = getDefaultConfig(__dirname);
 
 // Add SQL support for Drizzle migrations
-// config.resolver.sourceExts.push('sql');
+config.resolver.sourceExts.push('sql');
 
 module.exports = withNativeWind(config, { input: './global.css' });
