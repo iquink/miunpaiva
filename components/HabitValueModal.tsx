@@ -49,10 +49,10 @@ export default function HabitValueModal({
       onRequestClose={onClose}
     >
       <View className="flex-1 items-center justify-center bg-black/50 px-6">
-        <View className="w-full rounded-2xl bg-white p-6">
+        <View className="w-full rounded-2xl bg-white dark:bg-slate-800 p-6">
           {/* Header */}
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-xl font-bold text-gray-900">
+            <Text className="text-xl font-bold text-gray-900 dark:text-gray-100">
               {habit.title}
             </Text>
             <TouchableOpacity onPress={onClose} className="rounded-full p-1">
@@ -62,17 +62,17 @@ export default function HabitValueModal({
 
           {/* Description */}
           {habit.description && (
-            <Text className="mb-4 text-sm text-gray-600">
+            <Text className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               {habit.description}
             </Text>
           )}
 
           {/* Current/Goal Display */}
-          <View className="mb-6 rounded-lg bg-gray-50 p-4">
-            <Text className="text-center text-sm text-gray-600">
+          <View className="mb-6 rounded-lg bg-gray-50 dark:bg-slate-700 p-4">
+            <Text className="text-center text-sm text-gray-600 dark:text-gray-400">
               Today's Progress
             </Text>
-            <Text className="mt-1 text-center text-2xl font-bold text-gray-900">
+            <Text className="mt-1 text-center text-2xl font-bold text-gray-900 dark:text-gray-100">
               {currentValue}
               {habit.dailyGoal && ` / ${habit.dailyGoal}`}
               {habit.unit && ` ${habit.unit}`}
@@ -81,23 +81,24 @@ export default function HabitValueModal({
 
           {/* Value Input with Steppers */}
           <View className="mb-6">
-            <Text className="mb-2 text-sm font-medium text-gray-700">
+            <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Add Value
             </Text>
             <View className="flex-row items-center justify-center gap-3">
               <TouchableOpacity
                 onPress={handleDecrement}
-                className="h-12 w-12 items-center justify-center rounded-full bg-gray-200"
+                className="h-12 w-12 items-center justify-center rounded-full bg-gray-200 dark:bg-slate-600"
               >
                 <Minus color="#374151" size={24} />
               </TouchableOpacity>
 
               <TextInput
-                className="h-14 w-24 rounded-lg border-2 border-blue-500 bg-white px-4 text-center text-xl font-semibold"
+                className="h-14 w-24 rounded-lg border-2 border-blue-500 bg-white dark:bg-slate-700 px-4 text-center text-xl font-semibold text-gray-900 dark:text-gray-100"
                 keyboardType="numeric"
                 value={value}
                 onChangeText={setValue}
                 selectTextOnFocus
+                placeholderTextColor="#9ca3af"
               />
 
               <TouchableOpacity
@@ -113,9 +114,9 @@ export default function HabitValueModal({
           <View className="flex-row gap-3">
             <TouchableOpacity
               onPress={onClose}
-              className="flex-1 rounded-lg border border-gray-300 py-3"
+              className="flex-1 rounded-lg border border-gray-300 dark:border-slate-600 py-3"
             >
-              <Text className="text-center font-semibold text-gray-600">
+              <Text className="text-center font-semibold text-gray-600 dark:text-gray-300">
                 Cancel
               </Text>
             </TouchableOpacity>

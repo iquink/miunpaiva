@@ -368,17 +368,19 @@ export default function DashboardScreen() {
   );
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50 dark:bg-slate-900">
       {/* Header */}
-      <View className="bg-white px-6 pb-4 pt-12">
-        <Text className="text-2xl font-bold text-gray-900">
+      <View className="bg-white dark:bg-slate-800 px-6 pb-4 pt-12">
+        <Text className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           {t("dashboard")}
         </Text>
-        <Text className="mt-1 text-gray-600">{t("dashboard_subtitle")}</Text>
+        <Text className="mt-1 text-gray-600 dark:text-gray-400">
+          {t("dashboard_subtitle")}
+        </Text>
       </View>
 
       {/* Date Selector */}
-      <View className="flex-row items-center justify-between bg-white px-6 py-4">
+      <View className="flex-row items-center justify-between bg-white dark:bg-slate-800 px-6 py-4">
         <TouchableOpacity
           onPress={() => changeDate(-1)}
           className="rounded-lg p-2"
@@ -386,7 +388,7 @@ export default function DashboardScreen() {
           <ChevronLeft color="#6b7280" size={24} />
         </TouchableOpacity>
 
-        <Text className="text-lg font-semibold text-gray-900">
+        <Text className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           {dateStr === todayStr
             ? t("today")
             : format(selectedDate, "MMM dd, yyyy")}
@@ -409,7 +411,9 @@ export default function DashboardScreen() {
       >
         {userHabits.length === 0 ? (
           <View className="mt-8 items-center">
-            <Text className="text-gray-500">{t("no_habits")}</Text>
+            <Text className="text-gray-500 dark:text-gray-400">
+              {t("no_habits")}
+            </Text>
           </View>
         ) : (
           userHabits.map((habit) => (
@@ -417,6 +421,7 @@ export default function DashboardScreen() {
               key={habit.id}
               habit={habit}
               log={habitLogs.get(habit.id)}
+              selectedDate={selectedDate}
               onToggle={toggleBooleanHabit}
               onUpdateValue={updateCounterValue}
               onLongPress={deleteHabit}
@@ -437,17 +442,17 @@ export default function DashboardScreen() {
 
       {/* Add Habit Form */}
       {showAddHabit && (
-        <View className="border-t border-gray-200 bg-white">
+        <View className="border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
           <ScrollView
             className="p-6"
             contentContainerStyle={{ paddingBottom: 100 }}
           >
-            <Text className="mb-4 text-lg font-bold text-gray-900">
+            <Text className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">
               {t("new_habit")}
             </Text>
 
             {/* Category Selector */}
-            <Text className="mb-2 text-sm font-medium text-gray-700">
+            <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               {t("select_category")}
             </Text>
             <ScrollView
@@ -465,15 +470,15 @@ export default function DashboardScreen() {
                     }}
                     className={`rounded-full border px-4 py-2 ${
                       selectedCategory === category.label
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-300 bg-white"
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900"
+                        : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
                     }`}
                   >
                     <Text
                       className={`text-sm font-medium ${
                         selectedCategory === category.label
-                          ? "text-blue-500"
-                          : "text-gray-600"
+                          ? "text-blue-500 dark:text-blue-300"
+                          : "text-gray-600 dark:text-gray-300"
                       }`}
                     >
                       {category.label}
@@ -486,7 +491,7 @@ export default function DashboardScreen() {
             {/* Preset Items */}
             {selectedCategory && filteredPresets.length > 0 && (
               <>
-                <Text className="mb-2 text-sm font-medium text-gray-700">
+                <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t("select_preset")}
                 </Text>
                 <ScrollView
@@ -501,15 +506,15 @@ export default function DashboardScreen() {
                         onPress={() => selectPreset(preset.name)}
                         className={`rounded-full border px-4 py-2 ${
                           selectedPreset === preset.name
-                            ? "border-green-500 bg-green-50"
-                            : "border-gray-300 bg-white"
+                            ? "border-green-500 bg-green-50 dark:bg-green-900"
+                            : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
                         }`}
                       >
                         <Text
                           className={`text-sm ${
                             selectedPreset === preset.name
-                              ? "text-green-600"
-                              : "text-gray-600"
+                              ? "text-green-600 dark:text-green-300"
+                              : "text-gray-600 dark:text-gray-300"
                           }`}
                         >
                           {preset.name}
@@ -521,40 +526,44 @@ export default function DashboardScreen() {
               </>
             )}
 
-            <Text className="mb-2 text-sm font-medium text-gray-700">
+            <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               {t("or_custom")}
             </Text>
 
             <TextInput
-              className="mb-3 rounded-lg border border-gray-300 px-4 py-3"
+              className="mb-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-gray-900 dark:text-gray-100"
               placeholder={t("habit_title")}
+              placeholderTextColor="#9ca3af"
               value={newHabitTitle}
               onChangeText={setNewHabitTitle}
             />
 
             <TextInput
-              className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
+              className="mb-4 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-gray-900 dark:text-gray-100"
               placeholder={t("habit_description")}
+              placeholderTextColor="#9ca3af"
               value={newHabitDescription}
               onChangeText={setNewHabitDescription}
               multiline
               numberOfLines={2}
             />
 
-            <Text className="mb-2 text-xs text-gray-500">
+            <Text className="mb-2 text-xs text-gray-500 dark:text-gray-400">
               {t("habit_type_hint")}
             </Text>
 
             <View className="mb-4 space-y-3">
               <TextInput
-                className="rounded-lg border border-gray-300 px-4 py-3"
+                className="rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-gray-900 dark:text-gray-100"
                 placeholder={t("habit_unit")}
+                placeholderTextColor="#9ca3af"
                 value={newHabitUnit}
                 onChangeText={setNewHabitUnit}
               />
               <TextInput
-                className="rounded-lg border border-gray-300 px-4 py-3"
+                className="rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-gray-900 dark:text-gray-100"
                 placeholder={t("habit_daily_goal")}
+                placeholderTextColor="#9ca3af"
                 value={newHabitGoal}
                 onChangeText={setNewHabitGoal}
                 keyboardType="numeric"
@@ -563,7 +572,7 @@ export default function DashboardScreen() {
 
             {/* Schedule Section */}
             <View className="mb-4">
-              <Text className="mb-2 text-sm font-semibold text-gray-700">
+              <Text className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
                 {t("schedule")}
               </Text>
 
@@ -573,13 +582,15 @@ export default function DashboardScreen() {
                   onPress={() => setFrequency("daily")}
                   className={`flex-1 rounded-lg border py-2 ${
                     frequency === "daily"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-300 bg-white"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900"
+                      : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
                   }`}
                 >
                   <Text
                     className={`text-center text-sm font-medium ${
-                      frequency === "daily" ? "text-blue-600" : "text-gray-600"
+                      frequency === "daily"
+                        ? "text-blue-600 dark:text-blue-300"
+                        : "text-gray-600 dark:text-gray-300"
                     }`}
                   >
                     {t("daily")}
@@ -590,13 +601,15 @@ export default function DashboardScreen() {
                   onPress={() => setFrequency("weekly")}
                   className={`flex-1 rounded-lg border py-2 ${
                     frequency === "weekly"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-300 bg-white"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900"
+                      : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
                   }`}
                 >
                   <Text
                     className={`text-center text-sm font-medium ${
-                      frequency === "weekly" ? "text-blue-600" : "text-gray-600"
+                      frequency === "weekly"
+                        ? "text-blue-600 dark:text-blue-300"
+                        : "text-gray-600 dark:text-gray-300"
                     }`}
                   >
                     {t("weekly")}
@@ -607,8 +620,8 @@ export default function DashboardScreen() {
                   onPress={() => setFrequency("once")}
                   className={`flex-1 rounded-lg border py-2 ${
                     frequency === "once"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-300 bg-white"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900"
+                      : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
                   }`}
                 >
                   <Text
@@ -624,7 +637,7 @@ export default function DashboardScreen() {
               {/* Weekday Selector (Weekly only) */}
               {frequency === "weekly" && (
                 <View className="mb-3">
-                  <Text className="mb-2 text-xs text-gray-600">
+                  <Text className="mb-2 text-xs text-gray-600 dark:text-gray-400">
                     {t("select_weekdays")}
                   </Text>
                   <View className="flex-row justify-between">
@@ -667,14 +680,14 @@ export default function DashboardScreen() {
               {/* Target Date (One-time only) */}
               {frequency === "once" && (
                 <View className="mb-3">
-                  <Text className="mb-2 text-xs text-gray-600">
+                  <Text className="mb-2 text-xs text-gray-600 dark:text-gray-400">
                     {t("target_date")}
                   </Text>
                   <TouchableOpacity
                     onPress={() => setShowTargetPicker(true)}
-                    className="rounded-lg border border-gray-300 bg-white px-4 py-3"
+                    className="rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3"
                   >
-                    <Text className="text-gray-900">
+                    <Text className="text-gray-900 dark:text-gray-100">
                       {targetDate
                         ? format(targetDate, "MMM d, yyyy")
                         : t("target_date")}
@@ -697,14 +710,14 @@ export default function DashboardScreen() {
               {/* End Date (Daily/Weekly) */}
               {(frequency === "daily" || frequency === "weekly") && (
                 <View className="mb-3">
-                  <Text className="mb-2 text-xs text-gray-600">
+                  <Text className="mb-2 text-xs text-gray-600 dark:text-gray-400">
                     {t("end_date_optional")}
                   </Text>
                   <TouchableOpacity
                     onPress={() => setShowEndPicker(true)}
-                    className="rounded-lg border border-gray-300 bg-white px-4 py-3"
+                    className="rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3"
                   >
-                    <Text className="text-gray-900">
+                    <Text className="text-gray-900 dark:text-gray-100">
                       {endDate ? format(endDate, "MMM d, yyyy") : t("forever")}
                     </Text>
                   </TouchableOpacity>
@@ -741,9 +754,9 @@ export default function DashboardScreen() {
                   setShowAddHabit(false);
                   resetForm();
                 }}
-                className="flex-1 rounded-lg border border-gray-300 py-3"
+                className="flex-1 rounded-lg border border-gray-300 dark:border-slate-600 py-3"
               >
-                <Text className="text-center font-semibold text-gray-600">
+                <Text className="text-center font-semibold text-gray-600 dark:text-gray-300">
                   {t("cancel")}
                 </Text>
               </TouchableOpacity>

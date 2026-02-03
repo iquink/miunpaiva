@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Check, X, TrendingUp } from "lucide-react-native";
+import { Check, X, TrendingUp, Lock } from "lucide-react-native";
+import { startOfDay, differenceInCalendarDays } from "date-fns";
 import type { Habit, Log } from "../db/schema";
 import HabitValueModal from "./HabitValueModal";
 import React from "react";
@@ -8,6 +9,7 @@ import React from "react";
 interface HabitCardProps {
   habit: Habit;
   log?: Log;
+  selectedDate: Date;
   onToggle: (habit: Habit) => void;
   onUpdateValue: (habit: Habit, value: number) => void;
   onLongPress: (habitId: number) => void;
@@ -16,6 +18,7 @@ interface HabitCardProps {
 export default function HabitCard({
   habit,
   log,
+  selectedDate,
   onToggle,
   onUpdateValue,
   onLongPress,
@@ -27,7 +30,15 @@ export default function HabitCard({
   const currentValue = log?.value || 0;
   const isCompleted = log?.completed || false;
 
+  // Calculate if date is editable (Today or Yesterday only)
+  const now = startOfDay(new Date());
+  const selected = startOfDay(selectedDate);
+  const diff = differenceInCalendarDays(now, selected);
+  const isEditable = diff === 0 || diff === 1; // 0 = today, 1 = yesterday
+
   const handlePress = () => {
+    if (!isEditable) return; // Locked - no action
+
     if (isBoolean) {
       onToggle(habit);
     } else if (isCounter) {
@@ -54,15 +65,17 @@ export default function HabitCard({
       <TouchableOpacity
         onPress={handlePress}
         onLongPress={() => onLongPress(habit.id)}
+        disabled={!isEditable}
         className={`mb-3 rounded-xl p-4 ${
           isBoolean
             ? isCompleted
-              ? "bg-green-100"
-              : "bg-white"
+              ? "bg-green-100 dark:bg-green-900"
+              : "bg-white dark:bg-slate-800"
             : isGoalMet
-              ? "bg-green-100"
-              : "bg-white"
-        }`}
+              ? "bg-green-100 dark:bg-green-900"
+              : "bg-white dark:bg-slate-800"
+        } ${!isEditable ? "opacity-50" : ""}`}
+        style={{ opacity: isEditable ? 1 : 0.5 }}
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-1">
@@ -70,18 +83,18 @@ export default function HabitCard({
               className={`text-base font-semibold ${
                 isBoolean
                   ? isCompleted
-                    ? "text-green-800"
-                    : "text-gray-900"
+                    ? "text-green-800 dark:text-green-200"
+                    : "text-gray-900 dark:text-gray-100"
                   : isGoalMet
-                    ? "text-green-800"
-                    : "text-gray-900"
+                    ? "text-green-800 dark:text-green-200"
+                    : "text-gray-900 dark:text-gray-100"
               }`}
             >
               {habit.title}
             </Text>
 
             {habit.description && (
-              <Text className="mt-1 text-xs text-gray-500">
+              <Text className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 {habit.description}
               </Text>
             )}
@@ -89,14 +102,14 @@ export default function HabitCard({
             {/* Counter Progress Display */}
             {isCounter && (
               <View className="mt-2">
-                <Text className="text-sm font-medium text-gray-700">
+                <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {currentValue}
                   {habit.dailyGoal && ` / ${habit.dailyGoal}`}
                   {habit.unit && ` ${habit.unit}`}
                 </Text>
 
                 {habit.dailyGoal && (
-                  <View className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200">
+                  <View className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-slate-700">
                     <View
                       className={`h-full ${isGoalMet ? "bg-green-500" : "bg-blue-500"}`}
                       style={{ width: `${progressPercentage}%` }}
@@ -107,7 +120,7 @@ export default function HabitCard({
             )}
 
             {/* Type Label */}
-            <Text className="mt-2 text-xs text-gray-400">
+            <Text className="mt-2 text-xs text-gray-400 dark:text-gray-500">
               {isBoolean ? "Yes/No" : "Counter"}
             </Text>
           </View>
@@ -115,16 +128,20 @@ export default function HabitCard({
           {/* Icon */}
           <View
             className={`h-12 w-12 items-center justify-center rounded-full ${
-              isBoolean
-                ? isCompleted
-                  ? "bg-green-500"
-                  : "bg-gray-200"
-                : isGoalMet
-                  ? "bg-green-500"
-                  : "bg-blue-500"
+              !isEditable
+                ? "bg-gray-300 dark:bg-slate-600"
+                : isBoolean
+                  ? isCompleted
+                    ? "bg-green-500"
+                    : "bg-gray-200 dark:bg-slate-600"
+                  : isGoalMet
+                    ? "bg-green-500"
+                    : "bg-blue-500"
             }`}
           >
-            {isBoolean ? (
+            {!isEditable ? (
+              <Lock color="#9ca3af" size={20} />
+            ) : isBoolean ? (
               isCompleted ? (
                 <Check color="white" size={24} />
               ) : (

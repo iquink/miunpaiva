@@ -380,13 +380,15 @@ export default function AchievementsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50 dark:bg-slate-900">
       {/* Header */}
-      <View className="bg-white px-6 pb-4 pt-12">
-        <Text className="text-2xl font-bold text-gray-900">
+      <View className="bg-white dark:bg-slate-800 px-6 pb-4 pt-12">
+        <Text className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           {t("achievements")}
         </Text>
-        <Text className="mt-1 text-gray-600">{t("achievements_subtitle")}</Text>
+        <Text className="mt-1 text-gray-600 dark:text-gray-400">
+          {t("achievements_subtitle")}
+        </Text>
       </View>
 
       {/* Achievements List */}
@@ -398,16 +400,20 @@ export default function AchievementsScreen() {
       >
         {allAchievements.length === 0 ? (
           <View className="mt-8 items-center">
-            <Text className="text-gray-500">{t("no_achievements")}</Text>
+            <Text className="text-gray-500 dark:text-gray-400">
+              {t("no_achievements")}
+            </Text>
           </View>
         ) : (
           <>
             {/* Unlocked Achievements */}
-            <Text className="mb-3 text-sm font-semibold uppercase text-gray-500">
+            <Text className="mb-3 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">
               {t("unlocked")}
             </Text>
             {allAchievements.filter((a) => a.unlocked).length === 0 ? (
-              <Text className="mb-4 text-gray-400">{t("no_unlocked")}</Text>
+              <Text className="mb-4 text-gray-400 dark:text-gray-500">
+                {t("no_unlocked")}
+              </Text>
             ) : (
               allAchievements
                 .filter((a) => a.unlocked)
@@ -415,22 +421,22 @@ export default function AchievementsScreen() {
                   <TouchableOpacity
                     key={achievement.id}
                     onLongPress={() => deleteAchievement(achievement.id)}
-                    className="mb-3 rounded-xl bg-gradient-to-r from-yellow-100 to-yellow-200 p-4"
+                    className="mb-3 rounded-xl bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-800 p-4"
                   >
                     <View className="flex-row items-center">
                       <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-yellow-400">
                         {renderIcon(achievement.iconSlug, "white", 24)}
                       </View>
                       <View className="flex-1">
-                        <Text className="text-base font-bold text-gray-900">
+                        <Text className="text-base font-bold text-gray-900 dark:text-gray-100">
                           {achievement.title}
                         </Text>
                         {achievement.description && (
-                          <Text className="mt-1 text-xs text-gray-600">
+                          <Text className="mt-1 text-xs text-gray-600 dark:text-gray-300">
                             {achievement.description}
                           </Text>
                         )}
-                        <Text className="mt-1 text-xs text-gray-500">
+                        <Text className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           {t("criteria_count", {
                             count: achievement.criteriaCount,
                           })}
@@ -512,7 +518,7 @@ export default function AchievementsScreen() {
             {/* Missed Achievements */}
             {allAchievements.filter((a) => a.missed).length > 0 && (
               <>
-                <Text className="mb-3 mt-6 text-sm font-semibold uppercase text-gray-500">
+                <Text className="mb-3 mt-6 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">
                   {t("missed")}
                 </Text>
                 {allAchievements
@@ -521,22 +527,22 @@ export default function AchievementsScreen() {
                     <TouchableOpacity
                       key={achievement.id}
                       onLongPress={() => deleteAchievement(achievement.id)}
-                      className="mb-3 rounded-xl bg-gray-100 p-4 opacity-60"
+                      className="mb-3 rounded-xl bg-gray-100 dark:bg-slate-800/50 p-4 opacity-60"
                     >
                       <View className="flex-row items-center">
-                        <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-gray-300">
+                        <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-gray-300 dark:bg-slate-700">
                           {renderIcon(achievement.iconSlug, "#9CA3AF", 24)}
                         </View>
                         <View className="flex-1">
-                          <Text className="text-base font-semibold text-gray-600">
+                          <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
                             {achievement.title}
                           </Text>
                           {achievement.description && (
-                            <Text className="mt-1 text-xs text-gray-500">
+                            <Text className="mt-1 text-xs text-gray-500 dark:text-gray-500">
                               {achievement.description}
                             </Text>
                           )}
-                          <Text className="mt-1 text-xs italic text-gray-400">
+                          <Text className="mt-1 text-xs italic text-gray-400 dark:text-gray-500">
                             {t("missed")}
                           </Text>
                           {achievement.criteria.length > 0 && (
