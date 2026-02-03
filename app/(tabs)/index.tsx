@@ -11,13 +11,25 @@ import {
 import { format, startOfToday, endOfDay } from "date-fns";
 import { eq, and, desc, sql, lte } from "drizzle-orm";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react-native";
+import { useFocusEffect } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../store/authStore";
 import { db } from "../../db";
-import { habits, logs, type Habit, type Log } from "../../db/schema";
+import {
+  habits,
+  logs,
+  presetCategories,
+  presetItems,
+  type Habit,
+  type Log,
+  type PresetCategory,
+  type PresetItem,
+} from "../../db/schema";
 import { checkAchievements } from "../../services/achievementService";
 import HabitCard from "../../components/HabitCard";
 
 export default function DashboardScreen() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const [selectedDate, setSelectedDate] = useState(startOfToday());
   const [userHabits, setUserHabits] = useState<Habit[]>([]);
@@ -25,14 +37,50 @@ export default function DashboardScreen() {
   const [showAddHabit, setShowAddHabit] = useState(false);
   const [newHabitTitle, setNewHabitTitle] = useState("");
   const [newHabitDescription, setNewHabitDescription] = useState("");
-  const [newHabitType, setNewHabitType] = useState<"boolean" | "counter">(
-    "boolean",
-  );
   const [newHabitUnit, setNewHabitUnit] = useState("");
   const [newHabitGoal, setNewHabitGoal] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [categories, setCategories] = useState<PresetCategory[]>([]);
+  const [presets, setPresets] = useState<PresetItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   const dateStr = format(selectedDate, "yyyy-MM-dd");
+
+  // Load preset categories and items
+  const loadPresets = useCallback(async () => {
+    try {
+      const fetchedCategories = await db.select().from(presetCategories);
+      setCategories(fetchedCategories);
+
+      const fetchedPresets = await db.select().from(presetItems);
+      setPresets(fetchedPresets);
+    } catch (error) {
+      console.error("Error loading presets:", error);
+    }
+  }, []);
+
+  // Close modal when tab loses focus
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        // Cleanup when leaving tab
+        if (showAddHabit) {
+          setShowAddHabit(false);
+          resetForm();
+        }
+      };
+    }, [showAddHabit]),
+  );
+
+  const resetForm = () => {
+    setNewHabitTitle("");
+    setNewHabitDescription("");
+    setNewHabitUnit("");
+    setNewHabitGoal("");
+    setSelectedCategory(null);
+    setSelectedPreset(null);
+  };
 
   const loadHabits = useCallback(async () => {
     if (!user) return;
@@ -73,13 +121,14 @@ export default function DashboardScreen() {
       setHabitLogs(logsMap);
     } catch (error) {
       console.error("Error loading habits:", error);
-      Alert.alert("Error", "Failed to load habits");
+      Alert.alert(t("error"), t("error_load_habits"));
     }
-  }, [user, dateStr, selectedDate]);
+  }, [user, dateStr, selectedDate, t]);
 
   useEffect(() => {
     loadHabits();
-  }, [loadHabits]);
+    loadPresets();
+  }, [loadHabits, loadPresets]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -89,35 +138,34 @@ export default function DashboardScreen() {
 
   const handleAddHabit = async () => {
     if (!user || !newHabitTitle.trim()) {
-      Alert.alert("Error", "Please enter a habit title");
+      Alert.alert(t("error"), t("error_title_required"));
       return;
     }
 
     try {
+      // Auto-detect type based on unit/goal
+      const hasUnit = newHabitUnit.trim().length > 0;
+      const hasGoal = newHabitGoal.trim().length > 0;
+      const habitType: "boolean" | "counter" =
+        hasUnit || hasGoal ? "counter" : "boolean";
+
       await db.insert(habits).values({
         userId: user.id,
         title: newHabitTitle.trim(),
         description: newHabitDescription.trim() || null,
-        type: newHabitType,
-        unit:
-          newHabitType === "counter" && newHabitUnit
-            ? newHabitUnit.trim()
-            : null,
-        dailyGoal:
-          newHabitType === "counter" && newHabitGoal
-            ? parseInt(newHabitGoal, 10)
-            : null,
+        type: habitType,
+        unit: hasUnit ? newHabitUnit.trim() : null,
+        dailyGoal: hasGoal ? parseInt(newHabitGoal, 10) : null,
+        category: selectedCategory,
       });
 
-      setNewHabitTitle("");
-      setNewHabitDescription("");
-      setNewHabitUnit("");
-      setNewHabitGoal("");
+      resetForm();
       setShowAddHabit(false);
       await loadHabits();
+      Alert.alert(t("success"), t("success_habit_created"));
     } catch (error) {
       console.error("Error creating habit:", error);
-      Alert.alert("Error", "Failed to create habit");
+      Alert.alert(t("error"), t("error_create_habit"));
     }
   };
 
@@ -212,10 +260,10 @@ export default function DashboardScreen() {
   };
 
   const deleteHabit = async (habitId: number) => {
-    Alert.alert("Delete Habit", "Are you sure you want to delete this habit?", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("delete"), t("delete_achievement_message"), [
+      { text: t("cancel"), style: "cancel" },
       {
-        text: "Delete",
+        text: t("delete"),
         style: "destructive",
         onPress: async () => {
           try {
@@ -223,21 +271,32 @@ export default function DashboardScreen() {
             await loadHabits();
           } catch (error) {
             console.error("Error deleting habit:", error);
-            Alert.alert("Error", "Failed to delete habit");
+            Alert.alert(t("error"), t("error_update_habit"));
           }
         },
       },
     ]);
   };
 
+  const selectPreset = (presetName: string) => {
+    setNewHabitTitle(presetName);
+    setSelectedPreset(presetName);
+  };
+
+  const filteredPresets = presets.filter((p) =>
+    categories.find(
+      (c) => c.id === p.categoryId && c.label === selectedCategory,
+    ),
+  );
+
   return (
     <View className="flex-1 bg-gray-50">
       {/* Header */}
       <View className="bg-white px-6 pb-4 pt-12">
         <Text className="text-2xl font-bold text-gray-900">
-          Welcome, {user?.username}!
+          {t("dashboard")}
         </Text>
-        <Text className="mt-1 text-gray-600">Track your daily habits</Text>
+        <Text className="mt-1 text-gray-600">{t("dashboard_subtitle")}</Text>
       </View>
 
       {/* Date Selector */}
@@ -270,9 +329,7 @@ export default function DashboardScreen() {
       >
         {userHabits.length === 0 ? (
           <View className="mt-8 items-center">
-            <Text className="text-gray-500">
-              No habits yet. Create your first one!
-            </Text>
+            <Text className="text-gray-500">{t("no_habits")}</Text>
           </View>
         ) : (
           userHabits.map((habit) => (
@@ -300,106 +357,153 @@ export default function DashboardScreen() {
 
       {/* Add Habit Form */}
       {showAddHabit && (
-        <View className="border-t border-gray-200 bg-white p-6">
-          <Text className="mb-4 text-lg font-bold text-gray-900">
-            New Habit
-          </Text>
+        <View className="border-t border-gray-200 bg-white">
+          <ScrollView
+            className="p-6"
+            contentContainerStyle={{ paddingBottom: 100 }}
+          >
+            <Text className="mb-4 text-lg font-bold text-gray-900">
+              {t("new_habit")}
+            </Text>
 
-          <TextInput
-            className="mb-3 rounded-lg border border-gray-300 px-4 py-3"
-            placeholder="Habit name"
-            value={newHabitTitle}
-            onChangeText={setNewHabitTitle}
-            autoFocus
-          />
-
-          <TextInput
-            className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
-            placeholder="Description (optional)"
-            value={newHabitDescription}
-            onChangeText={setNewHabitDescription}
-            multiline
-            numberOfLines={2}
-          />
-
-          <View className="mb-4 flex-row gap-2">
-            <TouchableOpacity
-              onPress={() => setNewHabitType("boolean")}
-              className={`flex-1 rounded-lg border py-3 ${
-                newHabitType === "boolean"
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-300 bg-white"
-              }`}
+            {/* Category Selector */}
+            <Text className="mb-2 text-sm font-medium text-gray-700">
+              {t("select_category")}
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mb-4"
             >
-              <Text
-                className={`text-center font-semibold ${
-                  newHabitType === "boolean" ? "text-blue-500" : "text-gray-600"
-                }`}
-              >
-                Yes/No
-              </Text>
-            </TouchableOpacity>
+              <View className="flex-row gap-2">
+                {categories.map((category) => (
+                  <TouchableOpacity
+                    key={category.id}
+                    onPress={() => {
+                      setSelectedCategory(category.label);
+                      setSelectedPreset(null);
+                    }}
+                    className={`rounded-full border px-4 py-2 ${
+                      selectedCategory === category.label
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  >
+                    <Text
+                      className={`text-sm font-medium ${
+                        selectedCategory === category.label
+                          ? "text-blue-500"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {category.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
 
-            <TouchableOpacity
-              onPress={() => setNewHabitType("counter")}
-              className={`flex-1 rounded-lg border py-3 ${
-                newHabitType === "counter"
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-300 bg-white"
-              }`}
-            >
-              <Text
-                className={`text-center font-semibold ${
-                  newHabitType === "counter" ? "text-blue-500" : "text-gray-600"
-                }`}
-              >
-                Counter
-              </Text>
-            </TouchableOpacity>
-          </View>
+            {/* Preset Items */}
+            {selectedCategory && filteredPresets.length > 0 && (
+              <>
+                <Text className="mb-2 text-sm font-medium text-gray-700">
+                  {t("select_preset")}
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  className="mb-4"
+                >
+                  <View className="flex-row gap-2">
+                    {filteredPresets.map((preset) => (
+                      <TouchableOpacity
+                        key={preset.id}
+                        onPress={() => selectPreset(preset.name)}
+                        className={`rounded-full border px-4 py-2 ${
+                          selectedPreset === preset.name
+                            ? "border-green-500 bg-green-50"
+                            : "border-gray-300 bg-white"
+                        }`}
+                      >
+                        <Text
+                          className={`text-sm ${
+                            selectedPreset === preset.name
+                              ? "text-green-600"
+                              : "text-gray-600"
+                          }`}
+                        >
+                          {preset.name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </ScrollView>
+              </>
+            )}
 
-          {/* Counter-specific fields */}
-          {newHabitType === "counter" && (
+            <Text className="mb-2 text-sm font-medium text-gray-700">
+              {t("or_custom")}
+            </Text>
+
+            <TextInput
+              className="mb-3 rounded-lg border border-gray-300 px-4 py-3"
+              placeholder={t("habit_title")}
+              value={newHabitTitle}
+              onChangeText={setNewHabitTitle}
+            />
+
+            <TextInput
+              className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
+              placeholder={t("habit_description")}
+              value={newHabitDescription}
+              onChangeText={setNewHabitDescription}
+              multiline
+              numberOfLines={2}
+            />
+
+            <Text className="mb-2 text-xs text-gray-500">
+              {t("habit_type_hint")}
+            </Text>
+
             <View className="mb-4 space-y-3">
               <TextInput
                 className="rounded-lg border border-gray-300 px-4 py-3"
-                placeholder="Unit (e.g., km, pages, liters)"
+                placeholder={t("habit_unit")}
                 value={newHabitUnit}
                 onChangeText={setNewHabitUnit}
               />
               <TextInput
                 className="rounded-lg border border-gray-300 px-4 py-3"
-                placeholder="Daily goal (optional)"
+                placeholder={t("habit_daily_goal")}
                 value={newHabitGoal}
                 onChangeText={setNewHabitGoal}
                 keyboardType="numeric"
               />
             </View>
-          )}
 
-          <View className="flex-row gap-2">
-            <TouchableOpacity
-              onPress={() => {
-                setShowAddHabit(false);
-                setNewHabitTitle("");
-                setNewHabitDescription("");
-                setNewHabitUnit("");
-                setNewHabitGoal("");
-              }}
-              className="flex-1 rounded-lg border border-gray-300 py-3"
-            >
-              <Text className="text-center font-semibold text-gray-600">
-                Cancel
-              </Text>
-            </TouchableOpacity>
+            <View className="flex-row gap-2">
+              <TouchableOpacity
+                onPress={() => {
+                  setShowAddHabit(false);
+                  resetForm();
+                }}
+                className="flex-1 rounded-lg border border-gray-300 py-3"
+              >
+                <Text className="text-center font-semibold text-gray-600">
+                  {t("cancel")}
+                </Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={handleAddHabit}
-              className="flex-1 rounded-lg bg-blue-500 py-3"
-            >
-              <Text className="text-center font-semibold text-white">Add</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                onPress={handleAddHabit}
+                className="flex-1 rounded-lg bg-blue-500 py-3"
+              >
+                <Text className="text-center font-semibold text-white">
+                  {t("add")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
         </View>
       )}
     </View>

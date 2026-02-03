@@ -9,7 +9,9 @@ import {
   RefreshControl,
 } from "react-native";
 import { eq, and } from "drizzle-orm";
-import { Award, Lock, Plus, X } from "lucide-react-native";
+import { Award, Lock, Plus, X, Trophy, Flower } from "lucide-react-native";
+import { useFocusEffect } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../store/authStore";
 import { db } from "../../db";
 import {
@@ -38,6 +40,7 @@ interface CriterionForm {
 }
 
 export default function AchievementsScreen() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const [allAchievements, setAllAchievements] = useState<
     AchievementWithStatus[]
@@ -49,6 +52,9 @@ export default function AchievementsScreen() {
   // Form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [iconSlug, setIconSlug] = useState<"medal" | "trophy" | "flower">(
+    "medal",
+  );
   const [criteria, setCriteria] = useState<CriterionForm[]>([
     {
       habitId: null,
@@ -107,9 +113,16 @@ export default function AchievementsScreen() {
       setAllAchievements(achievementsWithStatus);
     } catch (error) {
       console.error("Error loading achievements:", error);
-      Alert.alert("Error", "Failed to load achievements");
+      Alert.alert(t("error"), t("error_load_achievements"));
     }
-  }, [user]);
+  }, [user, t]);
+
+  // Auto-refresh when tab gains focus
+  useFocusEffect(
+    useCallback(() => {
+      loadAchievements();
+    }, [loadAchievements]),
+  );
 
   useEffect(() => {
     loadAchievements();
@@ -151,7 +164,7 @@ export default function AchievementsScreen() {
 
   const handleAddAchievement = async () => {
     if (!user || !title.trim()) {
-      Alert.alert("Error", "Please enter an achievement title");
+      Alert.alert(t("error"), t("error_achievement_title_required"));
       return;
     }
 
@@ -159,14 +172,11 @@ export default function AchievementsScreen() {
     for (let i = 0; i < criteria.length; i++) {
       const c = criteria[i];
       if (!c.habitId) {
-        Alert.alert("Error", `Please select a habit for criterion ${i + 1}`);
+        Alert.alert(t("error"), t("error_select_habit", { num: i + 1 }));
         return;
       }
       if (!c.targetValue || parseInt(c.targetValue, 10) <= 0) {
-        Alert.alert(
-          "Error",
-          `Please enter a valid target value for criterion ${i + 1}`,
-        );
+        Alert.alert(t("error"), t("error_target_value", { num: i + 1 }));
         return;
       }
     }
@@ -179,6 +189,7 @@ export default function AchievementsScreen() {
           userId: user.id,
           title: title.trim(),
           description: description.trim() || null,
+          iconSlug: iconSlug,
         })
         .returning();
 
@@ -196,6 +207,7 @@ export default function AchievementsScreen() {
       // Reset form
       setTitle("");
       setDescription("");
+      setIconSlug("medal");
       setCriteria([
         {
           habitId: null,
@@ -207,21 +219,21 @@ export default function AchievementsScreen() {
       setShowAddForm(false);
 
       await loadAchievements();
-      Alert.alert("Success", "Achievement created!");
+      Alert.alert(t("success"), t("success_achievement_created"));
     } catch (error) {
       console.error("Error creating achievement:", error);
-      Alert.alert("Error", "Failed to create achievement");
+      Alert.alert(t("error"), t("error_create_achievement"));
     }
   };
 
   const deleteAchievement = async (achievementId: number) => {
     Alert.alert(
-      "Delete Achievement",
-      "Are you sure you want to delete this achievement?",
+      t("delete_achievement_title"),
+      t("delete_achievement_message"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("delete"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -231,7 +243,7 @@ export default function AchievementsScreen() {
               await loadAchievements();
             } catch (error) {
               console.error("Error deleting achievement:", error);
-              Alert.alert("Error", "Failed to delete achievement");
+              Alert.alert(t("error"), t("error_delete_achievement"));
             }
           },
         },
@@ -242,11 +254,11 @@ export default function AchievementsScreen() {
   const getRuleTypeLabel = (type: string) => {
     switch (type) {
       case "streak":
-        return "Streak";
+        return t("streak");
       case "total_count":
-        return "Total Count";
+        return t("total_count");
       case "sum_value":
-        return "Sum Value";
+        return t("sum_value");
       default:
         return type;
     }
@@ -260,12 +272,27 @@ export default function AchievementsScreen() {
       .filter((id): id is number => id !== null);
   };
 
+  // Render icon component based on slug
+  const renderIcon = (slug: string, color: string, size: number) => {
+    switch (slug) {
+      case "trophy":
+        return <Trophy color={color} size={size} />;
+      case "flower":
+        return <Flower color={color} size={size} />;
+      case "medal":
+      default:
+        return <Award color={color} size={size} />;
+    }
+  };
+
   return (
     <View className="flex-1 bg-gray-50">
       {/* Header */}
       <View className="bg-white px-6 pb-4 pt-12">
-        <Text className="text-2xl font-bold text-gray-900">Achievements</Text>
-        <Text className="mt-1 text-gray-600">Track your milestones</Text>
+        <Text className="text-2xl font-bold text-gray-900">
+          {t("achievements")}
+        </Text>
+        <Text className="mt-1 text-gray-600">{t("achievements_subtitle")}</Text>
       </View>
 
       {/* Achievements List */}
@@ -277,20 +304,16 @@ export default function AchievementsScreen() {
       >
         {allAchievements.length === 0 ? (
           <View className="mt-8 items-center">
-            <Text className="text-gray-500">
-              No achievements yet. Create your first one!
-            </Text>
+            <Text className="text-gray-500">{t("no_achievements")}</Text>
           </View>
         ) : (
           <>
             {/* Unlocked Achievements */}
             <Text className="mb-3 text-sm font-semibold uppercase text-gray-500">
-              Unlocked
+              {t("unlocked")}
             </Text>
             {allAchievements.filter((a) => a.unlocked).length === 0 ? (
-              <Text className="mb-4 text-gray-400">
-                No unlocked achievements yet
-              </Text>
+              <Text className="mb-4 text-gray-400">{t("no_unlocked")}</Text>
             ) : (
               allAchievements
                 .filter((a) => a.unlocked)
@@ -302,7 +325,7 @@ export default function AchievementsScreen() {
                   >
                     <View className="flex-row items-center">
                       <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-yellow-400">
-                        <Award color="white" size={24} />
+                        {renderIcon(achievement.iconSlug, "white", 24)}
                       </View>
                       <View className="flex-1">
                         <Text className="text-base font-bold text-gray-900">
@@ -314,7 +337,9 @@ export default function AchievementsScreen() {
                           </Text>
                         )}
                         <Text className="mt-1 text-xs text-gray-500">
-                          {achievement.criteriaCount} criteria
+                          {t("criteria_count", {
+                            count: achievement.criteriaCount,
+                          })}
                         </Text>
                       </View>
                     </View>
@@ -324,10 +349,10 @@ export default function AchievementsScreen() {
 
             {/* Locked Achievements */}
             <Text className="mb-3 mt-6 text-sm font-semibold uppercase text-gray-500">
-              Locked
+              {t("locked")}
             </Text>
             {allAchievements.filter((a) => !a.unlocked).length === 0 ? (
-              <Text className="text-gray-400">All achievements unlocked!</Text>
+              <Text className="text-gray-400">{t("all_unlocked")}</Text>
             ) : (
               allAchievements
                 .filter((a) => !a.unlocked)
@@ -339,7 +364,7 @@ export default function AchievementsScreen() {
                   >
                     <View className="flex-row items-center">
                       <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-gray-400">
-                        <Lock color="white" size={24} />
+                        {renderIcon(achievement.iconSlug, "#9CA3AF", 24)}
                       </View>
                       <View className="flex-1">
                         <Text className="text-base font-semibold text-gray-700">
@@ -351,7 +376,9 @@ export default function AchievementsScreen() {
                           </Text>
                         )}
                         <Text className="mt-1 text-xs text-gray-400">
-                          {achievement.criteriaCount} criteria to complete
+                          {t("criteria_count_to_complete", {
+                            count: achievement.criteriaCount,
+                          })}
                         </Text>
                       </View>
                     </View>
@@ -380,26 +407,50 @@ export default function AchievementsScreen() {
             contentContainerStyle={{ paddingBottom: 120 }}
           >
             <Text className="mb-4 text-lg font-bold text-gray-900">
-              New Achievement
+              {t("new_achievement")}
             </Text>
 
             <TextInput
               className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
-              placeholder="Achievement title"
+              placeholder={t("achievement_title")}
               value={title}
               onChangeText={setTitle}
             />
 
             <TextInput
               className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
-              placeholder="Description (optional)"
+              placeholder={t("achievement_description")}
               value={description}
               onChangeText={setDescription}
               multiline
             />
 
+            {/* Icon Selector */}
+            <Text className="mb-2 text-sm font-medium text-gray-700">
+              {t("icon")}
+            </Text>
+            <View className="mb-4 flex-row gap-3">
+              {(["medal", "trophy", "flower"] as const).map((icon) => (
+                <TouchableOpacity
+                  key={icon}
+                  onPress={() => setIconSlug(icon)}
+                  className={`flex-1 items-center rounded-lg border p-4 ${
+                    iconSlug === icon
+                      ? "border-yellow-500 bg-yellow-50"
+                      : "border-gray-300 bg-white"
+                  }`}
+                >
+                  {renderIcon(
+                    icon,
+                    iconSlug === icon ? "#EAB308" : "#9CA3AF",
+                    32,
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+
             <Text className="mb-2 text-base font-bold text-gray-900">
-              Criteria (All must be met)
+              {t("criteria_all_must_meet")}
             </Text>
 
             {criteria.map((criterion, index) => (
@@ -409,7 +460,7 @@ export default function AchievementsScreen() {
               >
                 <View className="mb-2 flex-row items-center justify-between">
                   <Text className="font-semibold text-gray-700">
-                    Criterion {index + 1}
+                    {t("criterion_num", { num: index + 1 })}
                   </Text>
                   {criteria.length > 1 && (
                     <TouchableOpacity onPress={() => removeCriterion(index)}>
@@ -420,7 +471,7 @@ export default function AchievementsScreen() {
 
                 <View className="mb-3">
                   <Text className="mb-2 text-sm font-medium text-gray-700">
-                    Habit
+                    {t("habit")}
                   </Text>
                   <HabitSelector
                     habits={userHabits}
@@ -429,13 +480,13 @@ export default function AchievementsScreen() {
                       updateCriterion(index, "habitId", habitId)
                     }
                     excludedHabitIds={getUsedHabitIds(index)}
-                    placeholder="Select a habit"
+                    placeholder={t("select_habit")}
                   />
                 </View>
 
                 <View className="mb-3">
                   <Text className="mb-2 text-sm font-medium text-gray-700">
-                    Rule Type
+                    {t("rule_type")}
                   </Text>
                   <View className="flex-row gap-2">
                     {(["streak", "total_count", "sum_value"] as const).map(
@@ -468,11 +519,11 @@ export default function AchievementsScreen() {
 
                 <View className="mb-3">
                   <Text className="mb-2 text-sm font-medium text-gray-700">
-                    Target Value
+                    {t("target_value")}
                   </Text>
                   <TextInput
                     className="rounded-lg border border-gray-300 bg-white px-4 py-3"
-                    placeholder="e.g., 7"
+                    placeholder={t("target_value_placeholder")}
                     value={criterion.targetValue}
                     onChangeText={(val) =>
                       updateCriterion(index, "targetValue", val)
@@ -483,11 +534,11 @@ export default function AchievementsScreen() {
 
                 <View>
                   <Text className="mb-2 text-sm font-medium text-gray-700">
-                    Days Period
+                    {t("days_period")}
                   </Text>
                   <TextInput
                     className="rounded-lg border border-gray-300 bg-white px-4 py-3"
-                    placeholder="Days (Empty = All time)"
+                    placeholder={t("days_period_placeholder")}
                     value={criterion.daysPeriod}
                     onChangeText={(val) =>
                       updateCriterion(index, "daysPeriod", val)
@@ -504,7 +555,7 @@ export default function AchievementsScreen() {
             >
               <Plus color="#3B82F6" size={20} />
               <Text className="ml-2 font-semibold text-blue-500">
-                Add Criterion
+                {t("add_criterion")}
               </Text>
             </TouchableOpacity>
 
@@ -514,6 +565,7 @@ export default function AchievementsScreen() {
                   setShowAddForm(false);
                   setTitle("");
                   setDescription("");
+                  setIconSlug("medal");
                   setCriteria([
                     {
                       habitId: null,
@@ -526,7 +578,7 @@ export default function AchievementsScreen() {
                 className="flex-1 rounded-lg border border-gray-300 py-3"
               >
                 <Text className="text-center font-semibold text-gray-600">
-                  Cancel
+                  {t("cancel")}
                 </Text>
               </TouchableOpacity>
 
@@ -535,7 +587,7 @@ export default function AchievementsScreen() {
                 className="flex-1 rounded-lg bg-blue-500 py-3"
               >
                 <Text className="text-center font-semibold text-white">
-                  Create
+                  {t("create")}
                 </Text>
               </TouchableOpacity>
             </View>

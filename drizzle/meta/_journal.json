@@ -15,6 +15,13 @@
       "when": 1770132742842,
       "tag": "0001_left_slipstream",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1770148596486,
+      "tag": "0002_optimal_fat_cobra",
+      "breakpoints": true
     }
   ]
 }

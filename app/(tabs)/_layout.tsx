@@ -1,8 +1,11 @@
 import { Tabs } from "expo-router";
 import { Home, Award, Settings } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 export default function TabsLayout() {
+  const { t } = useTranslation();
+
   return (
     <Tabs
       screenOptions={{
@@ -18,21 +21,21 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Dashboard",
+          title: t("dashboard"),
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="achievements"
         options={{
-          title: "Achievements",
+          title: t("achievements"),
           tabBarIcon: ({ color, size }) => <Award color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
+          title: t("settings"),
           tabBarIcon: ({ color, size }) => (
             <Settings color={color} size={size} />
           ),

@@ -22,6 +22,7 @@ export const habits = sqliteTable("habits", {
   type: text("type", { enum: ["boolean", "counter"] }).notNull(),
   dailyGoal: integer("daily_goal"),
   unit: text("unit"),
+  category: text("category"), // Category from preset
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -87,6 +88,21 @@ export const userAchievements = sqliteTable("user_achievements", {
     .default(sql`(unixepoch())`),
 });
 
+// Preset Categories table
+export const presetCategories = sqliteTable("preset_categories", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  label: text("label").notNull(),
+});
+
+// Preset Items table
+export const presetItems = sqliteTable("preset_items", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  categoryId: integer("category_id")
+    .notNull()
+    .references(() => presetCategories.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+});
+
 // Type exports for TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -105,3 +121,9 @@ export type NewAchievementCriterion = typeof achievementCriteria.$inferInsert;
 
 export type UserAchievement = typeof userAchievements.$inferSelect;
 export type NewUserAchievement = typeof userAchievements.$inferInsert;
+
+export type PresetCategory = typeof presetCategories.$inferSelect;
+export type NewPresetCategory = typeof presetCategories.$inferInsert;
+
+export type PresetItem = typeof presetItems.$inferSelect;
+export type NewPresetItem = typeof presetItems.$inferInsert;
