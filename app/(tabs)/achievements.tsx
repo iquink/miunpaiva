@@ -30,6 +30,7 @@ interface AchievementWithStatus extends Achievement {
   unlocked: boolean;
   unlockedAt?: Date;
   criteriaCount?: number;
+  missed?: boolean;
 }
 
 interface CriterionForm {
@@ -102,13 +103,63 @@ export default function AchievementsScreen() {
         criteriaCount.set(ach.id, count.length);
       }
 
-      const achievementsWithStatus: AchievementWithStatus[] =
-        fetchedAchievements.map((ach) => ({
-          ...ach,
-          unlocked: unlockedMap.has(ach.id),
-          unlockedAt: unlockedMap.get(ach.id),
-          criteriaCount: criteriaCount.get(ach.id) || 0,
-        }));
+      // Helper: Check if achievement is missed
+      const isAchievementMissed = async (
+        achievementId: number,
+      ): Promise<boolean> => {
+        // Get all criteria for this achievement
+        const achCriteria = await db
+          .select()
+          .from(achievementCriteria)
+          .where(eq(achievementCriteria.achievementId, achievementId));
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Check if ANY linked habit has expired
+        for (const criterion of achCriteria) {
+          const [habit] = await db
+            .select()
+            .from(habits)
+            .where(eq(habits.id, criterion.habitId))
+            .limit(1);
+
+          if (!habit) continue;
+
+          // Check if habit has passed its opportunity window
+          if (habit.frequency === "once") {
+            // One-time habit: check if target date is in the past
+            if (habit.targetDate && new Date(habit.targetDate) < today) {
+              return true;
+            }
+          } else if (
+            habit.frequency === "daily" ||
+            habit.frequency === "weekly"
+          ) {
+            // Recurring habit: check if end date is in the past
+            if (habit.endDate && new Date(habit.endDate) < today) {
+              return true;
+            }
+          }
+        }
+
+        return false;
+      };
+
+      const achievementsWithStatus: AchievementWithStatus[] = await Promise.all(
+        fetchedAchievements.map(async (ach) => {
+          const isUnlocked = unlockedMap.has(ach.id);
+          const isMissed = !isUnlocked && (await isAchievementMissed(ach.id));
+
+          return {
+            ...ach,
+            unlocked: isUnlocked,
+            unlockedAt: unlockedMap.get(ach.id),
+            criteriaCount: criteriaCount.get(ach.id) || 0,
+            missed: isMissed,
+          };
+        }),
+      );
 
       setAllAchievements(achievementsWithStatus);
     } catch (error) {
@@ -351,11 +402,12 @@ export default function AchievementsScreen() {
             <Text className="mb-3 mt-6 text-sm font-semibold uppercase text-gray-500">
               {t("locked")}
             </Text>
-            {allAchievements.filter((a) => !a.unlocked).length === 0 ? (
+            {allAchievements.filter((a) => !a.unlocked && !a.missed).length ===
+            0 ? (
               <Text className="text-gray-400">{t("all_unlocked")}</Text>
             ) : (
               allAchievements
-                .filter((a) => !a.unlocked)
+                .filter((a) => !a.unlocked && !a.missed)
                 .map((achievement) => (
                   <TouchableOpacity
                     key={achievement.id}
@@ -384,6 +436,43 @@ export default function AchievementsScreen() {
                     </View>
                   </TouchableOpacity>
                 ))
+            )}
+
+            {/* Missed Achievements */}
+            {allAchievements.filter((a) => a.missed).length > 0 && (
+              <>
+                <Text className="mb-3 mt-6 text-sm font-semibold uppercase text-gray-500">
+                  {t("missed")}
+                </Text>
+                {allAchievements
+                  .filter((a) => a.missed)
+                  .map((achievement) => (
+                    <TouchableOpacity
+                      key={achievement.id}
+                      onLongPress={() => deleteAchievement(achievement.id)}
+                      className="mb-3 rounded-xl bg-gray-100 p-4 opacity-60"
+                    >
+                      <View className="flex-row items-center">
+                        <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-gray-300">
+                          {renderIcon(achievement.iconSlug, "#9CA3AF", 24)}
+                        </View>
+                        <View className="flex-1">
+                          <Text className="text-base font-semibold text-gray-600">
+                            {achievement.title}
+                          </Text>
+                          {achievement.description && (
+                            <Text className="mt-1 text-xs text-gray-500">
+                              {achievement.description}
+                            </Text>
+                          )}
+                          <Text className="mt-1 text-xs italic text-gray-400">
+                            {t("missed")}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+              </>
             )}
           </>
         )}

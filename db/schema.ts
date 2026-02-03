@@ -23,6 +23,12 @@ export const habits = sqliteTable("habits", {
   dailyGoal: integer("daily_goal"),
   unit: text("unit"),
   category: text("category"), // Category from preset
+  frequency: text("frequency", { enum: ["daily", "weekly", "once"] })
+    .notNull()
+    .default("daily"),
+  frequencyDays: text("frequency_days"), // JSON array of weekday numbers [0-6] for 'weekly'
+  targetDate: integer("target_date", { mode: "timestamp" }), // For 'once' frequency
+  endDate: integer("end_date", { mode: "timestamp" }), // For 'daily'/'weekly' - null means forever
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

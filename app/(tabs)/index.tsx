@@ -7,8 +7,10 @@ import {
   TextInput,
   Alert,
   RefreshControl,
+  Platform,
 } from "react-native";
-import { format, startOfToday, endOfDay } from "date-fns";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { format, startOfToday, endOfDay, startOfDay } from "date-fns";
 import { eq, and, desc, sql, lte } from "drizzle-orm";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useFocusEffect } from "expo-router";
@@ -45,7 +47,60 @@ export default function DashboardScreen() {
   const [presets, setPresets] = useState<PresetItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Schedule state
+  const [frequency, setFrequency] = useState<"daily" | "weekly" | "once">(
+    "daily",
+  );
+  const [selectedWeekdays, setSelectedWeekdays] = useState<number[]>([]);
+  const [targetDate, setTargetDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [showTargetPicker, setShowTargetPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
+
   const dateStr = format(selectedDate, "yyyy-MM-dd");
+
+  // Helper: Toggle weekday selection
+  const toggleWeekday = (day: number) => {
+    setSelectedWeekdays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
+    );
+  };
+
+  // Helper: Check if habit should be shown on selected date
+  const shouldShowHabit = (habit: Habit): boolean => {
+    const selectedDateStart = startOfDay(selectedDate);
+
+    // 1. Habit must have been created before or on selected date
+    if (habit.createdAt && new Date(habit.createdAt) > selectedDateStart) {
+      return false;
+    }
+
+    // 2. Check end date (for daily/weekly)
+    if (habit.endDate && new Date(habit.endDate) < selectedDateStart) {
+      return false;
+    }
+
+    // 3. Check frequency-specific rules
+    if (habit.frequency === "once") {
+      // One-time: only show on exact target date
+      if (!habit.targetDate) return false;
+      const targetDateStart = startOfDay(new Date(habit.targetDate));
+      return targetDateStart.getTime() === selectedDateStart.getTime();
+    } else if (habit.frequency === "weekly") {
+      // Weekly: check if selected date's weekday is in frequencyDays
+      if (!habit.frequencyDays) return false;
+      try {
+        const days: number[] = JSON.parse(habit.frequencyDays);
+        const selectedDayOfWeek = selectedDate.getDay();
+        return days.includes(selectedDayOfWeek);
+      } catch {
+        return false;
+      }
+    } else {
+      // Daily: always show (already checked end_date above)
+      return true;
+    }
+  };
 
   // Load preset categories and items
   const loadPresets = useCallback(async () => {
@@ -80,6 +135,10 @@ export default function DashboardScreen() {
     setNewHabitGoal("");
     setSelectedCategory(null);
     setSelectedPreset(null);
+    setFrequency("daily");
+    setSelectedWeekdays([]);
+    setTargetDate(null);
+    setEndDate(null);
   };
 
   const loadHabits = useCallback(async () => {
@@ -89,24 +148,22 @@ export default function DashboardScreen() {
       // Get end of selected date as Date object for comparison
       const selectedDateEnd = endOfDay(selectedDate);
 
-      // Fetch habits for current user created on or before selected date
+      // Fetch ALL habits for current user (we'll filter client-side)
       const fetchedHabits = await db
         .select()
         .from(habits)
-        .where(
-          and(
-            eq(habits.userId, user.id),
-            lte(habits.createdAt, selectedDateEnd),
-          ),
-        )
+        .where(eq(habits.userId, user.id))
         .orderBy(desc(habits.createdAt));
 
-      setUserHabits(fetchedHabits);
+      // Filter habits based on schedule
+      const visibleHabits = fetchedHabits.filter(shouldShowHabit);
+
+      setUserHabits(visibleHabits);
 
       // Fetch logs for selected date
       const logsMap = new Map<number, Log>();
 
-      for (const habit of fetchedHabits) {
+      for (const habit of visibleHabits) {
         const [log] = await db
           .select()
           .from(logs)
@@ -142,6 +199,20 @@ export default function DashboardScreen() {
       return;
     }
 
+    // Validate schedule fields
+    if (frequency === "once" && !targetDate) {
+      Alert.alert(
+        t("error"),
+        "Please select a target date for one-time habits",
+      );
+      return;
+    }
+
+    if (frequency === "weekly" && selectedWeekdays.length === 0) {
+      Alert.alert(t("error"), "Please select at least one weekday");
+      return;
+    }
+
     try {
       // Auto-detect type based on unit/goal
       const hasUnit = newHabitUnit.trim().length > 0;
@@ -157,6 +228,11 @@ export default function DashboardScreen() {
         unit: hasUnit ? newHabitUnit.trim() : null,
         dailyGoal: hasGoal ? parseInt(newHabitGoal, 10) : null,
         category: selectedCategory,
+        frequency: frequency,
+        frequencyDays:
+          frequency === "weekly" ? JSON.stringify(selectedWeekdays) : null,
+        targetDate: frequency === "once" && targetDate ? targetDate : null,
+        endDate: endDate,
       });
 
       resetForm();
@@ -479,6 +555,180 @@ export default function DashboardScreen() {
                 onChangeText={setNewHabitGoal}
                 keyboardType="numeric"
               />
+            </View>
+
+            {/* Schedule Section */}
+            <View className="mb-4">
+              <Text className="mb-2 text-sm font-semibold text-gray-700">
+                {t("schedule")}
+              </Text>
+
+              {/* Frequency Selector */}
+              <View className="mb-3 flex-row gap-2">
+                <TouchableOpacity
+                  onPress={() => setFrequency("daily")}
+                  className={`flex-1 rounded-lg border py-2 ${
+                    frequency === "daily"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 bg-white"
+                  }`}
+                >
+                  <Text
+                    className={`text-center text-sm font-medium ${
+                      frequency === "daily" ? "text-blue-600" : "text-gray-600"
+                    }`}
+                  >
+                    {t("daily")}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setFrequency("weekly")}
+                  className={`flex-1 rounded-lg border py-2 ${
+                    frequency === "weekly"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 bg-white"
+                  }`}
+                >
+                  <Text
+                    className={`text-center text-sm font-medium ${
+                      frequency === "weekly" ? "text-blue-600" : "text-gray-600"
+                    }`}
+                  >
+                    {t("weekly")}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setFrequency("once")}
+                  className={`flex-1 rounded-lg border py-2 ${
+                    frequency === "once"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 bg-white"
+                  }`}
+                >
+                  <Text
+                    className={`text-center text-sm font-medium ${
+                      frequency === "once" ? "text-blue-600" : "text-gray-600"
+                    }`}
+                  >
+                    {t("once")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Weekday Selector (Weekly only) */}
+              {frequency === "weekly" && (
+                <View className="mb-3">
+                  <Text className="mb-2 text-xs text-gray-600">
+                    {t("select_weekdays")}
+                  </Text>
+                  <View className="flex-row justify-between">
+                    {[0, 1, 2, 3, 4, 5, 6].map((day) => {
+                      const labels = [
+                        "weekday_sun",
+                        "weekday_mon",
+                        "weekday_tue",
+                        "weekday_wed",
+                        "weekday_thu",
+                        "weekday_fri",
+                        "weekday_sat",
+                      ];
+                      return (
+                        <TouchableOpacity
+                          key={day}
+                          onPress={() => toggleWeekday(day)}
+                          className={`h-10 w-10 items-center justify-center rounded-full ${
+                            selectedWeekdays.includes(day)
+                              ? "bg-blue-500"
+                              : "bg-gray-200"
+                          }`}
+                        >
+                          <Text
+                            className={`text-xs font-semibold ${
+                              selectedWeekdays.includes(day)
+                                ? "text-white"
+                                : "text-gray-600"
+                            }`}
+                          >
+                            {t(labels[day])}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+              )}
+
+              {/* Target Date (One-time only) */}
+              {frequency === "once" && (
+                <View className="mb-3">
+                  <Text className="mb-2 text-xs text-gray-600">
+                    {t("target_date")}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setShowTargetPicker(true)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-3"
+                  >
+                    <Text className="text-gray-900">
+                      {targetDate
+                        ? format(targetDate, "MMM d, yyyy")
+                        : t("target_date")}
+                    </Text>
+                  </TouchableOpacity>
+                  {showTargetPicker && (
+                    <DateTimePicker
+                      value={targetDate || new Date()}
+                      mode="date"
+                      display={Platform.OS === "ios" ? "spinner" : "default"}
+                      onChange={(event, date) => {
+                        setShowTargetPicker(Platform.OS === "ios");
+                        if (date) setTargetDate(date);
+                      }}
+                    />
+                  )}
+                </View>
+              )}
+
+              {/* End Date (Daily/Weekly) */}
+              {(frequency === "daily" || frequency === "weekly") && (
+                <View className="mb-3">
+                  <Text className="mb-2 text-xs text-gray-600">
+                    {t("end_date_optional")}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setShowEndPicker(true)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-3"
+                  >
+                    <Text className="text-gray-900">
+                      {endDate ? format(endDate, "MMM d, yyyy") : t("forever")}
+                    </Text>
+                  </TouchableOpacity>
+                  {showEndPicker && (
+                    <DateTimePicker
+                      value={endDate || new Date()}
+                      mode="date"
+                      display={Platform.OS === "ios" ? "spinner" : "default"}
+                      onChange={(event, date) => {
+                        setShowEndPicker(Platform.OS === "ios");
+                        if (date) {
+                          setEndDate(date);
+                        }
+                      }}
+                    />
+                  )}
+                  {endDate && (
+                    <TouchableOpacity
+                      onPress={() => setEndDate(null)}
+                      className="mt-2"
+                    >
+                      <Text className="text-xs text-blue-500">
+                        Clear end date
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
             </View>
 
             <View className="flex-row gap-2">
