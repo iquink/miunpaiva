@@ -11,6 +11,7 @@ import {
 import { Link, useRouter } from "expo-router";
 import { useAuthStore } from "../../store/authStore";
 import { UserPlus } from "lucide-react-native";
+import React from "react";
 
 export default function RegisterScreen() {
   const router = useRouter();

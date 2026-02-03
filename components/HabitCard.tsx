@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Check, X, TrendingUp } from "lucide-react-native";
 import type { Habit, Log } from "../db/schema";
 import HabitValueModal from "./HabitValueModal";
+import React from "react";
 
 interface HabitCardProps {
   habit: Habit;
