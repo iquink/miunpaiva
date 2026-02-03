@@ -31,6 +31,12 @@ interface AchievementWithStatus extends Achievement {
   unlockedAt?: Date;
   criteriaCount?: number;
   missed?: boolean;
+  criteria: Array<{
+    habitTitle: string;
+    ruleType: string;
+    targetValue: number;
+    daysPeriod: number;
+  }>;
 }
 
 interface CriterionForm {
@@ -103,6 +109,42 @@ export default function AchievementsScreen() {
         criteriaCount.set(ach.id, count.length);
       }
 
+      // Load detailed criteria per achievement
+      const criteriaMap = new Map<
+        number,
+        Array<{
+          habitTitle: string;
+          ruleType: string;
+          targetValue: number;
+          daysPeriod: number;
+        }>
+      >();
+      for (const ach of fetchedAchievements) {
+        const crits = await db
+          .select({
+            ruleType: achievementCriteria.ruleType,
+            targetValue: achievementCriteria.targetValue,
+            daysPeriod: achievementCriteria.daysPeriod,
+            habitId: achievementCriteria.habitId,
+          })
+          .from(achievementCriteria)
+          .where(eq(achievementCriteria.achievementId, ach.id));
+
+        const criteriaWithTitles = await Promise.all(
+          crits.map(async (crit) => {
+            const [hab] = await db
+              .select({ title: habits.title })
+              .from(habits)
+              .where(eq(habits.id, crit.habitId));
+            return {
+              ...crit,
+              habitTitle: hab?.title || t("unknown_habit"),
+            };
+          }),
+        );
+        criteriaMap.set(ach.id, criteriaWithTitles);
+      }
+
       // Helper: Check if achievement is missed
       const isAchievementMissed = async (
         achievementId: number,
@@ -157,6 +199,7 @@ export default function AchievementsScreen() {
             unlockedAt: unlockedMap.get(ach.id),
             criteriaCount: criteriaCount.get(ach.id) || 0,
             missed: isMissed,
+            criteria: criteriaMap.get(ach.id) || [],
           };
         }),
       );
@@ -392,6 +435,20 @@ export default function AchievementsScreen() {
                             count: achievement.criteriaCount,
                           })}
                         </Text>
+                        {achievement.criteria.length > 0 && (
+                          <View className="mt-2">
+                            {achievement.criteria.map((crit, idx) => (
+                              <Text key={idx} className="text-xs text-gray-500">
+                                • {crit.habitTitle}:{" "}
+                                {getRuleTypeLabel(crit.ruleType)}{" "}
+                                {crit.targetValue}
+                                {crit.daysPeriod > 0
+                                  ? ` (${crit.daysPeriod} ${t("days")})`
+                                  : ""}
+                              </Text>
+                            ))}
+                          </View>
+                        )}
                       </View>
                     </View>
                   </TouchableOpacity>
@@ -432,6 +489,20 @@ export default function AchievementsScreen() {
                             count: achievement.criteriaCount,
                           })}
                         </Text>
+                        {achievement.criteria.length > 0 && (
+                          <View className="mt-2">
+                            {achievement.criteria.map((crit, idx) => (
+                              <Text key={idx} className="text-xs text-gray-400">
+                                • {crit.habitTitle}:{" "}
+                                {getRuleTypeLabel(crit.ruleType)}{" "}
+                                {crit.targetValue}
+                                {crit.daysPeriod > 0
+                                  ? ` (${crit.daysPeriod} ${t("days")})`
+                                  : ""}
+                              </Text>
+                            ))}
+                          </View>
+                        )}
                       </View>
                     </View>
                   </TouchableOpacity>
@@ -468,6 +539,23 @@ export default function AchievementsScreen() {
                           <Text className="mt-1 text-xs italic text-gray-400">
                             {t("missed")}
                           </Text>
+                          {achievement.criteria.length > 0 && (
+                            <View className="mt-2">
+                              {achievement.criteria.map((crit, idx) => (
+                                <Text
+                                  key={idx}
+                                  className="text-xs text-gray-400"
+                                >
+                                  • {crit.habitTitle}:{" "}
+                                  {getRuleTypeLabel(crit.ruleType)}{" "}
+                                  {crit.targetValue}
+                                  {crit.daysPeriod > 0
+                                    ? ` (${crit.daysPeriod} ${t("days")})`
+                                    : ""}
+                                </Text>
+                              ))}
+                            </View>
+                          )}
                         </View>
                       </View>
                     </TouchableOpacity>

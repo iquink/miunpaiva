@@ -78,6 +78,8 @@ export default {
   criteria_count_to_complete: "{{count}} criteria to complete",
   no_habits_available: "No tasks available",
   close: "Close",
+  days: "days",
+  unknown_habit: "Unknown habit",
 
   // Settings
   settings_subtitle: "Manage your account",

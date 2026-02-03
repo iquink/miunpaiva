@@ -79,6 +79,8 @@ export default {
   criteria_count_to_complete: "{{count}} kriteeriä täytettävänä",
   no_habits_available: "Ei toimintoja saatavilla",
   close: "Sulje",
+  days: "päivää",
+  unknown_habit: "Tuntematon toiminta",
 
   // Settings
   settings_subtitle: "Hallinnoi tiliäsi",
