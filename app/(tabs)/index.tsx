@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,8 +8,8 @@ import {
   Alert,
   RefreshControl,
 } from "react-native";
-import { format, startOfToday } from "date-fns";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { format, startOfToday, endOfDay } from "date-fns";
+import { eq, and, desc, sql, lte } from "drizzle-orm";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useAuthStore } from "../../store/authStore";
 import { db } from "../../db";
@@ -38,11 +38,19 @@ export default function DashboardScreen() {
     if (!user) return;
 
     try {
-      // Fetch habits for current user
+      // Get end of selected date as Date object for comparison
+      const selectedDateEnd = endOfDay(selectedDate);
+
+      // Fetch habits for current user created on or before selected date
       const fetchedHabits = await db
         .select()
         .from(habits)
-        .where(eq(habits.userId, user.id))
+        .where(
+          and(
+            eq(habits.userId, user.id),
+            lte(habits.createdAt, selectedDateEnd),
+          ),
+        )
         .orderBy(desc(habits.createdAt));
 
       setUserHabits(fetchedHabits);
@@ -67,7 +75,7 @@ export default function DashboardScreen() {
       console.error("Error loading habits:", error);
       Alert.alert("Error", "Failed to load habits");
     }
-  }, [user, dateStr]);
+  }, [user, dateStr, selectedDate]);
 
   useEffect(() => {
     loadHabits();
