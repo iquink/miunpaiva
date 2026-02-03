@@ -12,6 +12,7 @@ import {
   achievements,
   userAchievements,
 } from "../../db/schema";
+import React from "react";
 
 export default function SettingsScreen() {
   const router = useRouter();

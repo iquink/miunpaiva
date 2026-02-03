@@ -15,6 +15,7 @@ import { useAuthStore } from "../../store/authStore";
 import { db } from "../../db";
 import { habits, logs, type Habit, type Log } from "../../db/schema";
 import { checkAchievements } from "../../services/achievementService";
+import React from "react";
 
 export default function DashboardScreen() {
   const user = useAuthStore((state) => state.user);

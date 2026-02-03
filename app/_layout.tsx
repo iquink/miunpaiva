@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import "../global.css";
 import { useAuthStore } from "../store/authStore";
 import { useDatabaseMigrations } from "../db";
+import React from "react";
 
 export default function RootLayout() {
   const router = useRouter();
