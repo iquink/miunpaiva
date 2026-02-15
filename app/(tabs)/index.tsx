@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { format, startOfToday, endOfDay, startOfDay } from "date-fns";
+import { fi } from "date-fns/locale";
 import { eq, and, desc, sql, lte } from "drizzle-orm";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useFocusEffect } from "expo-router";
@@ -391,7 +392,7 @@ export default function DashboardScreen() {
         <Text className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           {dateStr === todayStr
             ? t("today")
-            : format(selectedDate, "MMM dd, yyyy")}
+            : format(selectedDate, "eeeeee dd.MM.yyyy", { locale: fi })}
         </Text>
 
         <TouchableOpacity
@@ -445,7 +446,7 @@ export default function DashboardScreen() {
         <View className="border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
           <ScrollView
             className="p-6"
-            contentContainerStyle={{ paddingBottom: 100 }}
+            contentContainerStyle={{ paddingBottom: 220 }}
           >
             <Text className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">
               {t("new_habit")}
@@ -689,7 +690,7 @@ export default function DashboardScreen() {
                   >
                     <Text className="text-gray-900 dark:text-gray-100">
                       {targetDate
-                        ? format(targetDate, "MMM d, yyyy")
+                        ? format(targetDate, "eeeeee d.M.yyyy", { locale: fi })
                         : t("target_date")}
                     </Text>
                   </TouchableOpacity>
@@ -718,7 +719,9 @@ export default function DashboardScreen() {
                     className="rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3"
                   >
                     <Text className="text-gray-900 dark:text-gray-100">
-                      {endDate ? format(endDate, "MMM d, yyyy") : t("forever")}
+                      {endDate
+                        ? format(endDate, "eeeeee d.M.yyyy", { locale: fi })
+                        : t("forever")}
                     </Text>
                   </TouchableOpacity>
                   {showEndPicker && (

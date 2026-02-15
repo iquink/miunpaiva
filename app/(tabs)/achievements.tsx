@@ -215,6 +215,22 @@ export default function AchievementsScreen() {
   useFocusEffect(
     useCallback(() => {
       loadAchievements();
+
+      // Cleanup: close modal and reset form when leaving tab
+      return () => {
+        setShowAddForm(false);
+        setTitle("");
+        setDescription("");
+        setIconSlug("medal");
+        setCriteria([
+          {
+            habitId: null,
+            ruleType: "streak",
+            targetValue: "",
+            daysPeriod: "",
+          },
+        ]);
+      };
     }, [loadAchievements]),
   );
 
@@ -587,7 +603,7 @@ export default function AchievementsScreen() {
         <View className="border-t border-gray-200 bg-white">
           <ScrollView
             className="p-6"
-            contentContainerStyle={{ paddingBottom: 120 }}
+            contentContainerStyle={{ paddingBottom: 150 }}
           >
             <Text className="mb-4 text-lg font-bold text-gray-900">
               {t("new_achievement")}
