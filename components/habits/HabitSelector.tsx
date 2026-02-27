@@ -8,7 +8,7 @@ import {
   Pressable,
 } from "react-native";
 import { ChevronDown } from "lucide-react-native";
-import type { Habit } from "../db/schema";
+import type { Habit } from "../../db/schema";
 
 interface HabitSelectorProps {
   habits: Habit[];

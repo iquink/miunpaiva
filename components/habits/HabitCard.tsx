@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Check, X, TrendingUp, Lock } from "lucide-react-native";
-import type { Habit, Log } from "../db/schema";
+import type { Habit, Log } from "../../db/schema";
 import HabitValueModal from "./HabitValueModal";
-import { isDateEditable } from "../utils/dateUtils";
+import { isDateEditable } from "../../utils/dateUtils";
 import React from "react";
 
 interface HabitCardProps {

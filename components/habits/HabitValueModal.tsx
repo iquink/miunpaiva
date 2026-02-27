@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Modal } from "react-native";
 import { X, Plus, Minus } from "lucide-react-native";
-import type { Habit } from "../db/schema";
+import type { Habit } from "../../db/schema";
 import React from "react";
 
 interface HabitValueModalProps {
