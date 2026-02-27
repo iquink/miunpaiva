@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Check, X, TrendingUp, Lock } from "lucide-react-native";
-import { startOfDay, differenceInCalendarDays } from "date-fns";
 import type { Habit, Log } from "../db/schema";
 import HabitValueModal from "./HabitValueModal";
+import { isDateEditable } from "../utils/dateUtils";
 import React from "react";
 
 interface HabitCardProps {
@@ -31,10 +31,7 @@ export default function HabitCard({
   const isCompleted = log?.completed || false;
 
   // Calculate if date is editable (Today or Yesterday only)
-  const now = startOfDay(new Date());
-  const selected = startOfDay(selectedDate);
-  const diff = differenceInCalendarDays(now, selected);
-  const isEditable = diff === 0 || diff === 1; // 0 = today, 1 = yesterday
+  const isEditable = isDateEditable(selectedDate);
 
   const handlePress = () => {
     if (!isEditable) return; // Locked - no action

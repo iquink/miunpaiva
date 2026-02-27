@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import * as SecureStore from "expo-secure-store";
-import * as Crypto from "expo-crypto";
-import { eq } from "drizzle-orm";
-import { db } from "../db";
-import { users, type User } from "../db/schema";
+import {
+  getUserById,
+  verifyUserCredentials,
+  createUser,
+} from "../services/authService";
+import type { User } from "../db/schema";
 
 const SESSION_KEY = "session_user_id";
 
@@ -35,11 +37,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const userId = await SecureStore.getItemAsync(SESSION_KEY);
 
       if (userId) {
-        const [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.id, parseInt(userId, 10)))
-          .limit(1);
+        const user = await getUserById(parseInt(userId, 10));
 
         if (user) {
           set({ user, isAuthenticated: true, isLoading: false });
@@ -56,24 +54,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   login: async (username: string, password: string) => {
     try {
-      // Hash the password
-      const passwordHash = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        password,
-      );
-
-      // Find user
-      const [user] = await db
-        .select()
-        .from(users)
-        .where(eq(users.username, username))
-        .limit(1);
+      const user = await verifyUserCredentials(username, password);
 
       if (!user) {
-        return { success: false, error: "Invalid username or password" };
-      }
-
-      if (user.passwordHash !== passwordHash) {
         return { success: false, error: "Invalid username or password" };
       }
 
@@ -90,52 +73,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   register: async (username: string, password: string) => {
     try {
-      // Validate input
-      if (!username || username.length < 3) {
-        return {
-          success: false,
-          error: "Username must be at least 3 characters",
-        };
-      }
-
-      if (!password || password.length < 6) {
-        return {
-          success: false,
-          error: "Password must be at least 6 characters",
-        };
-      }
-
-      // Check if username exists
-      const [existingUser] = await db
-        .select()
-        .from(users)
-        .where(eq(users.username, username))
-        .limit(1);
-
-      if (existingUser) {
-        return { success: false, error: "Username already exists" };
-      }
-
-      // Hash the password
-      const passwordHash = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        password,
-      );
-
-      // Create user
-      const [newUser] = await db
-        .insert(users)
-        .values({ username, passwordHash })
-        .returning();
+      const newUser = await createUser(username, password);
 
       // Save session
       await SecureStore.setItemAsync(SESSION_KEY, newUser.id.toString());
 
       set({ user: newUser, isAuthenticated: true });
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Registration error:", error);
-      return { success: false, error: "An error occurred during registration" };
+      return {
+        success: false,
+        error: error.message || "An error occurred during registration",
+      };
     }
   },
 

@@ -1,60 +1,30 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  TextInput,
-  Alert,
   RefreshControl,
 } from "react-native";
-import { eq, and } from "drizzle-orm";
 import { Award, Lock, Plus, X, Trophy, Flower } from "lucide-react-native";
 import { useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../store/authStore";
-import { db } from "../../db";
-import {
-  achievements,
-  userAchievements,
-  habits,
-  achievementCriteria,
-  type Achievement,
-  type UserAchievement,
-  type Habit,
-} from "../../db/schema";
 import HabitSelector from "../../components/HabitSelector";
+import {
+  useAchievements,
+  type CriterionForm,
+} from "../../hooks/useAchievements";
+import ScreenHeader from "../../components/ui/ScreenHeader";
+import IconButton from "../../components/ui/IconButton";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
 import React from "react";
-
-interface AchievementWithStatus extends Achievement {
-  unlocked: boolean;
-  unlockedAt?: Date;
-  criteriaCount?: number;
-  missed?: boolean;
-  criteria: Array<{
-    habitTitle: string;
-    ruleType: string;
-    targetValue: number;
-    daysPeriod: number;
-  }>;
-}
-
-interface CriterionForm {
-  habitId: number | null;
-  ruleType: "streak" | "total_count" | "sum_value";
-  targetValue: string;
-  daysPeriod: string; // Changed to string to allow empty placeholder
-}
 
 export default function AchievementsScreen() {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
-  const [allAchievements, setAllAchievements] = useState<
-    AchievementWithStatus[]
-  >([]);
-  const [userHabits, setUserHabits] = useState<Habit[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -67,155 +37,23 @@ export default function AchievementsScreen() {
       habitId: null,
       ruleType: "streak",
       targetValue: "",
-      daysPeriod: "", // Empty string for placeholder
+      daysPeriod: "",
     },
   ]);
 
-  const loadAchievements = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      // Fetch user's habits
-      const fetchedHabits = await db
-        .select()
-        .from(habits)
-        .where(eq(habits.userId, user.id));
-
-      setUserHabits(fetchedHabits);
-
-      // Fetch achievements for current user
-      const fetchedAchievements = await db
-        .select()
-        .from(achievements)
-        .where(eq(achievements.userId, user.id));
-
-      // Fetch unlocked achievements
-      const unlocked = await db
-        .select()
-        .from(userAchievements)
-        .where(eq(userAchievements.userId, user.id));
-
-      const unlockedMap = new Map(
-        unlocked.map((ua) => [ua.achievementId, ua.unlockedAt]),
-      );
-
-      // Count criteria per achievement
-      const criteriaCount = new Map<number, number>();
-      for (const ach of fetchedAchievements) {
-        const count = await db
-          .select()
-          .from(achievementCriteria)
-          .where(eq(achievementCriteria.achievementId, ach.id));
-        criteriaCount.set(ach.id, count.length);
-      }
-
-      // Load detailed criteria per achievement
-      const criteriaMap = new Map<
-        number,
-        Array<{
-          habitTitle: string;
-          ruleType: string;
-          targetValue: number;
-          daysPeriod: number;
-        }>
-      >();
-      for (const ach of fetchedAchievements) {
-        const crits = await db
-          .select({
-            ruleType: achievementCriteria.ruleType,
-            targetValue: achievementCriteria.targetValue,
-            daysPeriod: achievementCriteria.daysPeriod,
-            habitId: achievementCriteria.habitId,
-          })
-          .from(achievementCriteria)
-          .where(eq(achievementCriteria.achievementId, ach.id));
-
-        const criteriaWithTitles = await Promise.all(
-          crits.map(async (crit) => {
-            const [hab] = await db
-              .select({ title: habits.title })
-              .from(habits)
-              .where(eq(habits.id, crit.habitId));
-            return {
-              ...crit,
-              habitTitle: hab?.title || t("unknown_habit"),
-            };
-          }),
-        );
-        criteriaMap.set(ach.id, criteriaWithTitles);
-      }
-
-      // Helper: Check if achievement is missed
-      const isAchievementMissed = async (
-        achievementId: number,
-      ): Promise<boolean> => {
-        // Get all criteria for this achievement
-        const achCriteria = await db
-          .select()
-          .from(achievementCriteria)
-          .where(eq(achievementCriteria.achievementId, achievementId));
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // Check if ANY linked habit has expired
-        for (const criterion of achCriteria) {
-          const [habit] = await db
-            .select()
-            .from(habits)
-            .where(eq(habits.id, criterion.habitId))
-            .limit(1);
-
-          if (!habit) continue;
-
-          // Check if habit has passed its opportunity window
-          if (habit.frequency === "once") {
-            // One-time habit: check if target date is in the past
-            if (habit.targetDate && new Date(habit.targetDate) < today) {
-              return true;
-            }
-          } else if (
-            habit.frequency === "daily" ||
-            habit.frequency === "weekly"
-          ) {
-            // Recurring habit: check if end date is in the past
-            if (habit.endDate && new Date(habit.endDate) < today) {
-              return true;
-            }
-          }
-        }
-
-        return false;
-      };
-
-      const achievementsWithStatus: AchievementWithStatus[] = await Promise.all(
-        fetchedAchievements.map(async (ach) => {
-          const isUnlocked = unlockedMap.has(ach.id);
-          const isMissed = !isUnlocked && (await isAchievementMissed(ach.id));
-
-          return {
-            ...ach,
-            unlocked: isUnlocked,
-            unlockedAt: unlockedMap.get(ach.id),
-            criteriaCount: criteriaCount.get(ach.id) || 0,
-            missed: isMissed,
-            criteria: criteriaMap.get(ach.id) || [],
-          };
-        }),
-      );
-
-      setAllAchievements(achievementsWithStatus);
-    } catch (error) {
-      console.error("Error loading achievements:", error);
-      Alert.alert(t("error"), t("error_load_achievements"));
-    }
-  }, [user, t]);
+  // Use the custom hook for achievements management
+  const {
+    allAchievements,
+    userHabits,
+    refreshing,
+    onRefresh,
+    handleAddAchievement: addAchievement,
+    deleteAchievement,
+  } = useAchievements(user?.id);
 
   // Auto-refresh when tab gains focus
   useFocusEffect(
     useCallback(() => {
-      loadAchievements();
-
       // Cleanup: close modal and reset form when leaving tab
       return () => {
         setShowAddForm(false);
@@ -231,18 +69,8 @@ export default function AchievementsScreen() {
           },
         ]);
       };
-    }, [loadAchievements]),
+    }, []),
   );
-
-  useEffect(() => {
-    loadAchievements();
-  }, [loadAchievements]);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadAchievements();
-    setRefreshing(false);
-  };
 
   const addCriterion = () => {
     setCriteria([
@@ -251,7 +79,7 @@ export default function AchievementsScreen() {
         habitId: null,
         ruleType: "streak",
         targetValue: "",
-        daysPeriod: "", // Empty string
+        daysPeriod: "",
       },
     ]);
   };
@@ -272,48 +100,15 @@ export default function AchievementsScreen() {
     setCriteria(updated);
   };
 
-  const handleAddAchievement = async () => {
-    if (!user || !title.trim()) {
-      Alert.alert(t("error"), t("error_achievement_title_required"));
-      return;
-    }
+  const handleAddAchievementWrapper = async () => {
+    const success = await addAchievement({
+      title,
+      description,
+      iconSlug,
+      criteria,
+    });
 
-    // Validate criteria
-    for (let i = 0; i < criteria.length; i++) {
-      const c = criteria[i];
-      if (!c.habitId) {
-        Alert.alert(t("error"), t("error_select_habit", { num: i + 1 }));
-        return;
-      }
-      if (!c.targetValue || parseInt(c.targetValue, 10) <= 0) {
-        Alert.alert(t("error"), t("error_target_value", { num: i + 1 }));
-        return;
-      }
-    }
-
-    try {
-      // Insert achievement
-      const [newAchievement] = await db
-        .insert(achievements)
-        .values({
-          userId: user.id,
-          title: title.trim(),
-          description: description.trim() || null,
-          iconSlug: iconSlug,
-        })
-        .returning();
-
-      // Insert all criteria
-      for (const c of criteria) {
-        await db.insert(achievementCriteria).values({
-          achievementId: newAchievement.id,
-          habitId: c.habitId!,
-          ruleType: c.ruleType,
-          targetValue: parseInt(c.targetValue, 10),
-          daysPeriod: c.daysPeriod === "" ? 0 : parseInt(c.daysPeriod, 10), // Convert empty to 0
-        });
-      }
-
+    if (success) {
       // Reset form
       setTitle("");
       setDescription("");
@@ -327,38 +122,7 @@ export default function AchievementsScreen() {
         },
       ]);
       setShowAddForm(false);
-
-      await loadAchievements();
-      Alert.alert(t("success"), t("success_achievement_created"));
-    } catch (error) {
-      console.error("Error creating achievement:", error);
-      Alert.alert(t("error"), t("error_create_achievement"));
     }
-  };
-
-  const deleteAchievement = async (achievementId: number) => {
-    Alert.alert(
-      t("delete_achievement_title"),
-      t("delete_achievement_message"),
-      [
-        { text: t("cancel"), style: "cancel" },
-        {
-          text: t("delete"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await db
-                .delete(achievements)
-                .where(eq(achievements.id, achievementId));
-              await loadAchievements();
-            } catch (error) {
-              console.error("Error deleting achievement:", error);
-              Alert.alert(t("error"), t("error_delete_achievement"));
-            }
-          },
-        },
-      ],
-    );
   };
 
   const getRuleTypeLabel = (type: string) => {
@@ -397,15 +161,10 @@ export default function AchievementsScreen() {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-slate-900">
-      {/* Header */}
-      <View className="bg-white dark:bg-slate-800 px-6 pb-4 pt-12">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {t("achievements")}
-        </Text>
-        <Text className="mt-1 text-gray-600 dark:text-gray-400">
-          {t("achievements_subtitle")}
-        </Text>
-      </View>
+      <ScreenHeader
+        title={t("achievements")}
+        subtitle={t("achievements_subtitle")}
+      />
 
       {/* Achievements List */}
       <ScrollView
@@ -590,12 +349,11 @@ export default function AchievementsScreen() {
 
       {/* Add Achievement Button */}
       {!showAddForm && (
-        <TouchableOpacity
+        <IconButton
+          icon={<Plus color="white" size={28} />}
           onPress={() => setShowAddForm(true)}
-          className="absolute bottom-6 right-6 h-14 w-14 items-center justify-center rounded-full bg-blue-500 shadow-lg"
-        >
-          <Plus color="white" size={28} />
-        </TouchableOpacity>
+          className="absolute bottom-6 right-6"
+        />
       )}
 
       {/* Add Achievement Form */}
@@ -609,15 +367,15 @@ export default function AchievementsScreen() {
               {t("new_achievement")}
             </Text>
 
-            <TextInput
-              className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
+            <Input
+              className="mb-4"
               placeholder={t("achievement_title")}
               value={title}
               onChangeText={setTitle}
             />
 
-            <TextInput
-              className="mb-4 rounded-lg border border-gray-300 px-4 py-3"
+            <Input
+              className="mb-4"
               placeholder={t("achievement_description")}
               value={description}
               onChangeText={setDescription}
@@ -720,8 +478,7 @@ export default function AchievementsScreen() {
                   <Text className="mb-2 text-sm font-medium text-gray-700">
                     {t("target_value")}
                   </Text>
-                  <TextInput
-                    className="rounded-lg border border-gray-300 bg-white px-4 py-3"
+                  <Input
                     placeholder={t("target_value_placeholder")}
                     value={criterion.targetValue}
                     onChangeText={(val) =>
@@ -735,8 +492,7 @@ export default function AchievementsScreen() {
                   <Text className="mb-2 text-sm font-medium text-gray-700">
                     {t("days_period")}
                   </Text>
-                  <TextInput
-                    className="rounded-lg border border-gray-300 bg-white px-4 py-3"
+                  <Input
                     placeholder={t("days_period_placeholder")}
                     value={criterion.daysPeriod}
                     onChangeText={(val) =>
@@ -759,7 +515,9 @@ export default function AchievementsScreen() {
             </TouchableOpacity>
 
             <View className="flex-row gap-2">
-              <TouchableOpacity
+              <Button
+                variant="secondary"
+                className="flex-1"
                 onPress={() => {
                   setShowAddForm(false);
                   setTitle("");
@@ -774,21 +532,13 @@ export default function AchievementsScreen() {
                     },
                   ]);
                 }}
-                className="flex-1 rounded-lg border border-gray-300 py-3"
               >
-                <Text className="text-center font-semibold text-gray-600">
-                  {t("cancel")}
-                </Text>
-              </TouchableOpacity>
+                {t("cancel")}
+              </Button>
 
-              <TouchableOpacity
-                onPress={handleAddAchievement}
-                className="flex-1 rounded-lg bg-blue-500 py-3"
-              >
-                <Text className="text-center font-semibold text-white">
-                  {t("create")}
-                </Text>
-              </TouchableOpacity>
+              <Button className="flex-1" onPress={handleAddAchievementWrapper}>
+                {t("create")}
+              </Button>
             </View>
           </ScrollView>
         </View>

@@ -8,7 +8,6 @@ import {
   Image,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { eq } from "drizzle-orm";
 import {
   LogOut,
   Trash2,
@@ -21,15 +20,10 @@ import {
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "nativewind";
 import { useAuthStore } from "../../store/authStore";
-import { db } from "../../db";
-import {
-  users,
-  habits,
-  logs,
-  achievements,
-  userAchievements,
-} from "../../db/schema";
+import { deleteUser } from "../../services/authService";
 import { changeLanguage } from "../../i18n";
+import ScreenHeader from "../../components/ui/ScreenHeader";
+import Card from "../../components/ui/Card";
 import React from "react";
 
 export default function SettingsScreen() {
@@ -64,8 +58,8 @@ export default function SettingsScreen() {
 
           setIsDeleting(true);
           try {
-            // Delete all user data (cascade will handle related tables)
-            await db.delete(users).where(eq(users.id, user.id));
+            // Delete user (cascade will handle related tables)
+            await deleteUser(user.id);
 
             // Logout and redirect
             await logout();
@@ -96,19 +90,11 @@ export default function SettingsScreen() {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-slate-900">
-      {/* Header */}
-      <View className="bg-white dark:bg-slate-800 px-6 pb-4 pt-12">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {t("settings")}
-        </Text>
-        <Text className="mt-1 text-gray-600 dark:text-gray-400">
-          {t("manage_account")}
-        </Text>
-      </View>
+      <ScreenHeader title={t("settings")} subtitle={t("manage_account")} />
 
       <ScrollView className="flex-1 px-6 py-6">
         {/* User Info Section */}
-        <View className="mb-6 rounded-xl bg-white dark:bg-slate-800 p-4">
+        <Card className="mb-6">
           <Text className="mb-3 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">
             {t("account_info")}
           </Text>
@@ -135,10 +121,10 @@ export default function SettingsScreen() {
               </Text>
             </View>
           )}
-        </View>
+        </Card>
 
         {/* Language Section */}
-        <View className="mb-6 rounded-xl bg-white dark:bg-slate-800 p-4">
+        <Card className="mb-6">
           <Text className="mb-3 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">
             {t("language")}
           </Text>
@@ -190,10 +176,10 @@ export default function SettingsScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Card>
 
         {/* Theme Section */}
-        <View className="mb-6 rounded-xl bg-white dark:bg-slate-800 p-4">
+        <Card className="mb-6">
           <Text className="mb-3 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">
             Theme
           </Text>
@@ -245,10 +231,10 @@ export default function SettingsScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Card>
 
         {/* Actions Section */}
-        <View className="mb-6 rounded-xl bg-white dark:bg-slate-800 p-4">
+        <Card className="mb-6">
           <Text className="mb-3 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">
             {t("actions")}
           </Text>
@@ -262,10 +248,10 @@ export default function SettingsScreen() {
               {t("logout")}
             </Text>
           </TouchableOpacity>
-        </View>
+        </Card>
 
         {/* Danger Zone */}
-        <View className="mb-6 rounded-xl border border-red-200 dark:border-red-900 bg-white dark:bg-slate-800 p-4">
+        <Card className="mb-6 border border-red-200 dark:border-red-900">
           <Text className="mb-3 text-sm font-semibold uppercase text-red-600 dark:text-red-400">
             {t("danger_zone")}
           </Text>
@@ -289,7 +275,7 @@ export default function SettingsScreen() {
               </Text>
             </View>
           </TouchableOpacity>
-        </View>
+        </Card>
 
         {/* EU Logo */}
         <View className="mt-8 items-center pb-4">

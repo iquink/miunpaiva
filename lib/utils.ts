@@ -18,14 +18,3 @@ export function formatDisplayDate(date: Date): string {
     year: "numeric",
   });
 }
-
-/**
- * Get streak color based on length
- */
-export function getStreakColor(streak: number): string {
-  if (streak >= 30) return "text-purple-600";
-  if (streak >= 14) return "text-blue-600";
-  if (streak >= 7) return "text-green-600";
-  if (streak >= 3) return "text-yellow-600";
-  return "text-gray-600";
-}

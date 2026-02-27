@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
@@ -11,6 +10,8 @@ import {
 import { Link, useRouter } from "expo-router";
 import { useAuthStore } from "../../store/authStore";
 import { LogIn } from "lucide-react-native";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
 import React from "react";
 
 export default function LoginScreen() {
@@ -54,45 +55,27 @@ export default function LoginScreen() {
         </View>
 
         <View className="space-y-4">
-          <View>
-            <Text className="mb-2 text-sm font-medium text-gray-700">
-              Username
-            </Text>
-            <TextInput
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-              placeholder="Enter your username"
-              value={username}
-              onChangeText={setUsername}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
+          <Input
+            label="Username"
+            placeholder="Enter your username"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-          <View>
-            <Text className="mb-2 text-sm font-medium text-gray-700">
-              Password
-            </Text>
-            <TextInput
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
-          </View>
+          <Input
+            label="Password"
+            placeholder="Enter your password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoCapitalize="none"
+          />
 
-          <TouchableOpacity
-            className={`mt-6 rounded-lg py-4 ${
-              isLoading ? "bg-blue-400" : "bg-blue-500"
-            }`}
-            onPress={handleLogin}
-            disabled={isLoading}
-          >
-            <Text className="text-center text-base font-semibold text-white">
-              {isLoading ? "Signing In..." : "Sign In"}
-            </Text>
-          </TouchableOpacity>
+          <Button className="mt-6" onPress={handleLogin} isLoading={isLoading}>
+            {isLoading ? "Signing In..." : "Sign In"}
+          </Button>
 
           <View className="mt-6 flex-row items-center justify-center">
             <Text className="text-gray-600">Don't have an account? </Text>

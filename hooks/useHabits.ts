@@ -1,0 +1,232 @@
+import { useState, useEffect, useCallback } from "react";
+import { Alert } from "react-native";
+import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
+import type { Habit, Log, PresetCategory, PresetItem } from "../db/schema";
+import {
+  getUserHabits,
+  getLogsForDate,
+  createHabit,
+  toggleBooleanHabitLog,
+  updateCounterHabitLog,
+  deleteHabit as deleteHabitService,
+  getPresetCategories,
+  getPresetItems,
+} from "../services/habitService";
+import { checkAchievements } from "../services/achievementService";
+import { shouldShowHabit } from "../utils/habitScheduler";
+
+/**
+ * Custom hook for managing habits state and operations
+ */
+export function useHabits(userId: number | undefined, selectedDate: Date) {
+  const { t } = useTranslation();
+  const [userHabits, setUserHabits] = useState<Habit[]>([]);
+  const [habitLogs, setHabitLogs] = useState<Map<number, Log>>(new Map());
+  const [refreshing, setRefreshing] = useState(false);
+  const [categories, setCategories] = useState<PresetCategory[]>([]);
+  const [presets, setPresets] = useState<PresetItem[]>([]);
+
+  const dateStr = format(selectedDate, "yyyy-MM-dd");
+
+  // Load habits and logs
+  const loadHabits = useCallback(async () => {
+    if (!userId) return;
+
+    try {
+      // Fetch ALL habits for current user
+      const fetchedHabits = await getUserHabits(userId);
+
+      // Filter habits based on schedule
+      const visibleHabits = fetchedHabits.filter((habit) =>
+        shouldShowHabit(habit, selectedDate),
+      );
+
+      setUserHabits(visibleHabits);
+
+      // Fetch logs for selected date
+      const habitIds = visibleHabits.map((h) => h.id);
+      const logsMap = await getLogsForDate(habitIds, dateStr);
+
+      setHabitLogs(logsMap);
+    } catch (error) {
+      console.error("Error loading habits:", error);
+      Alert.alert(t("error"), t("error_load_habits"));
+    }
+  }, [userId, dateStr, selectedDate, t]);
+
+  // Load preset categories and items
+  const loadPresets = useCallback(async () => {
+    try {
+      const fetchedCategories = await getPresetCategories();
+      setCategories(fetchedCategories);
+
+      const fetchedPresets = await getPresetItems();
+      setPresets(fetchedPresets);
+    } catch (error) {
+      console.error("Error loading presets:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadHabits();
+    loadPresets();
+  }, [loadHabits, loadPresets]);
+
+  // Refresh handler
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadHabits();
+    setRefreshing(false);
+  };
+
+  // Add a new habit
+  const handleAddHabit = async (habitData: {
+    title: string;
+    description: string;
+    unit: string;
+    dailyGoal: string;
+    category: string | null;
+    frequency: "daily" | "weekly" | "once";
+    selectedWeekdays: number[];
+    targetDate: Date | null;
+    endDate: Date | null;
+  }) => {
+    if (!userId || !habitData.title.trim()) {
+      Alert.alert(t("error"), t("error_title_required"));
+      return false;
+    }
+
+    // Validate schedule fields
+    if (habitData.frequency === "once" && !habitData.targetDate) {
+      Alert.alert(
+        t("error"),
+        "Please select a target date for one-time habits",
+      );
+      return false;
+    }
+
+    if (
+      habitData.frequency === "weekly" &&
+      habitData.selectedWeekdays.length === 0
+    ) {
+      Alert.alert(t("error"), "Please select at least one weekday");
+      return false;
+    }
+
+    try {
+      // Auto-detect type based on unit/goal
+      const hasUnit = habitData.unit.trim().length > 0;
+      const hasGoal = habitData.dailyGoal.trim().length > 0;
+      const habitType: "boolean" | "counter" =
+        hasUnit || hasGoal ? "counter" : "boolean";
+
+      await createHabit({
+        userId: userId,
+        title: habitData.title.trim(),
+        description: habitData.description.trim() || null,
+        type: habitType,
+        unit: hasUnit ? habitData.unit.trim() : null,
+        dailyGoal: hasGoal ? parseInt(habitData.dailyGoal, 10) : null,
+        category: habitData.category,
+        frequency: habitData.frequency,
+        frequencyDays:
+          habitData.frequency === "weekly"
+            ? JSON.stringify(habitData.selectedWeekdays)
+            : null,
+        targetDate:
+          habitData.frequency === "once" && habitData.targetDate
+            ? habitData.targetDate
+            : null,
+        endDate: habitData.endDate,
+      });
+
+      await loadHabits();
+      Alert.alert(t("success"), t("success_habit_created"));
+      return true;
+    } catch (error) {
+      console.error("Error creating habit:", error);
+      Alert.alert(t("error"), t("error_create_habit"));
+      return false;
+    }
+  };
+
+  // Toggle a boolean habit
+  const toggleBooleanHabit = async (habit: Habit) => {
+    if (!userId) return;
+
+    try {
+      const existingLog = habitLogs.get(habit.id);
+      const updatedLog = await toggleBooleanHabitLog(
+        habit.id,
+        dateStr,
+        existingLog,
+      );
+
+      setHabitLogs((prev) => new Map(prev).set(habit.id, updatedLog));
+
+      // Check for achievement unlocks
+      await checkAchievements(userId);
+    } catch (error) {
+      console.error("Error toggling habit:", error);
+      Alert.alert("Error", "Failed to update habit");
+    }
+  };
+
+  // Update a counter habit value
+  const updateCounterValue = async (habit: Habit, value: number) => {
+    if (!userId) return;
+
+    try {
+      const existingLog = habitLogs.get(habit.id);
+      const updatedLog = await updateCounterHabitLog(
+        habit.id,
+        dateStr,
+        value,
+        habit.dailyGoal,
+        existingLog,
+      );
+
+      setHabitLogs((prev) => new Map(prev).set(habit.id, updatedLog));
+
+      // Check for achievement unlocks
+      await checkAchievements(userId);
+    } catch (error) {
+      console.error("Error updating counter:", error);
+      Alert.alert("Error", "Failed to update counter");
+    }
+  };
+
+  // Delete a habit
+  const deleteHabit = async (habitId: number) => {
+    Alert.alert(t("delete"), t("delete_achievement_message"), [
+      { text: t("cancel"), style: "cancel" },
+      {
+        text: t("delete"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteHabitService(habitId);
+            await loadHabits();
+          } catch (error) {
+            console.error("Error deleting habit:", error);
+            Alert.alert(t("error"), t("error_update_habit"));
+          }
+        },
+      },
+    ]);
+  };
+
+  return {
+    userHabits,
+    habitLogs,
+    refreshing,
+    categories,
+    presets,
+    onRefresh,
+    handleAddHabit,
+    toggleBooleanHabit,
+    updateCounterValue,
+    deleteHabit,
+  };
+}

@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
@@ -11,6 +10,8 @@ import {
 import { Link, useRouter } from "expo-router";
 import { useAuthStore } from "../../store/authStore";
 import { UserPlus } from "lucide-react-native";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
 import React from "react";
 
 export default function RegisterScreen() {
@@ -62,59 +63,40 @@ export default function RegisterScreen() {
         </View>
 
         <View className="space-y-4">
-          <View>
-            <Text className="mb-2 text-sm font-medium text-gray-700">
-              Username
-            </Text>
-            <TextInput
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-              placeholder="Choose a username"
-              value={username}
-              onChangeText={setUsername}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
+          <Input
+            label="Username"
+            placeholder="Choose a username"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-          <View>
-            <Text className="mb-2 text-sm font-medium text-gray-700">
-              Password
-            </Text>
-            <TextInput
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-              placeholder="Create a password (min 6 characters)"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
-          </View>
+          <Input
+            label="Password"
+            placeholder="Create a password (min 6 characters)"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoCapitalize="none"
+          />
 
-          <View>
-            <Text className="mb-2 text-sm font-medium text-gray-700">
-              Confirm Password
-            </Text>
-            <TextInput
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
-          </View>
+          <Input
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            autoCapitalize="none"
+          />
 
-          <TouchableOpacity
-            className={`mt-6 rounded-lg py-4 ${
-              isLoading ? "bg-blue-400" : "bg-blue-500"
-            }`}
+          <Button
+            className="mt-6"
             onPress={handleRegister}
-            disabled={isLoading}
+            isLoading={isLoading}
           >
-            <Text className="text-center text-base font-semibold text-white">
-              {isLoading ? "Creating Account..." : "Sign Up"}
-            </Text>
-          </TouchableOpacity>
+            {isLoading ? "Creating Account..." : "Sign Up"}
+          </Button>
 
           <View className="mt-6 flex-row items-center justify-center">
             <Text className="text-gray-600">Already have an account? </Text>
