@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Image,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { eq } from "drizzle-orm";
 import {
@@ -284,8 +291,17 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* EU Logo */}
+        <View className="mt-8 items-center pb-4">
+          <Image
+            source={require("../../assets/eu-logo.png")}
+            className="h-12 w-auto"
+            resizeMode="contain"
+          />
+        </View>
+
         {/* App Info */}
-        <View className="mt-8 items-center">
+        <View className="mt-4 items-center pb-8">
           <Text className="text-xs text-gray-400 dark:text-gray-500">
             {t("app_version")}
           </Text>
