@@ -4,6 +4,7 @@ import { Check, X, TrendingUp, Lock } from "lucide-react-native";
 import type { Habit, Log } from "../../db/schema";
 import HabitValueModal from "./HabitValueModal";
 import { isDateEditable } from "../../utils/dateUtils";
+import { useThemeColors } from "../../hooks/useThemeColors";
 import React from "react";
 
 interface HabitCardProps {
@@ -24,6 +25,7 @@ export default function HabitCard({
   onLongPress,
 }: HabitCardProps) {
   const [showModal, setShowModal] = useState(false);
+  const colors = useThemeColors();
 
   const isBoolean = habit.type === "boolean";
   const isCounter = habit.type === "counter";
@@ -57,41 +59,62 @@ export default function HabitCard({
   const isGoalMet =
     isCounter && habit.dailyGoal && currentValue >= habit.dailyGoal;
 
+  // Determine card background color
+  const getCardBgColor = () => {
+    if (isBoolean && isCompleted) return colors.success + "20";
+    if (isCounter && isGoalMet) return colors.success + "20";
+    return colors.surface;
+  };
+
+  // Determine text color for title
+  const getTitleColor = () => {
+    if (isBoolean && isCompleted) return colors.success;
+    if (isCounter && isGoalMet) return colors.success;
+    return colors.text;
+  };
+
+  // Determine icon background color
+  const getIconBgColor = () => {
+    if (!isEditable) return colors.border;
+    if (isBoolean) {
+      return isCompleted ? colors.success : colors.border;
+    }
+    return isGoalMet ? colors.success : colors.primary;
+  };
+
+  // Determine icon color
+  const getIconColor = () => {
+    if (!isEditable) return colors.textSecondary;
+    if (isBoolean && !isCompleted) return colors.textSecondary;
+    return colors.primaryForeground;
+  };
+
   return (
     <>
       <TouchableOpacity
         onPress={handlePress}
         onLongPress={() => onLongPress(habit.id)}
         disabled={!isEditable}
-        className={`mb-3 rounded-xl p-4 ${
-          isBoolean
-            ? isCompleted
-              ? "bg-green-100 dark:bg-green-900"
-              : "bg-white dark:bg-slate-800"
-            : isGoalMet
-              ? "bg-green-100 dark:bg-green-900"
-              : "bg-white dark:bg-slate-800"
-        } ${!isEditable ? "opacity-50" : ""}`}
-        style={{ opacity: isEditable ? 1 : 0.5 }}
+        className="mb-3 rounded-xl p-4"
+        style={{
+          backgroundColor: getCardBgColor(),
+          opacity: isEditable ? 1 : 0.5,
+        }}
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-1">
             <Text
-              className={`text-base font-semibold ${
-                isBoolean
-                  ? isCompleted
-                    ? "text-green-800 dark:text-green-200"
-                    : "text-gray-900 dark:text-gray-100"
-                  : isGoalMet
-                    ? "text-green-800 dark:text-green-200"
-                    : "text-gray-900 dark:text-gray-100"
-              }`}
+              className="text-base font-semibold"
+              style={{ color: getTitleColor() }}
             >
               {habit.title}
             </Text>
 
             {habit.description && (
-              <Text className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <Text
+                className="mt-1 text-xs"
+                style={{ color: colors.textSecondary }}
+              >
                 {habit.description}
               </Text>
             )}
@@ -99,17 +122,28 @@ export default function HabitCard({
             {/* Counter Progress Display */}
             {isCounter && (
               <View className="mt-2">
-                <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <Text
+                  className="text-sm font-medium"
+                  style={{ color: colors.text }}
+                >
                   {currentValue}
                   {habit.dailyGoal && ` / ${habit.dailyGoal}`}
                   {habit.unit && ` ${habit.unit}`}
                 </Text>
 
                 {habit.dailyGoal && (
-                  <View className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-slate-700">
+                  <View
+                    className="mt-2 h-2 overflow-hidden rounded-full"
+                    style={{ backgroundColor: colors.border + "40" }}
+                  >
                     <View
-                      className={`h-full ${isGoalMet ? "bg-green-500" : "bg-blue-500"}`}
-                      style={{ width: `${progressPercentage}%` }}
+                      className="h-full"
+                      style={{
+                        width: `${progressPercentage}%`,
+                        backgroundColor: isGoalMet
+                          ? colors.success
+                          : colors.primary,
+                      }}
                     />
                   </View>
                 )}
@@ -117,35 +151,29 @@ export default function HabitCard({
             )}
 
             {/* Type Label */}
-            <Text className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+            <Text
+              className="mt-2 text-xs"
+              style={{ color: colors.textSecondary }}
+            >
               {isBoolean ? "Yes/No" : "Counter"}
             </Text>
           </View>
 
           {/* Icon */}
           <View
-            className={`h-12 w-12 items-center justify-center rounded-full ${
-              !isEditable
-                ? "bg-gray-300 dark:bg-slate-600"
-                : isBoolean
-                  ? isCompleted
-                    ? "bg-green-500"
-                    : "bg-gray-200 dark:bg-slate-600"
-                  : isGoalMet
-                    ? "bg-green-500"
-                    : "bg-blue-500"
-            }`}
+            className="h-12 w-12 items-center justify-center rounded-full"
+            style={{ backgroundColor: getIconBgColor() }}
           >
             {!isEditable ? (
-              <Lock color="#9ca3af" size={20} />
+              <Lock color={getIconColor()} size={20} />
             ) : isBoolean ? (
               isCompleted ? (
-                <Check color="white" size={24} />
+                <Check color={getIconColor()} size={24} />
               ) : (
-                <X color="#9ca3af" size={24} />
+                <X color={getIconColor()} size={24} />
               )
             ) : (
-              <TrendingUp color="white" size={24} />
+              <TrendingUp color={getIconColor()} size={24} />
             )}
           </View>
         </View>

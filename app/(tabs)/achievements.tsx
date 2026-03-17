@@ -11,9 +11,11 @@ import AchievementCard from "../../components/achievements/AchievementCard";
 import AchievementSection from "../../components/achievements/AchievementSection";
 import CreateAchievementForm from "../../components/achievements/CreateAchievementForm";
 import React from "react";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function AchievementsScreen() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -57,7 +59,7 @@ export default function AchievementsScreen() {
   const missedAchievements = allAchievements.filter((a) => a.missed);
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-slate-900">
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScreenHeader
         title={t("achievements")}
         subtitle={t("achievements_subtitle")}
@@ -72,7 +74,7 @@ export default function AchievementsScreen() {
       >
         {allAchievements.length === 0 ? (
           <View className="mt-8 items-center">
-            <Text className="text-gray-500 dark:text-gray-400">
+            <Text style={{ color: colors.textSecondary }}>
               {t("no_achievements")}
             </Text>
           </View>

@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Award, Trophy, Flower } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface CriterionDetail {
   habitTitle: string;
@@ -31,6 +32,7 @@ export default function AchievementCard({
   onLongPress,
 }: AchievementCardProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   const renderIcon = (slug: string, color: string, size: number) => {
     switch (slug) {
@@ -61,28 +63,45 @@ export default function AchievementCard({
     return (
       <TouchableOpacity
         onLongPress={() => onLongPress(achievement.id)}
-        className="mb-3 rounded-xl bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-800 p-4"
+        className="mb-3 rounded-xl p-4"
+        style={{ backgroundColor: colors.warning + "30" }}
       >
         <View className="flex-row items-center">
-          <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-yellow-400">
-            {renderIcon(achievement.iconSlug, "white", 24)}
+          <View
+            className="mr-3 h-12 w-12 items-center justify-center rounded-full"
+            style={{ backgroundColor: colors.warning }}
+          >
+            {renderIcon(achievement.iconSlug, colors.primaryForeground, 24)}
           </View>
           <View className="flex-1">
-            <Text className="text-base font-bold text-gray-900 dark:text-gray-100">
+            <Text
+              className="text-base font-bold"
+              style={{ color: colors.text }}
+            >
               {achievement.title}
             </Text>
             {achievement.description && (
-              <Text className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+              <Text
+                className="mt-1 text-xs"
+                style={{ color: colors.textSecondary }}
+              >
                 {achievement.description}
               </Text>
             )}
-            <Text className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <Text
+              className="mt-1 text-xs"
+              style={{ color: colors.textSecondary }}
+            >
               {t("criteria_count", { count: achievement.criteriaCount || 0 })}
             </Text>
             {achievement.criteria.length > 0 && (
               <View className="mt-2">
                 {achievement.criteria.map((crit, idx) => (
-                  <Text key={idx} className="text-xs text-gray-500">
+                  <Text
+                    key={idx}
+                    className="text-xs"
+                    style={{ color: colors.textSecondary }}
+                  >
                     • {crit.habitTitle}: {getRuleTypeLabel(crit.ruleType)}{" "}
                     {crit.targetValue}
                     {crit.daysPeriod > 0
@@ -102,28 +121,45 @@ export default function AchievementCard({
     return (
       <TouchableOpacity
         onLongPress={() => onLongPress(achievement.id)}
-        className="mb-3 rounded-xl bg-gray-100 dark:bg-slate-800/50 p-4 opacity-60"
+        className="mb-3 rounded-xl p-4 opacity-60"
+        style={{ backgroundColor: colors.background }}
       >
         <View className="flex-row items-center">
-          <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-gray-300 dark:bg-slate-700">
-            {renderIcon(achievement.iconSlug, "#9CA3AF", 24)}
+          <View
+            className="mr-3 h-12 w-12 items-center justify-center rounded-full"
+            style={{ backgroundColor: colors.border }}
+          >
+            {renderIcon(achievement.iconSlug, colors.textSecondary, 24)}
           </View>
           <View className="flex-1">
-            <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
+            <Text
+              className="text-base font-semibold"
+              style={{ color: colors.textSecondary }}
+            >
               {achievement.title}
             </Text>
             {achievement.description && (
-              <Text className="mt-1 text-xs text-gray-500 dark:text-gray-500">
+              <Text
+                className="mt-1 text-xs"
+                style={{ color: colors.textSecondary }}
+              >
                 {achievement.description}
               </Text>
             )}
-            <Text className="mt-1 text-xs italic text-gray-400 dark:text-gray-500">
+            <Text
+              className="mt-1 text-xs italic"
+              style={{ color: colors.textSecondary }}
+            >
               {t("missed")}
             </Text>
             {achievement.criteria.length > 0 && (
               <View className="mt-2">
                 {achievement.criteria.map((crit, idx) => (
-                  <Text key={idx} className="text-xs text-gray-400">
+                  <Text
+                    key={idx}
+                    className="text-xs"
+                    style={{ color: colors.textSecondary }}
+                  >
                     • {crit.habitTitle}: {getRuleTypeLabel(crit.ruleType)}{" "}
                     {crit.targetValue}
                     {crit.daysPeriod > 0
@@ -143,22 +179,35 @@ export default function AchievementCard({
   return (
     <TouchableOpacity
       onLongPress={() => onLongPress(achievement.id)}
-      className="mb-3 rounded-xl bg-gray-200 p-4"
+      className="mb-3 rounded-xl p-4"
+      style={{ backgroundColor: colors.background }}
     >
       <View className="flex-row items-center">
-        <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-gray-400">
-          {renderIcon(achievement.iconSlug, "#9CA3AF", 24)}
+        <View
+          className="mr-3 h-12 w-12 items-center justify-center rounded-full"
+          style={{ backgroundColor: colors.border }}
+        >
+          {renderIcon(achievement.iconSlug, colors.textSecondary, 24)}
         </View>
         <View className="flex-1">
-          <Text className="text-base font-semibold text-gray-700">
+          <Text
+            className="text-base font-semibold"
+            style={{ color: colors.textSecondary }}
+          >
             {achievement.title}
           </Text>
           {achievement.description && (
-            <Text className="mt-1 text-xs text-gray-500">
+            <Text
+              className="mt-1 text-xs"
+              style={{ color: colors.textSecondary }}
+            >
               {achievement.description}
             </Text>
           )}
-          <Text className="mt-1 text-xs text-gray-400">
+          <Text
+            className="mt-1 text-xs"
+            style={{ color: colors.textSecondary }}
+          >
             {t("criteria_count_to_complete", {
               count: achievement.criteriaCount || 0,
             })}
@@ -166,7 +215,11 @@ export default function AchievementCard({
           {achievement.criteria.length > 0 && (
             <View className="mt-2">
               {achievement.criteria.map((crit, idx) => (
-                <Text key={idx} className="text-xs text-gray-400">
+                <Text
+                  key={idx}
+                  className="text-xs"
+                  style={{ color: colors.textSecondary }}
+                >
                   • {crit.habitTitle}: {getRuleTypeLabel(crit.ruleType)}{" "}
                   {crit.targetValue}
                   {crit.daysPeriod > 0

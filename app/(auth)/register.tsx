@@ -13,9 +13,11 @@ import { UserPlus } from "lucide-react-native";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import React from "react";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const colors = useThemeColors();
   const register = useAuthStore((state) => state.register);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -47,17 +49,21 @@ export default function RegisterScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 bg-white"
+      className="flex-1"
+      style={{ backgroundColor: colors.surface }}
     >
       <View className="flex-1 justify-center px-6">
         <View className="mb-8 items-center">
-          <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-blue-500">
-            <UserPlus color="white" size={32} />
+          <View
+            className="mb-4 h-16 w-16 items-center justify-center rounded-full"
+            style={{ backgroundColor: colors.primary }}
+          >
+            <UserPlus color={colors.primaryForeground} size={32} />
           </View>
-          <Text className="text-3xl font-bold text-gray-900">
+          <Text className="text-3xl font-bold" style={{ color: colors.text }}>
             Create Account
           </Text>
-          <Text className="mt-2 text-gray-600">
+          <Text className="mt-2" style={{ color: colors.textSecondary }}>
             Start your habit tracking journey
           </Text>
         </View>
@@ -99,10 +105,17 @@ export default function RegisterScreen() {
           </Button>
 
           <View className="mt-6 flex-row items-center justify-center">
-            <Text className="text-gray-600">Already have an account? </Text>
+            <Text style={{ color: colors.textSecondary }}>
+              Already have an account?{" "}
+            </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text className="font-semibold text-blue-500">Sign In</Text>
+                <Text
+                  className="font-semibold"
+                  style={{ color: colors.primary }}
+                >
+                  Sign In
+                </Text>
               </TouchableOpacity>
             </Link>
           </View>

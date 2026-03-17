@@ -5,6 +5,7 @@ import {
   type TouchableOpacityProps,
 } from "react-native";
 import { cn } from "../../lib/utils";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 type IconButtonVariant = "solid" | "ghost";
 type IconButtonSize = "sm" | "md" | "lg";
@@ -15,11 +16,6 @@ interface IconButtonProps extends Omit<TouchableOpacityProps, "className"> {
   icon: React.ReactNode;
   className?: string;
 }
-
-const variantStyles: Record<IconButtonVariant, string> = {
-  solid: "bg-blue-500 shadow-lg active:bg-blue-600",
-  ghost: "bg-transparent active:bg-gray-100 dark:active:bg-slate-700",
-};
 
 const sizeStyles: Record<IconButtonSize, string> = {
   sm: "h-10 w-10",
@@ -34,14 +30,23 @@ export default function IconButton({
   className,
   ...props
 }: IconButtonProps) {
+  const colors = useThemeColors();
+
+  const getVariantStyle = () => {
+    if (variant === "solid") {
+      return { backgroundColor: colors.primary };
+    }
+    return { backgroundColor: "transparent" };
+  };
+
   return (
     <TouchableOpacity
       className={cn(
         "rounded-full items-center justify-center",
-        variantStyles[variant],
         sizeStyles[size],
         className,
       )}
+      style={getVariantStyle()}
       {...props}
     >
       <View>{icon}</View>

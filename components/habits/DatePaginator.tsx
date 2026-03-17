@@ -5,6 +5,7 @@ import { fi } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import IconButton from "../ui/IconButton";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface DatePaginatorProps {
   selectedDate: Date;
@@ -18,19 +19,23 @@ export default function DatePaginator({
   onNextDay,
 }: DatePaginatorProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const dateStr = format(selectedDate, "yyyy-MM-dd");
   const todayStr = format(startOfToday(), "yyyy-MM-dd");
 
   return (
-    <View className="flex-row items-center justify-between bg-white dark:bg-slate-800 px-6 py-4">
+    <View
+      className="flex-row items-center justify-between px-6 py-4"
+      style={{ backgroundColor: colors.surface }}
+    >
       <IconButton
         variant="ghost"
         size="md"
-        icon={<ChevronLeft color="#6b7280" size={24} />}
+        icon={<ChevronLeft color={colors.textSecondary} size={24} />}
         onPress={onPrevDay}
       />
 
-      <Text className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <Text className="text-lg font-semibold" style={{ color: colors.text }}>
         {dateStr === todayStr
           ? t("today")
           : format(selectedDate, "eeeeee dd.MM.yyyy", { locale: fi })}
@@ -39,7 +44,7 @@ export default function DatePaginator({
       <IconButton
         variant="ghost"
         size="md"
-        icon={<ChevronRight color="#6b7280" size={24} />}
+        icon={<ChevronRight color={colors.textSecondary} size={24} />}
         onPress={onNextDay}
       />
     </View>

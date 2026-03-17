@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import PresetSelector from "./PresetSelector";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface Category {
   id: number;
@@ -51,6 +52,7 @@ export default function CreateHabitForm({
   onCancel,
 }: CreateHabitFormProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   // Form state
   const [title, setTitle] = useState("");
@@ -101,12 +103,18 @@ export default function CreateHabitForm({
   };
 
   return (
-    <View className="absolute bottom-0 left-0 right-0 max-h-[80%] rounded-t-2xl border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+    <View
+      className="absolute bottom-0 left-0 right-0 max-h-[80%] rounded-t-2xl border-t"
+      style={{
+        borderColor: colors.border,
+        backgroundColor: colors.surface,
+      }}
+    >
       <ScrollView
         className="p-6"
         contentContainerStyle={{ paddingBottom: 220 }}
       >
-        <Text className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">
+        <Text className="mb-4 text-lg font-bold" style={{ color: colors.text }}>
           {t("new_habit")}
         </Text>
 
@@ -119,7 +127,10 @@ export default function CreateHabitForm({
           onPresetSelect={handlePresetSelect}
         />
 
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+        <Text
+          className="mb-2 text-sm font-medium"
+          style={{ color: colors.text }}
+        >
           {t("or_custom")}
         </Text>
 
@@ -139,7 +150,7 @@ export default function CreateHabitForm({
           numberOfLines={2}
         />
 
-        <Text className="mb-2 text-xs text-gray-500 dark:text-gray-400">
+        <Text className="mb-2 text-xs" style={{ color: colors.textSecondary }}>
           {t("habit_type_hint")}
         </Text>
 
@@ -159,72 +170,47 @@ export default function CreateHabitForm({
 
         {/* Schedule Section */}
         <View className="mb-4">
-          <Text className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <Text
+            className="mb-2 text-sm font-semibold"
+            style={{ color: colors.text }}
+          >
             {t("schedule")}
           </Text>
 
           {/* Frequency Selector */}
           <View className="mb-3 flex-row gap-2">
-            <TouchableOpacity
-              onPress={() => setFrequency("daily")}
-              className={`flex-1 rounded-lg border py-2 ${
-                frequency === "daily"
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900"
-                  : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
-              }`}
-            >
-              <Text
-                className={`text-center text-sm font-medium ${
-                  frequency === "daily"
-                    ? "text-blue-600 dark:text-blue-300"
-                    : "text-gray-600 dark:text-gray-300"
-                }`}
-              >
-                {t("daily")}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setFrequency("weekly")}
-              className={`flex-1 rounded-lg border py-2 ${
-                frequency === "weekly"
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900"
-                  : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
-              }`}
-            >
-              <Text
-                className={`text-center text-sm font-medium ${
-                  frequency === "weekly"
-                    ? "text-blue-600 dark:text-blue-300"
-                    : "text-gray-600 dark:text-gray-300"
-                }`}
-              >
-                {t("weekly")}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setFrequency("once")}
-              className={`flex-1 rounded-lg border py-2 ${
-                frequency === "once"
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900"
-                  : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
-              }`}
-            >
-              <Text
-                className={`text-center text-sm font-medium ${
-                  frequency === "once" ? "text-blue-600" : "text-gray-600"
-                }`}
-              >
-                {t("once")}
-              </Text>
-            </TouchableOpacity>
+            {(["daily", "weekly", "once"] as const).map((freq) => {
+              const isSelected = frequency === freq;
+              return (
+                <TouchableOpacity
+                  key={freq}
+                  onPress={() => setFrequency(freq)}
+                  className="flex-1 rounded-lg border py-2"
+                  style={{
+                    backgroundColor: isSelected
+                      ? colors.primary + "20"
+                      : colors.surface,
+                    borderColor: isSelected ? colors.primary : colors.border,
+                  }}
+                >
+                  <Text
+                    className="text-center text-sm font-medium"
+                    style={{ color: isSelected ? colors.primary : colors.text }}
+                  >
+                    {t(freq)}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
           {/* Weekday Selector (Weekly only) */}
           {frequency === "weekly" && (
             <View className="mb-3">
-              <Text className="mb-2 text-xs text-gray-600 dark:text-gray-400">
+              <Text
+                className="mb-2 text-xs"
+                style={{ color: colors.textSecondary }}
+              >
                 {t("select_weekdays")}
               </Text>
               <View className="flex-row justify-between">
@@ -238,22 +224,25 @@ export default function CreateHabitForm({
                     "weekday_fri",
                     "weekday_sat",
                   ];
+                  const isSelected = selectedWeekdays.includes(day);
                   return (
                     <TouchableOpacity
                       key={day}
                       onPress={() => toggleWeekday(day)}
-                      className={`h-10 w-10 items-center justify-center rounded-full ${
-                        selectedWeekdays.includes(day)
-                          ? "bg-blue-500"
-                          : "bg-gray-200"
-                      }`}
+                      className="h-10 w-10 items-center justify-center rounded-full"
+                      style={{
+                        backgroundColor: isSelected
+                          ? colors.primary
+                          : colors.border,
+                      }}
                     >
                       <Text
-                        className={`text-xs font-semibold ${
-                          selectedWeekdays.includes(day)
-                            ? "text-white"
-                            : "text-gray-600"
-                        }`}
+                        className="text-xs font-semibold"
+                        style={{
+                          color: isSelected
+                            ? colors.primaryForeground
+                            : colors.text,
+                        }}
                       >
                         {t(labels[day])}
                       </Text>
@@ -267,14 +256,21 @@ export default function CreateHabitForm({
           {/* Target Date (One-time only) */}
           {frequency === "once" && (
             <View className="mb-3">
-              <Text className="mb-2 text-xs text-gray-600 dark:text-gray-400">
+              <Text
+                className="mb-2 text-xs"
+                style={{ color: colors.textSecondary }}
+              >
                 {t("target_date")}
               </Text>
               <TouchableOpacity
                 onPress={() => setShowTargetPicker(true)}
-                className="rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3"
+                className="rounded-lg border px-4 py-3"
+                style={{
+                  borderColor: colors.border,
+                  backgroundColor: colors.surface,
+                }}
               >
-                <Text className="text-gray-900 dark:text-gray-100">
+                <Text style={{ color: colors.text }}>
                   {targetDate
                     ? format(targetDate, "eeeeee d.M.yyyy", { locale: fi })
                     : t("target_date")}
@@ -297,14 +293,21 @@ export default function CreateHabitForm({
           {/* End Date (Daily/Weekly) */}
           {(frequency === "daily" || frequency === "weekly") && (
             <View className="mb-3">
-              <Text className="mb-2 text-xs text-gray-600 dark:text-gray-400">
+              <Text
+                className="mb-2 text-xs"
+                style={{ color: colors.textSecondary }}
+              >
                 {t("end_date_optional")}
               </Text>
               <TouchableOpacity
                 onPress={() => setShowEndPicker(true)}
-                className="rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3"
+                className="rounded-lg border px-4 py-3"
+                style={{
+                  borderColor: colors.border,
+                  backgroundColor: colors.surface,
+                }}
               >
-                <Text className="text-gray-900 dark:text-gray-100">
+                <Text style={{ color: colors.text }}>
                   {endDate
                     ? format(endDate, "eeeeee d.M.yyyy", { locale: fi })
                     : t("forever")}
@@ -328,7 +331,9 @@ export default function CreateHabitForm({
                   onPress={() => setEndDate(null)}
                   className="mt-2"
                 >
-                  <Text className="text-xs text-blue-500">Clear end date</Text>
+                  <Text className="text-xs" style={{ color: colors.primary }}>
+                    Clear end date
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>

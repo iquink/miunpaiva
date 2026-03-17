@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Globe } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Card from "../ui/Card";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface LanguageSelectorProps {
   currentLanguage: string;
@@ -14,32 +15,42 @@ export default function LanguageSelector({
   onLanguageChange,
 }: LanguageSelectorProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   return (
     <Card className="mb-6">
-      <Text className="mb-3 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">
+      <Text
+        className="mb-3 text-sm font-semibold uppercase"
+        style={{ color: colors.textSecondary }}
+      >
         {t("language")}
       </Text>
 
       <View className="flex-row gap-3">
         <TouchableOpacity
           onPress={() => onLanguageChange("en")}
-          className={`flex-1 flex-row items-center justify-center rounded-lg p-4 ${
-            currentLanguage === "en"
-              ? "bg-blue-500"
-              : "bg-gray-100 dark:bg-slate-700"
-          }`}
+          className="flex-1 flex-row items-center justify-center rounded-lg p-4"
+          style={{
+            backgroundColor:
+              currentLanguage === "en" ? colors.primary : colors.background,
+          }}
         >
           <Globe
-            color={currentLanguage === "en" ? "white" : "#6b7280"}
+            color={
+              currentLanguage === "en"
+                ? colors.primaryForeground
+                : colors.textSecondary
+            }
             size={20}
           />
           <Text
-            className={`ml-2 text-base font-semibold ${
-              currentLanguage === "en"
-                ? "text-white"
-                : "text-gray-700 dark:text-gray-300"
-            }`}
+            className="ml-2 text-base font-semibold"
+            style={{
+              color:
+                currentLanguage === "en"
+                  ? colors.primaryForeground
+                  : colors.text,
+            }}
           >
             English
           </Text>
@@ -47,22 +58,28 @@ export default function LanguageSelector({
 
         <TouchableOpacity
           onPress={() => onLanguageChange("fi")}
-          className={`flex-1 flex-row items-center justify-center rounded-lg p-4 ${
-            currentLanguage === "fi"
-              ? "bg-blue-500"
-              : "bg-gray-100 dark:bg-slate-700"
-          }`}
+          className="flex-1 flex-row items-center justify-center rounded-lg p-4"
+          style={{
+            backgroundColor:
+              currentLanguage === "fi" ? colors.primary : colors.background,
+          }}
         >
           <Globe
-            color={currentLanguage === "fi" ? "white" : "#6b7280"}
+            color={
+              currentLanguage === "fi"
+                ? colors.primaryForeground
+                : colors.textSecondary
+            }
             size={20}
           />
           <Text
-            className={`ml-2 text-base font-semibold ${
-              currentLanguage === "fi"
-                ? "text-white"
-                : "text-gray-700 dark:text-gray-300"
-            }`}
+            className="ml-2 text-base font-semibold"
+            style={{
+              color:
+                currentLanguage === "fi"
+                  ? colors.primaryForeground
+                  : colors.text,
+            }}
           >
             Suomi
           </Text>

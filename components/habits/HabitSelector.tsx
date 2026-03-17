@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { ChevronDown } from "lucide-react-native";
 import type { Habit } from "../../db/schema";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface HabitSelectorProps {
   habits: Habit[];
@@ -26,6 +27,7 @@ export default function HabitSelector({
   placeholder = "Select a habit",
 }: HabitSelectorProps) {
   const [modalVisible, setModalVisible] = useState(false);
+  const colors = useThemeColors();
 
   // Filter out excluded habits
   const availableHabits = habits.filter(
@@ -39,15 +41,19 @@ export default function HabitSelector({
       {/* Selector Button (looks like input) */}
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
-        className="flex-row items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-3"
+        className="flex-row items-center justify-between rounded-lg border px-4 py-3"
+        style={{
+          borderColor: colors.border,
+          backgroundColor: colors.surface,
+        }}
       >
         <Text
-          className={selectedHabit ? "text-gray-900" : "text-gray-400"}
+          style={{ color: selectedHabit ? colors.text : colors.textSecondary }}
           numberOfLines={1}
         >
           {selectedHabit ? selectedHabit.title : placeholder}
         </Text>
-        <ChevronDown color="#9CA3AF" size={20} />
+        <ChevronDown color={colors.textSecondary} size={20} />
       </TouchableOpacity>
 
       {/* Modal with habit list */}
@@ -63,56 +69,76 @@ export default function HabitSelector({
         >
           <View className="flex-1 items-center justify-center px-6">
             <Pressable
-              className="w-full max-w-md rounded-xl bg-white p-4 shadow-lg"
+              className="w-full max-w-md rounded-xl p-4 shadow-lg"
+              style={{ backgroundColor: colors.surface }}
               onPress={(e) => e.stopPropagation()}
             >
-              <Text className="mb-4 text-lg font-bold text-gray-900">
+              <Text
+                className="mb-4 text-lg font-bold"
+                style={{ color: colors.text }}
+              >
                 Select Habit
               </Text>
 
               {availableHabits.length === 0 ? (
-                <Text className="py-8 text-center text-gray-400">
+                <Text
+                  className="py-8 text-center"
+                  style={{ color: colors.textSecondary }}
+                >
                   No habits available
                 </Text>
               ) : (
                 <ScrollView className="max-h-80">
-                  {availableHabits.map((habit) => (
-                    <TouchableOpacity
-                      key={habit.id}
-                      onPress={() => {
-                        onSelect(habit.id);
-                        setModalVisible(false);
-                      }}
-                      className={`mb-2 rounded-lg border p-3 ${
-                        selectedHabitId === habit.id
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 bg-white"
-                      }`}
-                    >
-                      <Text
-                        className={`font-medium ${
-                          selectedHabitId === habit.id
-                            ? "text-blue-500"
-                            : "text-gray-900"
-                        }`}
+                  {availableHabits.map((habit) => {
+                    const isSelected = selectedHabitId === habit.id;
+                    return (
+                      <TouchableOpacity
+                        key={habit.id}
+                        onPress={() => {
+                          onSelect(habit.id);
+                          setModalVisible(false);
+                        }}
+                        className="mb-2 rounded-lg border p-3"
+                        style={{
+                          borderColor: isSelected
+                            ? colors.primary
+                            : colors.border,
+                          backgroundColor: isSelected
+                            ? colors.primary + "20"
+                            : colors.surface,
+                        }}
                       >
-                        {habit.title}
-                      </Text>
-                      {habit.description && (
-                        <Text className="mt-1 text-xs text-gray-500">
-                          {habit.description}
+                        <Text
+                          className="font-medium"
+                          style={{
+                            color: isSelected ? colors.primary : colors.text,
+                          }}
+                        >
+                          {habit.title}
                         </Text>
-                      )}
-                    </TouchableOpacity>
-                  ))}
+                        {habit.description && (
+                          <Text
+                            className="mt-1 text-xs"
+                            style={{ color: colors.textSecondary }}
+                          >
+                            {habit.description}
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                    );
+                  })}
                 </ScrollView>
               )}
 
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
-                className="mt-4 rounded-lg bg-gray-200 py-3"
+                className="mt-4 rounded-lg py-3"
+                style={{ backgroundColor: colors.background }}
               >
-                <Text className="text-center font-semibold text-gray-700">
+                <Text
+                  className="text-center font-semibold"
+                  style={{ color: colors.text }}
+                >
                   Close
                 </Text>
               </TouchableOpacity>

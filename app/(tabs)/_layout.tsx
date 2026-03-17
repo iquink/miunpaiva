@@ -2,19 +2,22 @@ import { Tabs } from "expo-router";
 import { Home, Award, Settings } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import React from "react";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function TabsLayout() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#3b82f6",
-        tabBarInactiveTintColor: "#9ca3af",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           borderTopWidth: 1,
-          borderTopColor: "#e5e7eb",
+          borderTopColor: colors.border,
+          backgroundColor: colors.surface,
         },
       }}
     >

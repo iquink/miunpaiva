@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Trash2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Card from "../ui/Card";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface DangerZoneSectionProps {
   onDeleteAccount: () => void;
@@ -14,28 +15,34 @@ export default function DangerZoneSection({
   isDeleting,
 }: DangerZoneSectionProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   return (
-    <Card className="mb-6 border border-red-200 dark:border-red-900">
-      <Text className="mb-3 text-sm font-semibold uppercase text-red-600 dark:text-red-400">
+    <Card className="mb-6 border" style={{ borderColor: colors.error + "40" }}>
+      <Text
+        className="mb-3 text-sm font-semibold uppercase"
+        style={{ color: colors.error }}
+      >
         {t("danger_zone")}
       </Text>
 
       <TouchableOpacity
         onPress={onDeleteAccount}
         disabled={isDeleting}
-        className={`flex-row items-center rounded-lg p-4 ${
-          isDeleting
-            ? "bg-red-200 dark:bg-red-900"
-            : "bg-red-100 dark:bg-red-900/50"
-        }`}
+        className="flex-row items-center rounded-lg p-4"
+        style={{
+          backgroundColor: colors.error + (isDeleting ? "30" : "20"),
+        }}
       >
-        <Trash2 color="#dc2626" size={20} />
+        <Trash2 color={colors.error} size={20} />
         <View className="ml-3 flex-1">
-          <Text className="text-base font-semibold text-red-600 dark:text-red-400">
+          <Text
+            className="text-base font-semibold"
+            style={{ color: colors.error }}
+          >
             {isDeleting ? t("deleting") : t("delete_account")}
           </Text>
-          <Text className="mt-1 text-xs text-red-500 dark:text-red-400">
+          <Text className="mt-1 text-xs" style={{ color: colors.error }}>
             {t("delete_account_description")}
           </Text>
         </View>

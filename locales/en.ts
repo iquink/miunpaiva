@@ -92,6 +92,12 @@ export default {
   member_since: "Member since",
   language: "Language",
   language_subtitle: "Choose your preferred language",
+  // Color theme selector
+  color_theme: "Color Theme",
+  theme_default: "Default",
+  theme_forest: "Forest",
+  theme_ocean: "Ocean",
+  theme_coffee: "Coffee",
   actions: "Actions",
   logout: "Logout",
   logout_confirm: "Are you sure you want to logout?",

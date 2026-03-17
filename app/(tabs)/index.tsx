@@ -11,9 +11,11 @@ import ScreenHeader from "../../components/ui/ScreenHeader";
 import IconButton from "../../components/ui/IconButton";
 import DatePaginator from "../../components/habits/DatePaginator";
 import CreateHabitForm from "../../components/habits/CreateHabitForm";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function DashboardScreen() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const [selectedDate, setSelectedDate] = useState(startOfToday());
   const [showAddHabit, setShowAddHabit] = useState(false);
@@ -69,7 +71,7 @@ export default function DashboardScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-slate-900">
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScreenHeader title={t("dashboard")} subtitle={t("dashboard_subtitle")} />
 
       <DatePaginator
@@ -87,7 +89,7 @@ export default function DashboardScreen() {
       >
         {userHabits.length === 0 ? (
           <View className="mt-8 items-center">
-            <Text className="text-gray-500 dark:text-gray-400">
+            <Text style={{ color: colors.textSecondary }}>
               {t("no_habits")}
             </Text>
           </View>

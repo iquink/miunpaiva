@@ -93,6 +93,12 @@ export default {
   member_since: "Jäsen alkaen",
   language: "Kieli",
   language_subtitle: "Valitse haluamasi kieli",
+  // Color theme selector
+  color_theme: "Väriteema",
+  theme_default: "Oletus",
+  theme_forest: "Metsä",
+  theme_ocean: "Meri",
+  theme_coffee: "Kahvi",
   actions: "Toiminnot",
   logout: "Kirjaudu ulos",
   logout_confirm: "Haluatko varmasti kirjautua ulos?",

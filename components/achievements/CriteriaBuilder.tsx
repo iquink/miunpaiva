@@ -6,6 +6,7 @@ import HabitSelector from "../habits/HabitSelector";
 import Input from "../ui/Input";
 import type { CriterionForm } from "../../hooks/useAchievements";
 import type { Habit } from "../../db/schema";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface CriteriaBuilderProps {
   criteria: CriterionForm[];
@@ -25,6 +26,7 @@ export default function CriteriaBuilder({
   getUsedHabitIds,
 }: CriteriaBuilderProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   const getRuleTypeLabel = (type: string) => {
     switch (type) {
@@ -41,28 +43,35 @@ export default function CriteriaBuilder({
 
   return (
     <>
-      <Text className="mb-2 text-base font-bold text-gray-900">
+      <Text className="mb-2 text-base font-bold" style={{ color: colors.text }}>
         {t("criteria_all_must_meet")}
       </Text>
 
       {criteria.map((criterion, index) => (
         <View
           key={index}
-          className="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4"
+          className="mb-4 rounded-lg border p-4"
+          style={{
+            borderColor: colors.border,
+            backgroundColor: colors.background,
+          }}
         >
           <View className="mb-2 flex-row items-center justify-between">
-            <Text className="font-semibold text-gray-700">
+            <Text className="font-semibold" style={{ color: colors.text }}>
               {t("criterion_num", { num: index + 1 })}
             </Text>
             {criteria.length > 1 && (
               <TouchableOpacity onPress={() => onRemove(index)}>
-                <X color="#EF4444" size={20} />
+                <X color={colors.error} size={20} />
               </TouchableOpacity>
             )}
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 text-sm font-medium text-gray-700">
+            <Text
+              className="mb-2 text-sm font-medium"
+              style={{ color: colors.text }}
+            >
               {t("habit")}
             </Text>
             <HabitSelector
@@ -75,36 +84,46 @@ export default function CriteriaBuilder({
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 text-sm font-medium text-gray-700">
+            <Text
+              className="mb-2 text-sm font-medium"
+              style={{ color: colors.text }}
+            >
               {t("rule_type")}
             </Text>
             <View className="flex-row gap-2">
-              {(["streak", "total_count", "sum_value"] as const).map((type) => (
-                <TouchableOpacity
-                  key={type}
-                  onPress={() => onUpdate(index, "ruleType", type)}
-                  className={`flex-1 rounded-lg border py-2 ${
-                    criterion.ruleType === type
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-300 bg-white"
-                  }`}
-                >
-                  <Text
-                    className={`text-center text-xs font-semibold ${
-                      criterion.ruleType === type
-                        ? "text-blue-500"
-                        : "text-gray-600"
-                    }`}
+              {(["streak", "total_count", "sum_value"] as const).map((type) => {
+                const isSelected = criterion.ruleType === type;
+                return (
+                  <TouchableOpacity
+                    key={type}
+                    onPress={() => onUpdate(index, "ruleType", type)}
+                    className="flex-1 rounded-lg border py-2"
+                    style={{
+                      backgroundColor: isSelected
+                        ? colors.primary + "20"
+                        : colors.surface,
+                      borderColor: isSelected ? colors.primary : colors.border,
+                    }}
                   >
-                    {getRuleTypeLabel(type)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      className="text-center text-xs font-semibold"
+                      style={{
+                        color: isSelected ? colors.primary : colors.text,
+                      }}
+                    >
+                      {getRuleTypeLabel(type)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 text-sm font-medium text-gray-700">
+            <Text
+              className="mb-2 text-sm font-medium"
+              style={{ color: colors.text }}
+            >
               {t("target_value")}
             </Text>
             <Input
@@ -116,7 +135,10 @@ export default function CriteriaBuilder({
           </View>
 
           <View>
-            <Text className="mb-2 text-sm font-medium text-gray-700">
+            <Text
+              className="mb-2 text-sm font-medium"
+              style={{ color: colors.text }}
+            >
               {t("days_period")}
             </Text>
             <Input
@@ -131,10 +153,11 @@ export default function CriteriaBuilder({
 
       <TouchableOpacity
         onPress={onAdd}
-        className="mb-4 flex-row items-center justify-center rounded-lg border border-dashed border-blue-500 py-3"
+        className="mb-4 flex-row items-center justify-center rounded-lg border border-dashed py-3"
+        style={{ borderColor: colors.primary }}
       >
-        <Plus color="#3B82F6" size={20} />
-        <Text className="ml-2 font-semibold text-blue-500">
+        <Plus color={colors.primary} size={20} />
+        <Text className="ml-2 font-semibold" style={{ color: colors.primary }}>
           {t("add_criterion")}
         </Text>
       </TouchableOpacity>

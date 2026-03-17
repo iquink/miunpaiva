@@ -1,3 +1,91 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ==================================================================
+   CSS VARIABLE ARCHITECTURE
+   ================================================================== */
+
+/* ------------------------------------------------------------------
+   DEFAULT THEME (Light Mode)
+   ------------------------------------------------------------------ */
+:root {
+  --color-background: 249 250 251;        /* #f9fafb */
+  --color-surface: 255 255 255;           /* #ffffff */
+  --color-primary: 59 130 246;            /* #3b82f6 */
+  --color-primary-foreground: 255 255 255; /* #ffffff */
+  --color-secondary: 100 116 139;         /* #64748b */
+  --color-secondary-foreground: 255 255 255; /* #ffffff */
+  --color-accent: 147 197 253;            /* #93c5fd */
+  --color-text: 15 23 42;                 /* #0f172a */
+  --color-text-secondary: 100 116 139;    /* #64748b */
+  --color-border: 226 232 240;            /* #e2e8f0 */
+  --color-success: 34 197 94;             /* #22c55e */
+  --color-warning: 251 146 60;            /* #fb923c */
+  --color-error: 239 68 68;               /* #ef4444 */
+}
+
+/* ------------------------------------------------------------------
+   DEFAULT THEME (Dark Mode)
+   ------------------------------------------------------------------ */
+.dark {
+  --color-background: 15 23 42;           /* #0f172a */
+  --color-surface: 30 41 59;              /* #1e293b */
+  --color-primary: 96 165 250;            /* #60a5fa */
+  --color-primary-foreground: 15 23 42;   /* #0f172a */
+  --color-secondary: 148 163 184;         /* #94a3b8 */
+  --color-secondary-foreground: 15 23 42; /* #0f172a */
+  --color-accent: 59 130 246;             /* #3b82f6 */
+  --color-text: 241 245 249;              /* #f1f5f9 */
+  --color-text-secondary: 148 163 184;    /* #94a3b8 */
+  --color-border: 51 65 85;               /* #334155 */
+  --color-success: 34 197 94;             /* #22c55e */
+  --color-warning: 251 146 60;            /* #fb923c */
+  --color-error: 239 68 68;               /* #ef4444 */
+}
+
+/* ------------------------------------------------------------------
+   FOREST THEME (Light Mode)
+   ------------------------------------------------------------------ */
+.theme-forest {
+  --color-background: 240 253 244;        /* #f0fdf4 */
+  --color-surface: 255 255 255;           /* #ffffff */
+  --color-primary: 34 197 94;             /* #22c55e */
+  --color-primary-foreground: 255 255 255; /* #ffffff */
+  --color-secondary: 74 222 128;          /* #4ade80 */
+  --color-secondary-foreground: 22 101 52; /* #166534 */
+  --color-accent: 134 239 172;            /* #86efac */
+  --color-text: 20 83 45;                 /* #14532d */
+  --color-text-secondary: 22 101 52;      /* #166534 */
+  --color-border: 187 247 208;            /* #bbf7d0 */
+  --color-success: 34 197 94;             /* #22c55e */
+  --color-warning: 251 146 60;            /* #fb923c */
+  --color-error: 239 68 68;               /* #ef4444 */
+}
+
+/* ------------------------------------------------------------------
+   FOREST THEME (Dark Mode)
+   ------------------------------------------------------------------ */
+.theme-forest.dark {
+  --color-background: 6 78 59;            /* #064e3b */
+  --color-surface: 20 83 45;              /* #14532d */
+  --color-primary: 74 222 128;            /* #4ade80 */
+  --color-primary-foreground: 6 78 59;    /* #064e3b */
+  --color-secondary: 34 197 94;           /* #22c55e */
+  --color-secondary-foreground: 240 253 244; /* #f0fdf4 */
+  --color-accent: 34 197 94;              /* #22c55e */
+  --color-text: 240 253 244;              /* #f0fdf4 */
+  --color-text-secondary: 187 247 208;    /* #bbf7d0 */
+  --color-border: 22 101 52;              /* #166534 */
+  --color-success: 74 222 128;            /* #4ade80 */
+  --color-warning: 251 146 60;            /* #fb923c */
+  --color-error: 239 68 68;               /* #ef4444 */
+}
+
+/* ==================================================================
+   ADDITIONAL THEMES
+   
+   Follow the same pattern:
+   .theme-name { ... light mode colors ... }
+   .theme-name.dark { ... dark mode colors ... }
+   ================================================================== */

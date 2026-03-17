@@ -3,6 +3,7 @@ import { TouchableOpacity, Text } from "react-native";
 import { LogOut } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Card from "../ui/Card";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface LogoutSectionProps {
   onLogout: () => void;
@@ -10,19 +11,27 @@ interface LogoutSectionProps {
 
 export default function LogoutSection({ onLogout }: LogoutSectionProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   return (
     <Card className="mb-6">
-      <Text className="mb-3 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">
+      <Text
+        className="mb-3 text-sm font-semibold uppercase"
+        style={{ color: colors.textSecondary }}
+      >
         {t("actions")}
       </Text>
 
       <TouchableOpacity
         onPress={onLogout}
-        className="flex-row items-center rounded-lg bg-gray-100 dark:bg-slate-700 p-4"
+        className="flex-row items-center rounded-lg p-4"
+        style={{ backgroundColor: colors.background }}
       >
-        <LogOut color="#6b7280" size={20} />
-        <Text className="ml-3 text-base font-semibold text-gray-700 dark:text-gray-300">
+        <LogOut color={colors.textSecondary} size={20} />
+        <Text
+          className="ml-3 text-base font-semibold"
+          style={{ color: colors.text }}
+        >
           {t("logout")}
         </Text>
       </TouchableOpacity>

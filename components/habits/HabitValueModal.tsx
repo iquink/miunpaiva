@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Modal } from "react-native";
 import { X, Plus, Minus } from "lucide-react-native";
 import type { Habit } from "../../db/schema";
+import { useThemeColors } from "../../hooks/useThemeColors";
 import React from "react";
 
 interface HabitValueModalProps {
@@ -20,6 +21,7 @@ export default function HabitValueModal({
   onSave,
 }: HabitValueModalProps) {
   const [value, setValue] = useState(currentValue.toString());
+  const colors = useThemeColors();
 
   const handleIncrement = () => {
     const num = parseInt(value || "0", 10);
@@ -49,30 +51,45 @@ export default function HabitValueModal({
       onRequestClose={onClose}
     >
       <View className="flex-1 items-center justify-center bg-black/50 px-6">
-        <View className="w-full rounded-2xl bg-white dark:bg-slate-800 p-6">
+        <View
+          className="w-full rounded-2xl p-6"
+          style={{ backgroundColor: colors.surface }}
+        >
           {/* Header */}
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            <Text className="text-xl font-bold" style={{ color: colors.text }}>
               {habit.title}
             </Text>
             <TouchableOpacity onPress={onClose} className="rounded-full p-1">
-              <X color="#6b7280" size={24} />
+              <X color={colors.textSecondary} size={24} />
             </TouchableOpacity>
           </View>
 
           {/* Description */}
           {habit.description && (
-            <Text className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <Text
+              className="mb-4 text-sm"
+              style={{ color: colors.textSecondary }}
+            >
               {habit.description}
             </Text>
           )}
 
           {/* Current/Goal Display */}
-          <View className="mb-6 rounded-lg bg-gray-50 dark:bg-slate-700 p-4">
-            <Text className="text-center text-sm text-gray-600 dark:text-gray-400">
+          <View
+            className="mb-6 rounded-lg p-4"
+            style={{ backgroundColor: colors.background }}
+          >
+            <Text
+              className="text-center text-sm"
+              style={{ color: colors.textSecondary }}
+            >
               Today's Progress
             </Text>
-            <Text className="mt-1 text-center text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <Text
+              className="mt-1 text-center text-2xl font-bold"
+              style={{ color: colors.text }}
+            >
               {currentValue}
               {habit.dailyGoal && ` / ${habit.dailyGoal}`}
               {habit.unit && ` ${habit.unit}`}
@@ -81,31 +98,41 @@ export default function HabitValueModal({
 
           {/* Value Input with Steppers */}
           <View className="mb-6">
-            <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Text
+              className="mb-2 text-sm font-medium"
+              style={{ color: colors.text }}
+            >
               Add Value
             </Text>
             <View className="flex-row items-center justify-center gap-3">
               <TouchableOpacity
                 onPress={handleDecrement}
-                className="h-12 w-12 items-center justify-center rounded-full bg-gray-200 dark:bg-slate-600"
+                className="h-12 w-12 items-center justify-center rounded-full"
+                style={{ backgroundColor: colors.border }}
               >
-                <Minus color="#374151" size={24} />
+                <Minus color={colors.text} size={24} />
               </TouchableOpacity>
 
               <TextInput
-                className="h-14 w-24 rounded-lg border-2 border-blue-500 bg-white dark:bg-slate-700 px-4 text-center text-xl font-semibold text-gray-900 dark:text-gray-100"
+                className="h-14 w-24 rounded-lg border-2 px-4 text-center text-xl font-semibold"
+                style={{
+                  borderColor: colors.primary,
+                  backgroundColor: colors.surface,
+                  color: colors.text,
+                }}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={setValue}
                 selectTextOnFocus
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textSecondary}
               />
 
               <TouchableOpacity
                 onPress={handleIncrement}
-                className="h-12 w-12 items-center justify-center rounded-full bg-blue-500"
+                className="h-12 w-12 items-center justify-center rounded-full"
+                style={{ backgroundColor: colors.primary }}
               >
-                <Plus color="white" size={24} />
+                <Plus color={colors.primaryForeground} size={24} />
               </TouchableOpacity>
             </View>
           </View>
@@ -114,18 +141,28 @@ export default function HabitValueModal({
           <View className="flex-row gap-3">
             <TouchableOpacity
               onPress={onClose}
-              className="flex-1 rounded-lg border border-gray-300 dark:border-slate-600 py-3"
+              className="flex-1 rounded-lg border py-3"
+              style={{ borderColor: colors.border }}
             >
-              <Text className="text-center font-semibold text-gray-600 dark:text-gray-300">
+              <Text
+                className="text-center font-semibold"
+                style={{ color: colors.text }}
+              >
                 Cancel
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={handleSave}
-              className="flex-1 rounded-lg bg-blue-500 py-3"
+              className="flex-1 rounded-lg py-3"
+              style={{ backgroundColor: colors.primary }}
             >
-              <Text className="text-center font-semibold text-white">Save</Text>
+              <Text
+                className="text-center font-semibold"
+                style={{ color: colors.primaryForeground }}
+              >
+                Save
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

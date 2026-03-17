@@ -7,6 +7,7 @@ import Button from "../ui/Button";
 import CriteriaBuilder from "./CriteriaBuilder";
 import type { CriterionForm } from "../../hooks/useAchievements";
 import type { Habit } from "../../db/schema";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface AchievementFormData {
   title: string;
@@ -27,6 +28,7 @@ export default function CreateAchievementForm({
   onCancel,
 }: CreateAchievementFormProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   // Form state
   const [title, setTitle] = useState("");
@@ -100,12 +102,18 @@ export default function CreateAchievementForm({
   };
 
   return (
-    <View className="border-t border-gray-200 bg-white">
+    <View
+      className="border-t"
+      style={{
+        borderColor: colors.border,
+        backgroundColor: colors.surface,
+      }}
+    >
       <ScrollView
         className="p-6"
         contentContainerStyle={{ paddingBottom: 150 }}
       >
-        <Text className="mb-4 text-lg font-bold text-gray-900">
+        <Text className="mb-4 text-lg font-bold" style={{ color: colors.text }}>
           {t("new_achievement")}
         </Text>
 
@@ -125,23 +133,35 @@ export default function CreateAchievementForm({
         />
 
         {/* Icon Selector */}
-        <Text className="mb-2 text-sm font-medium text-gray-700">
+        <Text
+          className="mb-2 text-sm font-medium"
+          style={{ color: colors.text }}
+        >
           {t("icon")}
         </Text>
         <View className="mb-4 flex-row gap-3">
-          {(["medal", "trophy", "flower"] as const).map((icon) => (
-            <TouchableOpacity
-              key={icon}
-              onPress={() => setIconSlug(icon)}
-              className={`flex-1 items-center rounded-lg border p-4 ${
-                iconSlug === icon
-                  ? "border-yellow-500 bg-yellow-50"
-                  : "border-gray-300 bg-white"
-              }`}
-            >
-              {renderIcon(icon, iconSlug === icon ? "#EAB308" : "#9CA3AF", 32)}
-            </TouchableOpacity>
-          ))}
+          {(["medal", "trophy", "flower"] as const).map((icon) => {
+            const isSelected = iconSlug === icon;
+            return (
+              <TouchableOpacity
+                key={icon}
+                onPress={() => setIconSlug(icon)}
+                className="flex-1 items-center rounded-lg border p-4"
+                style={{
+                  backgroundColor: isSelected
+                    ? colors.warning + "20"
+                    : colors.surface,
+                  borderColor: isSelected ? colors.warning : colors.border,
+                }}
+              >
+                {renderIcon(
+                  icon,
+                  isSelected ? colors.warning : colors.textSecondary,
+                  32,
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <CriteriaBuilder

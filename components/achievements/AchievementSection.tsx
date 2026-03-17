@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface AchievementSectionProps {
   title: string;
@@ -16,14 +17,18 @@ export default function AchievementSection({
   showSection,
 }: AchievementSectionProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   return (
     <>
-      <Text className="mb-3 mt-6 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">
+      <Text
+        className="mb-3 mt-6 text-sm font-semibold uppercase"
+        style={{ color: colors.textSecondary }}
+      >
         {title}
       </Text>
       {!showSection ? (
-        <Text className="mb-4 text-gray-400 dark:text-gray-500">
+        <Text className="mb-4" style={{ color: colors.textSecondary }}>
           {emptyMessage}
         </Text>
       ) : (

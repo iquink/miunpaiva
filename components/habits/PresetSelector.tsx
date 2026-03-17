@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface Category {
   id: number;
@@ -31,6 +32,7 @@ export default function PresetSelector({
   onPresetSelect,
 }: PresetSelectorProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   const filteredPresets = presets.filter((p) =>
     categories.find(
@@ -41,7 +43,7 @@ export default function PresetSelector({
   return (
     <>
       {/* Category Selector */}
-      <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+      <Text className="mb-2 text-sm font-medium" style={{ color: colors.text }}>
         {t("select_category")}
       </Text>
       <ScrollView
@@ -50,34 +52,39 @@ export default function PresetSelector({
         className="mb-4"
       >
         <View className="flex-row gap-2">
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category.id}
-              onPress={() => onCategorySelect(category.label)}
-              className={`rounded-full border px-4 py-2 ${
-                selectedCategory === category.label
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900"
-                  : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
-              }`}
-            >
-              <Text
-                className={`text-sm font-medium ${
-                  selectedCategory === category.label
-                    ? "text-blue-500 dark:text-blue-300"
-                    : "text-gray-600 dark:text-gray-300"
-                }`}
+          {categories.map((category) => {
+            const isSelected = selectedCategory === category.label;
+            return (
+              <TouchableOpacity
+                key={category.id}
+                onPress={() => onCategorySelect(category.label)}
+                className="rounded-full border px-4 py-2"
+                style={{
+                  backgroundColor: isSelected
+                    ? colors.primary + "20"
+                    : colors.surface,
+                  borderColor: isSelected ? colors.primary : colors.border,
+                }}
               >
-                {category.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  className="text-sm font-medium"
+                  style={{ color: isSelected ? colors.primary : colors.text }}
+                >
+                  {category.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
 
       {/* Preset Items */}
       {selectedCategory && filteredPresets.length > 0 && (
         <>
-          <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <Text
+            className="mb-2 text-sm font-medium"
+            style={{ color: colors.text }}
+          >
             {t("select_preset")}
           </Text>
           <ScrollView
@@ -86,27 +93,31 @@ export default function PresetSelector({
             className="mb-4"
           >
             <View className="flex-row gap-2">
-              {filteredPresets.map((preset) => (
-                <TouchableOpacity
-                  key={preset.id}
-                  onPress={() => onPresetSelect(preset.name)}
-                  className={`rounded-full border px-4 py-2 ${
-                    selectedPreset === preset.name
-                      ? "border-green-500 bg-green-50 dark:bg-green-900"
-                      : "border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
-                  }`}
-                >
-                  <Text
-                    className={`text-sm ${
-                      selectedPreset === preset.name
-                        ? "text-green-600 dark:text-green-300"
-                        : "text-gray-600 dark:text-gray-300"
-                    }`}
+              {filteredPresets.map((preset) => {
+                const isSelected = selectedPreset === preset.name;
+                return (
+                  <TouchableOpacity
+                    key={preset.id}
+                    onPress={() => onPresetSelect(preset.name)}
+                    className="rounded-full border px-4 py-2"
+                    style={{
+                      backgroundColor: isSelected
+                        ? colors.success + "20"
+                        : colors.surface,
+                      borderColor: isSelected ? colors.success : colors.border,
+                    }}
                   >
-                    {preset.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      className="text-sm"
+                      style={{
+                        color: isSelected ? colors.success : colors.text,
+                      }}
+                    >
+                      {preset.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </ScrollView>
         </>

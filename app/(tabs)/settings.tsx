@@ -13,9 +13,12 @@ import ThemeSelector from "../../components/settings/ThemeSelector";
 import LogoutSection from "../../components/settings/LogoutSection";
 import DangerZoneSection from "../../components/settings/DangerZoneSection";
 import React from "react";
+import ColorThemeSelector from "../../components/settings/ColorThemeSelector";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const colors = useThemeColors();
   const { user, logout } = useAuthStore();
   const { t, i18n } = useTranslation();
   const { colorScheme, setColorScheme } = useColorScheme();
@@ -70,14 +73,17 @@ export default function SettingsScreen() {
 
   if (!user) {
     return (
-      <View className="flex-1 items-center justify-center bg-gray-50 dark:bg-slate-900">
-        <Text className="text-gray-500 dark:text-gray-400">{t("no_user")}</Text>
+      <View
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: colors.background }}
+      >
+        <Text style={{ color: colors.textSecondary }}>{t("no_user")}</Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-slate-900">
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScreenHeader title={t("settings")} subtitle={t("manage_account")} />
 
       <ScrollView className="flex-1 px-6 py-6">
@@ -97,6 +103,8 @@ export default function SettingsScreen() {
           onThemeChange={setColorScheme}
         />
 
+        <ColorThemeSelector />
+
         <LogoutSection onLogout={handleLogout} />
 
         <DangerZoneSection
@@ -115,10 +123,13 @@ export default function SettingsScreen() {
 
         {/* App Info */}
         <View className="mt-4 items-center pb-8">
-          <Text className="text-xs text-gray-400 dark:text-gray-500">
+          <Text className="text-xs" style={{ color: colors.textSecondary }}>
             {t("app_version")}
           </Text>
-          <Text className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+          <Text
+            className="mt-1 text-xs"
+            style={{ color: colors.textSecondary }}
+          >
             {t("made_with_love")}
           </Text>
         </View>
