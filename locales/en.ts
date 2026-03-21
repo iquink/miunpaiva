@@ -154,4 +154,14 @@ export default {
   // Languages
   lang_en: "English",
   lang_fi: "Suomi",
+  // Relaxations
+  relax: "Relax",
+  relax_subtitle:
+    "Choose a sound accompaniment. Music will play even when the screen is off.",
+  relax_track_1_title: "Summer Forest",
+  relax_track_1_description: "Birdsong and rustling leaves",
+  relax_track_1_artist: "Miunpäivä",
+  relax_track_2_title: "Deep Space",
+  relax_track_2_description: "Soft binaural hum",
+  relax_track_2_artist: "Miunpäivä",
 };

@@ -154,4 +154,14 @@ export default {
   // Languages
   lang_en: "English",
   lang_fi: "Suomi",
+  // Relaxations
+  relax: "Rentoudu",
+  relax_subtitle:
+    "Valitse äänimaailma. Musiikki soi myös näytön ollessa pois päältä.",
+  relax_track_1_title: "Kesämetsä",
+  relax_track_1_description: "Lintujen laulu ja lehtien havina",
+  relax_track_1_artist: "Miunpäivä",
+  relax_track_2_title: "Syvä avaruus",
+  relax_track_2_description: "Pehmeä binauraalinen humina",
+  relax_track_2_artist: "Miunpäivä",
 };

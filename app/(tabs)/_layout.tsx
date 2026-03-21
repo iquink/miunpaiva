@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, Award, Settings } from "lucide-react-native";
+import { Home, Award, Settings, Wind } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { useThemeColors } from "../../hooks/useThemeColors";
@@ -42,6 +42,13 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => (
             <Settings color={color} size={size} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="relax"
+        options={{
+          title: t("relax"),
+          tabBarIcon: ({ color, size }) => <Wind color={color} size={size} />,
         }}
       />
     </Tabs>
