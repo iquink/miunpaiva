@@ -81,6 +81,17 @@ export default {
   days: "days",
   unknown_habit: "Unknown habit",
 
+  // RPG System
+  tab_my_goals: "My Goals",
+  tab_rpg_ranks: "RPG Ranks",
+  rpg_subtitle: "Level up by completing tasks",
+  no_rpg_stats: "No stats yet. Start completing tasks to gain levels!",
+  rpg_completed_tasks: "completed tasks",
+  rpg_rank: "Rank",
+  rpg_level: "Level",
+  rpg_progress_to_next: "Progress to next level",
+  loading: "Loading...",
+
   // Settings
   settings_subtitle: "Manage your account",
   manage_account: "Manage your account",

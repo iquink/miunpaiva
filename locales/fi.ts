@@ -82,6 +82,18 @@ export default {
   days: "päivää",
   unknown_habit: "Tuntematon toiminta",
 
+  // RPG System
+  tab_my_goals: "Omat tavoitteet",
+  tab_rpg_ranks: "RPG-rankit",
+  rpg_subtitle: "Nouse tasolla suorittamalla tehtäviä",
+  no_rpg_stats:
+    "Ei vielä tilastoja. Aloita tehtävien suorittaminen noustaaksesi tasolla!",
+  rpg_completed_tasks: "suoritetut tehtävät",
+  rpg_rank: "Ranki",
+  rpg_level: "Taso",
+  rpg_progress_to_next: "Edistyminen seuraavalle tasolle",
+  loading: "Ladataan...",
+
   // Settings
   settings_subtitle: "Hallinnoi tiliäsi",
   manage_account: "Hallinnoi tiliäsi",
