@@ -11,6 +11,7 @@ import {
   type PresetItem,
   type NewHabit,
 } from "../db/schema";
+import { checkSecretAchievements } from "./secretAchievementEngine";
 
 /**
  * Habit Service
@@ -82,9 +83,12 @@ export async function createHabit(habitData: NewHabit): Promise<void> {
 export async function toggleBooleanHabitLog(
   habitId: number,
   dateStr: string,
+  userId: number,
   existingLog?: Log,
 ): Promise<Log> {
   try {
+    let result: Log;
+
     if (existingLog) {
       // Update existing log
       const newCompleted = !existingLog.completed;
@@ -93,7 +97,7 @@ export async function toggleBooleanHabitLog(
         .set({ completed: newCompleted })
         .where(eq(logs.id, existingLog.id));
 
-      return { ...existingLog, completed: newCompleted };
+      result = { ...existingLog, completed: newCompleted };
     } else {
       // Create new log
       const [newLog] = await db
@@ -106,8 +110,15 @@ export async function toggleBooleanHabitLog(
         })
         .returning();
 
-      return newLog;
+      result = newLog;
     }
+
+    // Fire-and-forget: check secret achievements without blocking the UI
+    checkSecretAchievements(userId, dateStr).catch((err) => {
+      console.error("[SecretAchievements] Engine error:", err);
+    });
+
+    return result;
   } catch (error) {
     console.error("Error toggling boolean habit:", error);
     throw new Error("Failed to toggle habit");
@@ -122,10 +133,12 @@ export async function updateCounterHabitLog(
   dateStr: string,
   value: number,
   dailyGoal: number | null,
+  userId: number,
   existingLog?: Log,
 ): Promise<Log> {
   try {
     const completed = dailyGoal ? value >= dailyGoal : value > 0;
+    let result: Log;
 
     if (existingLog) {
       // Update existing log
@@ -137,7 +150,7 @@ export async function updateCounterHabitLog(
         })
         .where(eq(logs.id, existingLog.id));
 
-      return { ...existingLog, value, completed };
+      result = { ...existingLog, value, completed };
     } else {
       // Create new log
       const [newLog] = await db
@@ -150,8 +163,15 @@ export async function updateCounterHabitLog(
         })
         .returning();
 
-      return newLog;
+      result = newLog;
     }
+
+    // Fire-and-forget: check secret achievements without blocking the UI
+    checkSecretAchievements(userId, dateStr).catch((err) => {
+      console.error("[SecretAchievements] Engine error:", err);
+    });
+
+    return result;
   } catch (error) {
     console.error("Error updating counter habit:", error);
     throw new Error("Failed to update counter");

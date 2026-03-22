@@ -32,6 +32,7 @@ interface HabitFormData {
   unit: string;
   dailyGoal: string;
   category: string | null;
+  selectedPreset: string | null;
   frequency: "daily" | "weekly" | "once";
   selectedWeekdays: number[];
   targetDate: Date | null;
@@ -95,6 +96,7 @@ export default function CreateHabitForm({
       unit,
       dailyGoal,
       category: selectedCategory,
+      selectedPreset,
       frequency,
       selectedWeekdays,
       targetDate,

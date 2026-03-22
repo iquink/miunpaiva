@@ -29,6 +29,7 @@ export const habits = sqliteTable("habits", {
   frequencyDays: text("frequency_days"), // JSON array of weekday numbers [0-6] for 'weekly'
   targetDate: integer("target_date", { mode: "timestamp" }), // For 'once' frequency
   endDate: integer("end_date", { mode: "timestamp" }), // For 'daily'/'weekly' - null means forever
+  presetName: text("preset_name"), // Original preset name; null for fully custom habits
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -94,6 +95,18 @@ export const userAchievements = sqliteTable("user_achievements", {
     .default(sql`(unixepoch())`),
 });
 
+// Secret Achievements (app-defined, static catalog) — stores only unlock state
+export const userSecretAchievements = sqliteTable("user_secret_achievements", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  secretAchievementId: text("secret_achievement_id").notNull(), // String ID from static catalog
+  unlockedAt: integer("unlocked_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
 // Preset Categories table
 export const presetCategories = sqliteTable("preset_categories", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -127,6 +140,10 @@ export type NewAchievementCriterion = typeof achievementCriteria.$inferInsert;
 
 export type UserAchievement = typeof userAchievements.$inferSelect;
 export type NewUserAchievement = typeof userAchievements.$inferInsert;
+
+export type UserSecretAchievement = typeof userSecretAchievements.$inferSelect;
+export type NewUserSecretAchievement =
+  typeof userSecretAchievements.$inferInsert;
 
 export type PresetCategory = typeof presetCategories.$inferSelect;
 export type NewPresetCategory = typeof presetCategories.$inferInsert;

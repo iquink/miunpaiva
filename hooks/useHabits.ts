@@ -87,6 +87,7 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
     unit: string;
     dailyGoal: string;
     category: string | null;
+    selectedPreset: string | null;
     frequency: "daily" | "weekly" | "once";
     selectedWeekdays: number[];
     targetDate: Date | null;
@@ -129,6 +130,7 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
         unit: hasUnit ? habitData.unit.trim() : null,
         dailyGoal: hasGoal ? parseInt(habitData.dailyGoal, 10) : null,
         category: habitData.category,
+        presetName: habitData.selectedPreset ?? null,
         frequency: habitData.frequency,
         frequencyDays:
           habitData.frequency === "weekly"
@@ -160,6 +162,7 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
       const updatedLog = await toggleBooleanHabitLog(
         habit.id,
         dateStr,
+        userId,
         existingLog,
       );
 
@@ -184,6 +187,7 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
         dateStr,
         value,
         habit.dailyGoal,
+        userId,
         existingLog,
       );
 
