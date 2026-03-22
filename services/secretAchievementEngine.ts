@@ -1,7 +1,14 @@
 import { eq, and, count } from "drizzle-orm";
 import { db } from "../db";
 import { habits, logs, userSecretAchievements } from "../db/schema";
-import { SECRET_ACHIEVEMENTS } from "../constants/secretAchievements";
+import {
+  SECRET_ACHIEVEMENTS,
+  type SecretAchievement,
+} from "../constants/secretAchievements";
+
+export interface UnlockedSecretAchievement extends SecretAchievement {
+  unlockedAt: Date;
+}
 
 /**
  * Background checker that evaluates all locked secret achievements for a user.
@@ -75,8 +82,33 @@ export async function checkSecretAchievements(
         secretAchievementId: achievement.id,
       });
       console.log(
-        `[SecretAchievements] Unlocked: ${achievement.title} (${achievement.icon}) for user ${userId}`,
+        `[SecretAchievements] Unlocked: ${achievement.id} (${achievement.icon}) for user ${userId}`,
       );
     }
   }
+}
+
+/**
+ * Returns all secret achievements unlocked by the user, merged with catalog data.
+ */
+export async function getUnlockedSecretAchievements(
+  userId: number,
+): Promise<UnlockedSecretAchievement[]> {
+  const rows = await db
+    .select({
+      secretAchievementId: userSecretAchievements.secretAchievementId,
+      unlockedAt: userSecretAchievements.unlockedAt,
+    })
+    .from(userSecretAchievements)
+    .where(eq(userSecretAchievements.userId, userId));
+
+  const catalog = new Map(SECRET_ACHIEVEMENTS.map((a) => [a.id, a]));
+
+  return rows
+    .map((row) => {
+      const base = catalog.get(row.secretAchievementId);
+      if (!base) return null;
+      return { ...base, unlockedAt: row.unlockedAt };
+    })
+    .filter((x): x is UnlockedSecretAchievement => x !== null);
 }

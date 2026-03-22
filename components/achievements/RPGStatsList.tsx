@@ -156,7 +156,7 @@ export default function RPGStatsList({ userId }: RPGStatsListProps) {
                   color: colors.warning,
                 }}
               >
-                {stat.rank}
+                {t(stat.rankKey)}
               </Text>
             </View>
             <View style={{ alignItems: "flex-end" }}>

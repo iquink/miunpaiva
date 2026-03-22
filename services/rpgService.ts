@@ -11,22 +11,23 @@ import { logs, habits } from "../db/schema";
 export interface CategoryProgress {
   category: string;
   level: number;
-  rank: string;
+  rankKey: string;
   completedCount: number;
   progressPercent: number;
   nextLevelAt: number;
+  lastActivityAt: string | null;
 }
 
 /**
- * Get rank title based on level
+ * Get rank translation key based on level
  */
-function getRankTitle(level: number): string {
-  if (level >= 25) return "Legend";
-  if (level >= 20) return "Hero";
-  if (level >= 15) return "Expert";
-  if (level >= 10) return "Master";
-  if (level >= 5) return "Adept";
-  return "Novice";
+function getRankKey(level: number): string {
+  if (level >= 25) return "rpg_ranks.legend";
+  if (level >= 20) return "rpg_ranks.hero";
+  if (level >= 15) return "rpg_ranks.expert";
+  if (level >= 10) return "rpg_ranks.master";
+  if (level >= 5) return "rpg_ranks.adept";
+  return "rpg_ranks.novice";
 }
 
 /**
@@ -35,12 +36,12 @@ function getRankTitle(level: number): string {
  */
 function calculateLevel(completedCount: number): {
   level: number;
-  rank: string;
+  rankKey: string;
   progressPercent: number;
   nextLevelAt: number;
 } {
   const level = Math.floor(Math.sqrt(completedCount)) + 1;
-  const rank = getRankTitle(level);
+  const rankKey = getRankKey(level);
 
   // Calculate progress to next level
   // Next level requires: (level)^2 completions
@@ -55,7 +56,7 @@ function calculateLevel(completedCount: number): {
 
   return {
     level,
-    rank,
+    rankKey,
     progressPercent,
     nextLevelAt: nextLevelRequirement,
   };
@@ -75,6 +76,7 @@ export async function getUserRPGStats(
       .select({
         category: habits.category,
         completedCount: sql<number>`count(${logs.id})`,
+        lastActivityAt: sql<string>`MAX(${logs.date})`,
       })
       .from(logs)
       .innerJoin(habits, eq(logs.habitId, habits.id))
@@ -83,20 +85,21 @@ export async function getUserRPGStats(
 
     // Map results to CategoryProgress with level calculations
     const categoryProgress: CategoryProgress[] = results
-      .filter((r) => r.category !== null) // Filter out habits without category
+      .filter((r) => r.category !== null)
       .map((result) => {
         const category = result.category || "Uncategorized";
         const completedCount = Number(result.completedCount) || 0;
-        const { level, rank, progressPercent, nextLevelAt } =
+        const { level, rankKey, progressPercent, nextLevelAt } =
           calculateLevel(completedCount);
 
         return {
           category,
           level,
-          rank,
+          rankKey,
           completedCount,
           progressPercent,
           nextLevelAt,
+          lastActivityAt: result.lastActivityAt ?? null,
         };
       });
 

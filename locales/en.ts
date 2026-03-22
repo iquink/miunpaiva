@@ -175,4 +175,97 @@ export default {
   relax_track_2_title: "Deep Space",
   relax_track_2_description: "Soft binaural hum",
   relax_track_2_artist: "Miunpäivä",
+
+  // Activity Feed
+  tab_goals: "My Goals",
+  tab_rewards: "Rewards",
+  filter_rpg: "Levels",
+  filter_secrets: "Secret Badges",
+  no_rewards:
+    "No rewards yet. Complete tasks to earn RPG levels and unlock secret badges!",
+
+  // RPG Ranks
+  rpg_ranks: {
+    novice: "Novice",
+    apprentice: "Apprentice",
+    adept: "Adept",
+    master: "Master",
+    grandmaster: "Grandmaster",
+    expert: "Expert",
+    hero: "Hero",
+    legend: "Legend",
+  },
+
+  // Secret Achievements
+  secret_achievements: {
+    aquaman: {
+      title: "Aquaman",
+      description: "Stay hydrated! Logged water intake 100 times.",
+    },
+    ironman: {
+      title: "Iron Man",
+      description: "Hit the gym 50 times. You are a machine!",
+    },
+    sauna_master: {
+      title: "Suomalainen Sielu",
+      description: "Visited the Sauna 50 times. A true Finnish soul.",
+    },
+    bingo_champion: {
+      title: "Lottovoittaja",
+      description: "Played Bingo 20 times! Feeling lucky?",
+    },
+    picasso: {
+      title: "Picasso",
+      description: "Completed 30 Art sessions. Masterpiece!",
+    },
+    disco_king: {
+      title: "Tanssikuningas",
+      description: "Danced at the Disco 10 times. John Travolta is proud.",
+    },
+    forest_spirit: {
+      title: "Metsänhenki",
+      description: "Enjoyed the outdoors 100 times.",
+    },
+    zen_master: {
+      title: "Zen Master",
+      description: "Practiced relaxation 30 times.",
+    },
+    clean_smile: {
+      title: "Puhdas Hymy",
+      description: "Brushed your teeth 100 times. Dentist approved!",
+    },
+    marathoner: {
+      title: "Maratoonari",
+      description: "Went for a run 50 times.",
+    },
+    health_first: {
+      title: "Terveys Edellä",
+      description: "Took your medication exactly as prescribed 100 times.",
+    },
+    perfect_morning: {
+      title: "Perfect Morning",
+      description: "Made bed, brushed teeth, and ate breakfast in one day.",
+    },
+    good_night: {
+      title: "Hyvää Yötä",
+      description: "Evening snack, brushed teeth, and went to bed properly.",
+    },
+    perfect_diet: {
+      title: "Täydellinen Ravitsemus",
+      description:
+        "Ate breakfast, lunch, dinner, and evening snack in a single day.",
+    },
+    spring_cleaning: {
+      title: "Kevätsiivous",
+      description: "Cleaned room, organized stuff, and did laundry in one day.",
+    },
+    spa_day: {
+      title: "Spa Day",
+      description: "Sauna, Shower, and Relaxation all in one day.",
+    },
+    active_day: {
+      title: "Aktiivinen Päivä",
+      description: "Went outdoors, exercised, and took a shower.",
+    },
+  },
 };

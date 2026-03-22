@@ -176,4 +176,100 @@ export default {
   relax_track_2_title: "Syvä avaruus",
   relax_track_2_description: "Pehmeä binauraalinen humina",
   relax_track_2_artist: "Miunpäivä",
+
+  // Activity Feed
+  tab_goals: "Omat tavoitteet",
+  tab_rewards: "Palkinnot",
+  filter_rpg: "Tasot",
+  filter_secrets: "Salaiset merkit",
+  no_rewards:
+    "Ei vielä palkintoja. Suorita tehtäviä ansaitaksesi RPG-tasoja ja avataksesi salaisia merkkejä!",
+
+  // RPG Ranks
+  rpg_ranks: {
+    novice: "Noviisi",
+    apprentice: "Oppipoika",
+    adept: "Taitaja",
+    master: "Mestari",
+    grandmaster: "Suurmestari",
+    expert: "Asiantuntija",
+    hero: "Sankari",
+    legend: "Legenda",
+  },
+
+  // Secret Achievements
+  secret_achievements: {
+    aquaman: {
+      title: "Aquaman",
+      description: "Pysy nestytettynä! Kirjasit veden juonnin 100 kertaa.",
+    },
+    ironman: {
+      title: "Iron Man",
+      description: "Kuntosalilla 50 kertaa. Olet kone!",
+    },
+    sauna_master: {
+      title: "Suomalainen Sielu",
+      description: "Kävi saunassa 50 kertaa. Aito suomalainen sielu.",
+    },
+    bingo_champion: {
+      title: "Lottovoittaja",
+      description: "Pelasi bingoa 20 kertaa! Tuuri suosii?",
+    },
+    picasso: {
+      title: "Picasso",
+      description: "Suoritti 30 taidetehtävää. Mestariteos!",
+    },
+    disco_king: {
+      title: "Tanssikuningas",
+      description: "Tanssi discossa 10 kertaa. John Travolta on ylpeä.",
+    },
+    forest_spirit: {
+      title: "Metsänhenki",
+      description: "Nautti ulkoilusta 100 kertaa.",
+    },
+    zen_master: {
+      title: "Zen-mestari",
+      description: "Harjoitti rentoutumista 30 kertaa.",
+    },
+    clean_smile: {
+      title: "Puhdas Hymy",
+      description: "Harjasi hampaansa 100 kertaa. Hammaslääkäri hyväksyy!",
+    },
+    marathoner: {
+      title: "Maratoonari",
+      description: "Lähti juoksemaan 50 kertaa.",
+    },
+    health_first: {
+      title: "Terveys Edellä",
+      description: "Otti lääkkeet täsmällisesti 100 kertaa.",
+    },
+    perfect_morning: {
+      title: "Täydellinen Aamu",
+      description:
+        "Petasi sängyn, harjasi hampaat ja söi aamupalan yhtenä päivänä.",
+    },
+    good_night: {
+      title: "Hyvää Yötä",
+      description:
+        "Iltapala, hampaiden harjaus ja nukkumaanmeno asianmukaisesti.",
+    },
+    perfect_diet: {
+      title: "Täydellinen Ravitsemus",
+      description:
+        "Söi aamupalan, lounaan, päivällisen ja iltapalan yhtenä päivänä.",
+    },
+    spring_cleaning: {
+      title: "Kevätsiivous",
+      description:
+        "Siivosi huoneen, järjesteli tavarat ja pesi pyykit yhtenä päivänä.",
+    },
+    spa_day: {
+      title: "Kylpyläpäivä",
+      description: "Sauna, suihku ja rentoutuminen kaikki yhtenä päivänä.",
+    },
+    active_day: {
+      title: "Aktiivinen Päivä",
+      description: "Ulkoilu, jumppa ja suihku yhtenä päivänä.",
+    },
+  },
 };
