@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 // 1. Add import for useAudioPlayerStatus
-import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
+import {
+  setAudioModeAsync,
+  useAudioPlayer,
+  useAudioPlayerStatus,
+} from "expo-audio";
 import { Play, Square, Headphones } from "lucide-react-native";
 import { useThemeColors } from "../../hooks/useThemeColors";
 import Card from "../../components/ui/Card";
@@ -35,6 +39,15 @@ export default function RelaxScreen() {
   // 2. Initialize player status. This object is reactive
   // and will cause the component to re-render on state changes.
   const status = useAudioPlayerStatus(player);
+
+  useEffect(() => {
+    // Configure audio session for background playback
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+      interruptionMode: "doNotMix",
+    });
+  }, []);
 
   const handlePlaySound = (track: (typeof TRACKS)[0]) => {
     if (activeTrackId === track.id) {
