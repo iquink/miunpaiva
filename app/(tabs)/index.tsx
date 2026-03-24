@@ -1,5 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, RefreshControl } from "react-native";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { startOfToday } from "date-fns";
 import { Plus } from "lucide-react-native";
 import { useFocusEffect } from "expo-router";
@@ -14,10 +17,11 @@ import CreateHabitForm from "../../components/habits/CreateHabitForm";
 import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function DashboardScreen() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const [selectedDate, setSelectedDate] = useState(startOfToday());
+  const [showPicker, setShowPicker] = useState(false);
   const [showAddHabit, setShowAddHabit] = useState(false);
 
   // Use the custom hook for habits management
@@ -71,6 +75,14 @@ export default function DashboardScreen() {
     setSelectedDate(newDate);
   };
 
+  // Android closes the dialog automatically; just capture the result.
+  const onPickerChange = (event: DateTimePickerEvent, date?: Date) => {
+    setShowPicker(false);
+    if (event.type === "set" && date) {
+      setSelectedDate(date);
+    }
+  };
+
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScreenHeader title={t("dashboard")} subtitle={t("dashboard_subtitle")} />
@@ -79,7 +91,17 @@ export default function DashboardScreen() {
         selectedDate={selectedDate}
         onPrevDay={() => changeDate(-1)}
         onNextDay={() => changeDate(1)}
+        onDatePress={() => setShowPicker(true)}
       />
+
+      {showPicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          display="default"
+          onChange={onPickerChange}
+        />
+      )}
 
       {/* Habits List */}
       <ScrollView

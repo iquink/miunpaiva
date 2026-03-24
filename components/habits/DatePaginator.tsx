@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { format, startOfToday } from "date-fns";
 import { fi } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react-native";
+import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import IconButton from "../ui/IconButton";
 import { useThemeColors } from "../../hooks/useThemeColors";
@@ -11,14 +11,16 @@ interface DatePaginatorProps {
   selectedDate: Date;
   onPrevDay: () => void;
   onNextDay: () => void;
+  onDatePress?: () => void;
 }
 
 export default function DatePaginator({
   selectedDate,
   onPrevDay,
   onNextDay,
+  onDatePress,
 }: DatePaginatorProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const colors = useThemeColors();
   const dateStr = format(selectedDate, "yyyy-MM-dd");
   const todayStr = format(startOfToday(), "yyyy-MM-dd");
@@ -35,11 +37,23 @@ export default function DatePaginator({
         onPress={onPrevDay}
       />
 
-      <Text className="text-lg font-semibold" style={{ color: colors.text }}>
-        {dateStr === todayStr
-          ? t("today")
-          : format(selectedDate, "eeeeee dd.MM.yyyy", { locale: fi })}
-      </Text>
+      <TouchableOpacity
+        className="flex-row items-center gap-2"
+        onPress={onDatePress}
+        accessibilityRole="button"
+        accessibilityLabel={t("select_date")}
+        disabled={!onDatePress}
+      >
+        <CalendarDays size={18} color={colors.primary} />
+        <Text
+          className="text-lg font-semibold"
+          style={{ color: colors.primary }}
+        >
+          {dateStr === todayStr
+            ? t("today")
+            : format(selectedDate, "eeeeee dd.MM.yyyy", { locale: fi })}
+        </Text>
+      </TouchableOpacity>
 
       <IconButton
         variant="ghost"
