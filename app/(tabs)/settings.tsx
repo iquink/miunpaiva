@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "nativewind";
 import { useAuthStore } from "../../store/authStore";
-import { deleteUser } from "../../services/authService";
+import { deleteUser, DUMMY_PASSWORD } from "../../services/authService";
 import { changeLanguage } from "../../i18n";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import UserInfoSection from "../../components/settings/UserInfoSection";
@@ -20,6 +20,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { user, logout } = useAuthStore();
+  const isPersonalAccount = user?.passwordHash === DUMMY_PASSWORD;
   const { t, i18n } = useTranslation();
   const { colorScheme, setColorScheme } = useColorScheme();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -105,7 +106,7 @@ export default function SettingsScreen() {
 
         <ColorThemeSelector />
 
-        <LogoutSection onLogout={handleLogout} />
+        {!isPersonalAccount && <LogoutSection onLogout={handleLogout} />}
 
         <DangerZoneSection
           onDeleteAccount={handleDeleteAccount}

@@ -1,12 +1,55 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import * as Crypto from "expo-crypto";
 import { db } from "../db";
 import { users, type User } from "../db/schema";
+
+export const DUMMY_PASSWORD = "PERSONAL_DEVICE_NO_PASS";
 
 /**
  * Auth Service
  * Contains all database operations related to user authentication
  */
+
+/**
+ * Check whether any users exist in the database.
+ */
+export async function hasAnyUsers(): Promise<boolean> {
+  try {
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users);
+    return result[0].count > 0;
+  } catch (error) {
+    console.error("Error checking user count:", error);
+    return false;
+  }
+}
+
+/**
+ * Create a personal-mode user (no password hashing – stores DUMMY_PASSWORD directly).
+ */
+export async function createPersonalUser(username: string): Promise<User> {
+  try {
+    if (!username || username.length < 3) {
+      throw new Error("Username must be at least 3 characters");
+    }
+
+    const existingUser = await getUserByUsername(username);
+    if (existingUser) {
+      throw new Error("Username already exists");
+    }
+
+    const [newUser] = await db
+      .insert(users)
+      .values({ username, passwordHash: DUMMY_PASSWORD })
+      .returning();
+
+    return newUser;
+  } catch (error) {
+    console.error("Error creating personal user:", error);
+    throw error;
+  }
+}
 
 /**
  * Find a user by ID
