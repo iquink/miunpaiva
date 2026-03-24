@@ -13,9 +13,11 @@ import { LogIn } from "lucide-react-native";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const colors = useThemeColors();
   const login = useAuthStore((state) => state.login);
@@ -25,7 +27,10 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!username || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert(
+        t("error_failed", { ns: "login" }),
+        t("error_fill_fields", { ns: "login" }),
+      );
       return;
     }
 
@@ -36,7 +41,10 @@ export default function LoginScreen() {
     if (result.success) {
       router.replace("/(tabs)");
     } else {
-      Alert.alert("Login Failed", result.error || "An error occurred");
+      Alert.alert(
+        t("error_failed", { ns: "login" }),
+        result.error || t("error_default", { ns: "login" }),
+      );
     }
   };
 
@@ -55,17 +63,17 @@ export default function LoginScreen() {
             <LogIn color={colors.primaryForeground} size={32} />
           </View>
           <Text className="text-3xl font-bold" style={{ color: colors.text }}>
-            Welcome Back
+            {t("title", { ns: "login" })}
           </Text>
           <Text className="mt-2" style={{ color: colors.textSecondary }}>
-            Sign in to continue tracking
+            {t("subtitle", { ns: "login" })}
           </Text>
         </View>
 
         <View className="space-y-4">
           <Input
-            label="Username"
-            placeholder="Enter your username"
+            label={t("username_label", { ns: "login" })}
+            placeholder={t("username_placeholder", { ns: "login" })}
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -73,8 +81,8 @@ export default function LoginScreen() {
           />
 
           <Input
-            label="Password"
-            placeholder="Enter your password"
+            label={t("password_label", { ns: "login" })}
+            placeholder={t("password_placeholder", { ns: "login" })}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -82,12 +90,14 @@ export default function LoginScreen() {
           />
 
           <Button className="mt-6" onPress={handleLogin} isLoading={isLoading}>
-            {isLoading ? "Signing In..." : "Sign In"}
+            {isLoading
+              ? t("loading", { ns: "login" })
+              : t("button", { ns: "login" })}
           </Button>
 
           <View className="mt-6 flex-row items-center justify-center">
             <Text style={{ color: colors.textSecondary }}>
-              Don't have an account?{" "}
+              {t("no_account", { ns: "login" })}{" "}
             </Text>
             <Link href="/(auth)/register" asChild>
               <TouchableOpacity>
@@ -95,7 +105,7 @@ export default function LoginScreen() {
                   className="font-semibold"
                   style={{ color: colors.primary }}
                 >
-                  Sign Up
+                  {t("sign_up", { ns: "login" })}
                 </Text>
               </TouchableOpacity>
             </Link>

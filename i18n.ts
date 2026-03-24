@@ -3,14 +3,28 @@ import { initReactI18next } from "react-i18next";
 import * as Localization from "expo-localization";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import en from "./locales/en";
-import fi from "./locales/fi";
+import translationEn, {
+  login as loginEn,
+  register as registerEn,
+} from "./locales/en";
+import translationFi, {
+  login as loginFi,
+  register as registerFi,
+} from "./locales/fi";
 
 const LANGUAGE_KEY = "user_language";
 
 const resources = {
-  en: { translation: en },
-  fi: { translation: fi },
+  en: {
+    translation: translationEn,
+    login: loginEn,
+    register: registerEn,
+  },
+  fi: {
+    translation: translationFi,
+    login: loginFi,
+    register: registerFi,
+  },
 };
 
 // Get saved language or detect system language

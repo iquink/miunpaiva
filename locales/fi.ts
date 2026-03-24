@@ -1,4 +1,42 @@
-export default {
+// i18next namespace: login
+export const login = {
+  title: "Tervetuloa takaisin",
+  subtitle: "Kirjaudu jatkaaksesi seurantaa",
+  username_label: "Käyttäjänimi",
+  username_placeholder: "Syötä käyttäjänimesi",
+  password_label: "Salasana",
+  password_placeholder: "Syötä salasanasi",
+  button: "Kirjaudu sisään",
+  loading: "Kirjaudutaan...",
+  no_account: "Eikö sinulla ole tiliä?",
+  sign_up: "Rekisteröidy",
+  error_fill_fields: "Täytä kaikki kentät",
+  error_failed: "Kirjautuminen epäonnistui",
+  error_default: "Tapahtui virhe",
+};
+
+// i18next namespace: register
+export const register = {
+  title: "Luo tili",
+  subtitle: "Aloita tapojen seuranta",
+  username_label: "Käyttäjänimi",
+  username_placeholder: "Valitse käyttäjänimi",
+  password_label: "Salasana",
+  password_placeholder: "Luo salasana (väh. 6 merkkiä)",
+  confirm_password_label: "Vahvista salasana",
+  confirm_password_placeholder: "Vahvista salasanasi",
+  button: "Rekisteröidy",
+  loading: "Luodaan tiliä...",
+  have_account: "Onko sinulla jo tili?",
+  sign_in: "Kirjaudu sisään",
+  error_fill_fields: "Täytä kaikki kentät",
+  error_password_match: "Salasanat eivät täsmää",
+  error_failed: "Rekisteröinti epäonnistui",
+  error_default: "Tapahtui virhe",
+};
+
+// i18next default namespace (translation)
+const translation = {
   // Tab names
   dashboard: "Kojelauta",
   achievements: "Saavutukset",
@@ -273,3 +311,5 @@ export default {
     },
   },
 };
+
+export default translation;

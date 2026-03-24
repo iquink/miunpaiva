@@ -13,9 +13,11 @@ import { UserPlus } from "lucide-react-native";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function RegisterScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const colors = useThemeColors();
   const register = useAuthStore((state) => state.register);
@@ -26,12 +28,18 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!username || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert(
+        t("error_failed", { ns: "register" }),
+        t("error_fill_fields", { ns: "register" }),
+      );
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      Alert.alert(
+        t("error_failed", { ns: "register" }),
+        t("error_password_match", { ns: "register" }),
+      );
       return;
     }
 
@@ -42,7 +50,10 @@ export default function RegisterScreen() {
     if (result.success) {
       router.replace("/(tabs)");
     } else {
-      Alert.alert("Registration Failed", result.error || "An error occurred");
+      Alert.alert(
+        t("error_failed", { ns: "register" }),
+        result.error || t("error_default", { ns: "register" }),
+      );
     }
   };
 
@@ -61,17 +72,17 @@ export default function RegisterScreen() {
             <UserPlus color={colors.primaryForeground} size={32} />
           </View>
           <Text className="text-3xl font-bold" style={{ color: colors.text }}>
-            Create Account
+            {t("title", { ns: "register" })}
           </Text>
           <Text className="mt-2" style={{ color: colors.textSecondary }}>
-            Start your habit tracking journey
+            {t("subtitle", { ns: "register" })}
           </Text>
         </View>
 
         <View className="space-y-4">
           <Input
-            label="Username"
-            placeholder="Choose a username"
+            label={t("username_label", { ns: "register" })}
+            placeholder={t("username_placeholder", { ns: "register" })}
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -79,8 +90,8 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label="Password"
-            placeholder="Create a password (min 6 characters)"
+            label={t("password_label", { ns: "register" })}
+            placeholder={t("password_placeholder", { ns: "register" })}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -88,8 +99,8 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label="Confirm Password"
-            placeholder="Confirm your password"
+            label={t("confirm_password_label", { ns: "register" })}
+            placeholder={t("confirm_password_placeholder", { ns: "register" })}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
@@ -101,12 +112,14 @@ export default function RegisterScreen() {
             onPress={handleRegister}
             isLoading={isLoading}
           >
-            {isLoading ? "Creating Account..." : "Sign Up"}
+            {isLoading
+              ? t("loading", { ns: "register" })
+              : t("button", { ns: "register" })}
           </Button>
 
           <View className="mt-6 flex-row items-center justify-center">
             <Text style={{ color: colors.textSecondary }}>
-              Already have an account?{" "}
+              {t("have_account", { ns: "register" })}{" "}
             </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
@@ -114,7 +127,7 @@ export default function RegisterScreen() {
                   className="font-semibold"
                   style={{ color: colors.primary }}
                 >
-                  Sign In
+                  {t("sign_in", { ns: "register" })}
                 </Text>
               </TouchableOpacity>
             </Link>

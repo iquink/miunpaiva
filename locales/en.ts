@@ -1,4 +1,42 @@
-export default {
+// i18next namespace: login
+export const login = {
+  title: "Welcome Back",
+  subtitle: "Sign in to continue tracking",
+  username_label: "Username",
+  username_placeholder: "Enter your username",
+  password_label: "Password",
+  password_placeholder: "Enter your password",
+  button: "Sign In",
+  loading: "Signing In...",
+  no_account: "Don't have an account?",
+  sign_up: "Sign Up",
+  error_fill_fields: "Please fill in all fields",
+  error_failed: "Login Failed",
+  error_default: "An error occurred",
+};
+
+// i18next namespace: register
+export const register = {
+  title: "Create Account",
+  subtitle: "Start your habit tracking journey",
+  username_label: "Username",
+  username_placeholder: "Choose a username",
+  password_label: "Password",
+  password_placeholder: "Create a password (min 6 characters)",
+  confirm_password_label: "Confirm Password",
+  confirm_password_placeholder: "Confirm your password",
+  button: "Sign Up",
+  loading: "Creating Account...",
+  have_account: "Already have an account?",
+  sign_in: "Sign In",
+  error_fill_fields: "Please fill in all fields",
+  error_password_match: "Passwords do not match",
+  error_failed: "Registration Failed",
+  error_default: "An error occurred",
+};
+
+// i18next default namespace (translation)
+const translation = {
   // Tab names
   dashboard: "Dashboard",
   achievements: "Achievements",
@@ -269,3 +307,5 @@ export default {
     },
   },
 };
+
+export default translation;
