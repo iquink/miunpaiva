@@ -27,7 +27,7 @@ export default function CreateAchievementForm({
   onSubmit,
   onCancel,
 }: CreateAchievementFormProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
 
   // Form state

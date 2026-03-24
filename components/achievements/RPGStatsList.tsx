@@ -14,7 +14,7 @@ interface RPGStatsListProps {
 }
 
 export default function RPGStatsList({ userId }: RPGStatsListProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
   const [stats, setStats] = useState<CategoryProgress[]>([]);
   const [refreshing, setRefreshing] = useState(false);

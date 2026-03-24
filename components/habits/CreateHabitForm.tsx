@@ -52,7 +52,7 @@ export default function CreateHabitForm({
   onSubmit,
   onCancel,
 }: CreateHabitFormProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
 
   // Form state

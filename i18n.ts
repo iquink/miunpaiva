@@ -17,11 +17,13 @@ const LANGUAGE_KEY = "user_language";
 const resources = {
   en: {
     translation: translationEn,
+    common: translationEn,
     login: loginEn,
     register: registerEn,
   },
   fi: {
     translation: translationFi,
+    common: translationFi,
     login: loginFi,
     register: registerFi,
   },
@@ -54,6 +56,8 @@ export const initI18n = async () => {
     resources,
     lng: initialLanguage,
     fallbackLng: "en",
+    defaultNS: "common",
+    ns: ["common", "translation", "login", "register"],
     interpolation: {
       escapeValue: false, // React already escapes
     },

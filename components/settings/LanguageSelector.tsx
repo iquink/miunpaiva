@@ -14,7 +14,7 @@ export default function LanguageSelector({
   currentLanguage,
   onLanguageChange,
 }: LanguageSelectorProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
 
   return (

@@ -42,7 +42,7 @@ export interface CriterionForm {
  * Custom hook for managing achievements state and operations
  */
 export function useAchievements(userId: number | undefined) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [allAchievements, setAllAchievements] = useState<
     AchievementWithStatus[]
   >([]);

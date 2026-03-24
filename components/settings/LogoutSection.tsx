@@ -10,7 +10,7 @@ interface LogoutSectionProps {
 }
 
 export default function LogoutSection({ onLogout }: LogoutSectionProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
 
   return (

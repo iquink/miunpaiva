@@ -25,7 +25,7 @@ export default function CriteriaBuilder({
   onUpdate,
   getUsedHabitIds,
 }: CriteriaBuilderProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
 
   const getRuleTypeLabel = (type: string) => {

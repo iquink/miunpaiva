@@ -51,7 +51,7 @@ interface SecretFeedItem {
 type FeedItem = RPGFeedItem | SecretFeedItem;
 
 export default function AchievementsScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const [showAddForm, setShowAddForm] = useState(false);

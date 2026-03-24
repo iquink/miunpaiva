@@ -5,7 +5,7 @@ import React from "react";
 import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function TabsLayout() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
 
   return (

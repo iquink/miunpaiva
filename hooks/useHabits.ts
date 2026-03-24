@@ -20,7 +20,7 @@ import { shouldShowHabit } from "../utils/habitScheduler";
  * Custom hook for managing habits state and operations
  */
 export function useHabits(userId: number | undefined, selectedDate: Date) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [userHabits, setUserHabits] = useState<Habit[]>([]);
   const [habitLogs, setHabitLogs] = useState<Map<number, Log>>(new Map());
   const [refreshing, setRefreshing] = useState(false);

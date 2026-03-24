@@ -14,7 +14,7 @@ import CreateHabitForm from "../../components/habits/CreateHabitForm";
 import { useThemeColors } from "../../hooks/useThemeColors";
 
 export default function DashboardScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const [selectedDate, setSelectedDate] = useState(startOfToday());

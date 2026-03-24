@@ -18,7 +18,7 @@ export default function DatePaginator({
   onPrevDay,
   onNextDay,
 }: DatePaginatorProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
   const dateStr = format(selectedDate, "yyyy-MM-dd");
   const todayStr = format(startOfToday(), "yyyy-MM-dd");

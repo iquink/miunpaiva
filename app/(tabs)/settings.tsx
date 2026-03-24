@@ -21,7 +21,7 @@ export default function SettingsScreen() {
   const colors = useThemeColors();
   const { user, logout } = useAuthStore();
   const isPersonalAccount = user?.passwordHash === DUMMY_PASSWORD;
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
   const { colorScheme, setColorScheme } = useColorScheme();
   const [isDeleting, setIsDeleting] = useState(false);
 

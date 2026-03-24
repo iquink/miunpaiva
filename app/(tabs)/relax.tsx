@@ -30,7 +30,7 @@ const TRACKS = [
 ];
 
 export default function RelaxScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
   const [activeTrackId, setActiveTrackId] = useState<string | null>(null);
 

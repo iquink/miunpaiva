@@ -18,7 +18,7 @@ import { useThemeColors } from "../../hooks/useThemeColors";
 type Mode = "choose" | "personal" | "shared";
 
 export default function RegisterScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(["register", "common"]);
   const router = useRouter();
   const colors = useThemeColors();
   const { register, registerPersonal, isFirstLaunch } = useAuthStore();
@@ -31,8 +31,8 @@ export default function RegisterScreen() {
   const handlePersonalRegister = async () => {
     if (!username) {
       Alert.alert(
-        t("error_failed", { ns: "register" }),
-        t("error_username_only", { ns: "register" }),
+        t("error_failed"),
+        t("error_username_only"),
       );
       return;
     }
@@ -45,8 +45,8 @@ export default function RegisterScreen() {
       router.replace("/(tabs)");
     } else {
       Alert.alert(
-        t("error_failed", { ns: "register" }),
-        result.error || t("error_default", { ns: "register" }),
+        t("error_failed"),
+        result.error || t("error_default"),
       );
     }
   };
@@ -54,16 +54,16 @@ export default function RegisterScreen() {
   const handleSharedRegister = async () => {
     if (!username || !password || !confirmPassword) {
       Alert.alert(
-        t("error_failed", { ns: "register" }),
-        t("error_fill_fields", { ns: "register" }),
+        t("error_failed"),
+        t("error_fill_fields"),
       );
       return;
     }
 
     if (password !== confirmPassword) {
       Alert.alert(
-        t("error_failed", { ns: "register" }),
-        t("error_password_match", { ns: "register" }),
+        t("error_failed"),
+        t("error_password_match"),
       );
       return;
     }
@@ -76,8 +76,8 @@ export default function RegisterScreen() {
       router.replace("/(tabs)");
     } else {
       Alert.alert(
-        t("error_failed", { ns: "register" }),
-        result.error || t("error_default", { ns: "register" }),
+        t("error_failed"),
+        result.error || t("error_default"),
       );
     }
   };
@@ -94,13 +94,13 @@ export default function RegisterScreen() {
             className="text-3xl font-bold text-center"
             style={{ color: colors.text }}
           >
-            {t("choose_title", { ns: "register" })}
+            {t("choose_title")}
           </Text>
           <Text
             className="mt-2 text-base text-center"
             style={{ color: colors.textSecondary }}
           >
-            {t("choose_subtitle", { ns: "register" })}
+            {t("choose_subtitle")}
           </Text>
         </View>
 
@@ -123,10 +123,10 @@ export default function RegisterScreen() {
             className="text-xl font-bold mb-2"
             style={{ color: colors.text }}
           >
-            {t("personal_device_mode", { ns: "register" })}
+            {t("personal_device_mode")}
           </Text>
           <Text className="text-center" style={{ color: colors.textSecondary }}>
-            {t("personal_device_subtitle", { ns: "register" })}
+            {t("personal_device_subtitle")}
           </Text>
         </TouchableOpacity>
 
@@ -149,10 +149,10 @@ export default function RegisterScreen() {
             className="text-xl font-bold mb-2"
             style={{ color: colors.text }}
           >
-            {t("shared_device_mode", { ns: "register" })}
+            {t("shared_device_mode")}
           </Text>
           <Text className="text-center" style={{ color: colors.textSecondary }}>
-            {t("shared_device_subtitle", { ns: "register" })}
+            {t("shared_device_subtitle")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -177,7 +177,7 @@ export default function RegisterScreen() {
               className="font-semibold ml-1"
               style={{ color: colors.primary }}
             >
-              {t("back", { ns: "register" })}
+              {t("back")}
             </Text>
           </TouchableOpacity>
 
@@ -189,19 +189,19 @@ export default function RegisterScreen() {
               <Smartphone color={colors.primaryForeground} size={32} />
             </View>
             <Text className="text-2xl font-bold" style={{ color: colors.text }}>
-              {t("personal_device_mode", { ns: "register" })}
+              {t("personal_device_mode")}
             </Text>
             <Text
               className="mt-2 text-center"
               style={{ color: colors.textSecondary }}
             >
-              {t("personal_device_subtitle", { ns: "register" })}
+              {t("personal_device_subtitle")}
             </Text>
           </View>
 
           <Input
-            label={t("username_label", { ns: "register" })}
-            placeholder={t("username_placeholder", { ns: "register" })}
+            label={t("username_label")}
+            placeholder={t("username_placeholder")}
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -214,8 +214,8 @@ export default function RegisterScreen() {
             className="mt-6"
           >
             {isLoading
-              ? t("loading", { ns: "register" })
-              : t("button_personal", { ns: "register" })}
+              ? t("loading")
+              : t("button_personal")}
           </Button>
         </View>
       </KeyboardAvoidingView>
@@ -240,7 +240,7 @@ export default function RegisterScreen() {
               className="font-semibold ml-1"
               style={{ color: colors.primary }}
             >
-              {t("back", { ns: "register" })}
+              {t("back")}
             </Text>
           </TouchableOpacity>
         )}
@@ -254,23 +254,23 @@ export default function RegisterScreen() {
           </View>
           <Text className="text-2xl font-bold" style={{ color: colors.text }}>
             {isFirstLaunch
-              ? t("shared_device_mode", { ns: "register" })
-              : t("title", { ns: "register" })}
+              ? t("shared_device_mode")
+              : t("title")}
           </Text>
           <Text
             className="mt-2 text-center"
             style={{ color: colors.textSecondary }}
           >
             {isFirstLaunch
-              ? t("shared_device_subtitle", { ns: "register" })
-              : t("subtitle", { ns: "register" })}
+              ? t("shared_device_subtitle")
+              : t("subtitle")}
           </Text>
         </View>
 
         <View className="gap-4">
           <Input
-            label={t("username_label", { ns: "register" })}
-            placeholder={t("username_placeholder", { ns: "register" })}
+            label={t("username_label")}
+            placeholder={t("username_placeholder")}
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -278,8 +278,8 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label={t("password_label", { ns: "register" })}
-            placeholder={t("password_placeholder", { ns: "register" })}
+            label={t("password_label")}
+            placeholder={t("password_placeholder")}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -287,8 +287,8 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label={t("confirm_password_label", { ns: "register" })}
-            placeholder={t("confirm_password_placeholder", { ns: "register" })}
+            label={t("confirm_password_label")}
+            placeholder={t("confirm_password_placeholder")}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
@@ -302,14 +302,14 @@ export default function RegisterScreen() {
           className="mt-6"
         >
           {isLoading
-            ? t("loading", { ns: "register" })
-            : t("button", { ns: "register" })}
+            ? t("loading")
+            : t("button")}
         </Button>
 
         {!isFirstLaunch && (
           <View className="mt-6 flex-row items-center justify-center">
             <Text style={{ color: colors.textSecondary }}>
-              {t("have_account", { ns: "register" })}{" "}
+              {t("have_account")}{" "}
             </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
@@ -317,7 +317,7 @@ export default function RegisterScreen() {
                   className="font-semibold"
                   style={{ color: colors.primary }}
                 >
-                  {t("sign_in", { ns: "register" })}
+                  {t("sign_in")}
                 </Text>
               </TouchableOpacity>
             </Link>

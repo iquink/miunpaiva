@@ -16,7 +16,7 @@ export default function AchievementSection({
   children,
   showSection,
 }: AchievementSectionProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const colors = useThemeColors();
 
   return (
