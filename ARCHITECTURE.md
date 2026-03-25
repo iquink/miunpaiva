@@ -1,476 +1,199 @@
-# Project Architecture Overview
+# Architecture
 
-## 📁 Directory Structure
+## Overview
 
-```
-habit-tracker/
-│
-├── 📱 app/                          # Expo Router screens
-│   ├── _layout.tsx                 # Root layout (auth protection)
-│   ├── (auth)/                     # Public routes
-│   │   ├── _layout.tsx
-│   │   ├── login.tsx              # Login screen
-│   │   └── register.tsx           # Registration screen
-│   └── (tabs)/                     # Protected routes
-│       ├── _layout.tsx            # Tab navigation
-│       ├── index.tsx              # Dashboard (habit tracking)
-│       ├── achievements.tsx       # Achievement management
-│       └── settings.tsx           # User settings
-│
-├── 🗄️ db/                          # Database layer
-│   ├── schema.ts                  # Drizzle schema (5 tables)
-│   └── index.ts                   # DB initialization & migrations
-│
-├── 🔄 drizzle/                     # Auto-generated migrations
-│   ├── 0000_*.sql                 # SQL migration files
-│   ├── migrations.js              # Migration loader
-│   └── meta/                      # Migration metadata
-│
-├── 🏪 store/                       # State management
-│   └── authStore.ts               # Zustand auth store
-│
-├── ⚙️ services/                    # Business logic
-│   └── achievementService.ts      # Achievement engine
-│
-├── 🛠️ lib/                         # Utilities
-│   └── utils.ts                   # Helper functions
-│
-├── 🎨 assets/                      # Images & icons
-│
-├── 📝 Configuration Files
-│   ├── drizzle.config.ts          # Drizzle ORM config
-│   ├── metro.config.js            # Metro bundler (SQL support)
-│   ├── tailwind.config.js         # Tailwind CSS config
-│   ├── tsconfig.json              # TypeScript config
-│   ├── app.json                   # Expo config
-│   ├── package.json               # Dependencies
-│   └── babel.config.js            # Babel config
-│
-└── 📚 Documentation
-    ├── README.md                  # Project overview
-    ├── IMPLEMENTATION.md          # Implementation details
-    └── TESTING.md                 # Testing guide
-```
+The app is a fully offline, single-binary React Native application. There is no backend server, no REST API, and no cloud database. All state lives in a local SQLite file managed by Drizzle ORM; the only network calls are made by Expo's build toolchain during development.
 
-## 🔄 Data Flow
+---
+
+## Directory Structure
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     User Interaction                     │
-└──────────────────────┬──────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│                 React Components (UI)                    │
-│  • Login/Register                                        │
-│  • Dashboard (Habit List)                                │
-│  • Achievements                                          │
-│  • Settings                                              │
-└──────────────────────┬──────────────────────────────────┘
-                       │
-            ┌──────────┴──────────┐
-            │                     │
-            ▼                     ▼
-┌──────────────────┐    ┌──────────────────┐
-│  Zustand Store   │    │  Direct DB Ops   │
-│  (Auth State)    │    │  (Habits, Logs)  │
-└────────┬─────────┘    └─────────┬────────┘
-         │                        │
-         ▼                        ▼
-┌─────────────────────────────────────────┐
-│         expo-secure-store               │
-│      (Session Persistence)              │
-└─────────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│         Drizzle ORM Layer               │
-│  • Type-safe queries                    │
-│  • User filtering                       │
-│  • Joins & relationships                │
-└────────┬────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│         Expo SQLite (Next)              │
-│  • Local database storage               │
-│  • ACID transactions                    │
-│  • Foreign keys & constraints           │
-└────────┬────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│      Device Local Storage               │
-│      (habit_tracker.db)                 │
-└─────────────────────────────────────────┘
+app/                    Expo Router file-system routes
+  _layout.tsx           Root layout -- initialises DB, i18n, auth state
+  (auth)/               Public routes (login, register)
+  (tabs)/               Protected routes (dashboard, achievements, relax, settings)
+
+components/             Feature-grouped UI components
+  habits/
+  achievements/
+  settings/
+  ui/                   Generic primitives (Button, Card, Input, ...)
+
+constants/
+  secretAchievements.ts Static catalog of secret badge definitions
+
+db/
+  schema.ts             Drizzle table definitions (single source of truth)
+  index.ts              SQLite connection + migration runner
+
+drizzle/                Auto-generated SQL migrations + meta snapshots
+
+hooks/
+  useThemeColors.ts     Returns resolved hex colour values for the active theme
+  useHabits.ts
+  useAchievements.ts
+
+locales/
+  en.ts                 English translations (all namespaces)
+  fi.ts                 Finnish translations (all namespaces)
+
+services/
+  authService.ts        User CRUD + password hashing
+  habitService.ts       Habit + log CRUD
+  achievementService.ts Goal achievement evaluation
+  rpgService.ts         On-the-fly RPG stat queries
+  secretAchievementEngine.ts  Background badge unlock checker
+  helpers/
+    rpgCalculations.ts  Pure level formula (no DB dependency)
+    achievementLogic.ts Pure criteria evaluation helpers
+
+store/
+  authStore.ts          Zustand -- session, login, register, logout
+  themeStore.ts         Zustand -- active theme name + dark-mode flag
+
+utils/
+  dateUtils.ts
+  habitScheduler.ts
+  habitUtils.ts
 ```
 
-## 🔐 Authentication Flow
+---
+
+## Database
+
+### Connection and Migrations
+
+`db/index.ts` opens a single SQLite connection with `expo-sqlite` and runs all pending Drizzle migrations on startup via the bundled `drizzle/migrations.js` loader. Migrations are generated from `db/schema.ts` using `npx drizzle-kit generate` and must be committed alongside schema changes.
+
+### Schema -- 7 Tables
+
+| Table | PK type | Purpose |
+|---|---|---|
+| `users` | integer auto-increment | User accounts |
+| `habits` | integer auto-increment | Habit definitions per user |
+| `logs` | integer auto-increment | Daily habit completion records |
+| `achievements` | integer auto-increment | User-defined goal badges |
+| `achievementCriteria` | integer auto-increment | One or more rules per achievement |
+| `userAchievements` | integer auto-increment | Unlocked goal badge records |
+| `userSecretAchievements` | integer auto-increment | Unlocked secret badge records |
+
+All tables that belong to a user cascade-delete when the user row is removed.
+
+### Hybrid ID Approach
+
+We use two different ID strategies depending on the nature of the data.
+
+**Auto-incrementing integers** are used for every _dynamic_ table (`users`, `habits`, `logs`, `achievements`, `achievementCriteria`, `userAchievements`). These rows are created at runtime on this device, so an integer primary key guarantees uniqueness without requiring a network round-trip or UUID generation -- essential for offline safety.
+
+**String IDs** are used in `userSecretAchievements.secretAchievementId`. Secret achievements are defined in the static catalog `constants/secretAchievements.ts` and are _never_ inserted into a database table. The `userSecretAchievements` table only records _which catalog entry was unlocked and when_. Storing the catalog string ID (e.g. `"aquaman"`, `"ironman"`) instead of a foreign-key integer means unlock records remain valid even if the database is wiped and rebuilt, and developers can safely reorder or extend the catalog without renumbering anything.
 
 ```
-App Launch
-    │
-    ▼
-┌──────────────────┐
-│ Root Layout      │
-│ (_layout.tsx)    │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────────────────┐
-│ Run Database Migrations      │
-└────────┬─────────────────────┘
-         │
-         ▼
-┌──────────────────────────────┐
-│ Initialize Auth Store        │
-│ • Check SecureStore          │
-│ • Load user if session found│
-└────────┬─────────────────────┘
-         │
-    ┌────┴────┐
-    │         │
-    ▼         ▼
-[Session     [No
- Found]      Session]
-    │         │
-    │         ▼
-    │    ┌─────────────┐
-    │    │ Login/      │
-    │    │ Register    │
-    │    └──────┬──────┘
-    │           │
-    │           ▼
-    │    ┌──────────────────┐
-    │    │ Hash Password    │
-    │    │ (SHA-256)        │
-    │    └──────┬───────────┘
-    │           │
-    │           ▼
-    │    ┌──────────────────┐
-    │    │ Verify/Create    │
-    │    │ User in DB       │
-    │    └──────┬───────────┘
-    │           │
-    │           ▼
-    │    ┌──────────────────┐
-    │    │ Save Session to  │
-    │    │ SecureStore      │
-    │    └──────┬───────────┘
-    │           │
-    └───────────┴──────┐
-                       ▼
-                ┌──────────────┐
-                │ Dashboard    │
-                │ (Protected)  │
-                └──────────────┘
+constants/secretAchievements.ts       <- source of truth (string IDs, no DB rows)
+         |
+         |  id: "aquaman"
+         v
+userSecretAchievements.secretAchievementId = "aquaman"   <- unlock state only
 ```
 
-## 🏆 Achievement Engine Flow
+---
+
+## Gamification Engine
+
+The gamification system is split into three independent layers, each with a different data source and evaluation strategy.
+
+### 1 -- Manual Goals (achievementService.ts)
+
+Users create custom achievements in the UI. Each achievement has one or more criteria rows in `achievementCriteria`:
+
+| ruleType | Meaning |
+|---|---|
+| `streak` | N consecutive completed days |
+| `total_count` | N completed logs of any value |
+| `sum_value` | Sum of counter log values >= N |
+
+`achievementService.ts` evaluates all unmet criteria after every habit log update. When every criterion for an achievement passes, a `userAchievements` row is inserted.
+
+### 2 -- Auto RPG Levels (rpgService.ts + services/helpers/rpgCalculations.ts)
+
+No additional tables are written for RPG data. Levels are derived entirely from `logs` counts:
 
 ```
-User Toggles Habit
-        │
-        ▼
-┌──────────────────────┐
-│ Update Log in DB     │
-│ (completed = true)   │
-└──────────┬───────────┘
-           │
-           ▼
-┌────────────────────────────────┐
-│ Call checkAchievements()       │
-│ (userId, habitId)              │
-└──────────┬─────────────────────┘
-           │
-           ▼
-┌────────────────────────────────┐
-│ Fetch Locked Achievements      │
-│ WHERE user_id = userId         │
-│   AND linked_habit = habitId   │
-│   AND NOT unlocked             │
-└──────────┬─────────────────────┘
-           │
-           ▼
-    ┌──────┴──────┐
-    │             │
-    ▼             ▼
-[For Each Achievement]
-    │
-    ├─► Rule Type: STREAK
-    │   └─► Check consecutive days
-    │       └─► Query logs DESC by date
-    │           └─► Count unbroken chain
-    │
-    ├─► Rule Type: TOTAL_COUNT
-    │   └─► Count completed logs
-    │       └─► Apply date filter if needed
-    │           └─► Compare to target
-    │
-    └─► Rule Type: SUM_VALUE
-        └─► Sum log values
-            └─► Apply date filter if needed
-                └─► Compare to target
-                │
-                ▼
-        ┌───────────────┐
-        │ Target Met?   │
-        └───┬───────┬───┘
-            │       │
-          YES      NO
-            │       │
-            ▼       ▼
-    ┌───────────┐ [Skip]
-    │ Insert    │
-    │ into      │
-    │ user_     │
-    │ achieve   │
-    │ ments     │
-    └───────────┘
+Level = floor( sqrt(totalCompletedLogs) ) + 1
 ```
 
-## 🔒 Data Security Layers
+Progress toward the next level is the percentage between `(level-1)^2` and `level^2` completed logs.
 
-```
-┌─────────────────────────────────────────┐
-│          Application Layer              │
-│  • Input validation                     │
-│  • Form sanitization                    │
-└────────────┬────────────────────────────┘
-             │
-             ▼
-┌─────────────────────────────────────────┐
-│         Authentication Layer            │
-│  • SHA-256 password hashing             │
-│  • Secure session tokens                │
-│  • expo-secure-store encryption         │
-└────────────┬────────────────────────────┘
-             │
-             ▼
-┌─────────────────────────────────────────┐
-│         Authorization Layer             │
-│  • User ID filtering (EVERY query)      │
-│  • Row-level security via user_id       │
-│  • No cross-user data access            │
-└────────────┬────────────────────────────┘
-             │
-             ▼
-┌─────────────────────────────────────────┐
-│         Database Layer                  │
-│  • Foreign key constraints              │
-│  • CASCADE DELETE on user removal       │
-│  • NOT NULL constraints                 │
-│  • Unique constraints (username)        │
-└────────────┬────────────────────────────┘
-             │
-             ▼
-┌─────────────────────────────────────────┐
-│         Storage Layer                   │
-│  • Local SQLite file                    │
-│  • Device-level encryption (OS)         │
-│  • No network transmission              │
-└─────────────────────────────────────────┘
-```
+Ranks map to level thresholds:
 
-## 📊 Database Relationships
+| Level | Rank translation key |
+|---|---|
+| 1-4 | `rpg_ranks.novice` |
+| 5-9 | `rpg_ranks.adept` |
+| 10-14 | `rpg_ranks.master` |
+| 15-19 | `rpg_ranks.expert` |
+| 20-24 | `rpg_ranks.hero` |
+| 25+ | `rpg_ranks.legend` |
 
-```
-         users
-           │
-           │ (1:N)
-           ├──────────────┐
-           │              │
-           ▼              ▼
-        habits      achievements
-           │              │
-     (1:N) │              │ (M:N via user_achievements)
-           │              │
-           ▼              ▼
-         logs      user_achievements
-                          │
-                          │ (references)
-                          ▼
-                    achievements
-```
+`rpgService.getUserRPGStats(userId)` groups completed logs by `habits.category`, calls `calculateLevelData()` for each group, and returns `CategoryProgress[]` ready for display. The pure helper `services/helpers/rpgCalculations.ts` has no native imports and is fully unit-testable.
 
-## 🎨 UI Component Hierarchy
+### 3 -- Secret Badges (secretAchievementEngine.ts + constants/secretAchievements.ts)
 
-```
-App
-├── RootLayout (_layout.tsx)
-│   ├── AuthGroup (auth)
-│   │   ├── Login
-│   │   └── Register
-│   │
-│   └── TabsGroup (tabs)
-│       ├── TabLayout
-│       │   ├── Dashboard (index)
-│       │   │   ├── Header
-│       │   │   ├── DateSelector
-│       │   │   ├── HabitList
-│       │   │   │   └── HabitCard
-│       │   │   └── AddHabitForm
-│       │   │
-│       │   ├── Achievements
-│       │   │   ├── Header
-│       │   │   ├── UnlockedSection
-│       │   │   │   └── AchievementCard
-│       │   │   ├── LockedSection
-│       │   │   │   └── AchievementCard
-│       │   │   └── AddAchievementForm
-│       │   │
-│       │   └── Settings
-│       │       ├── Header
-│       │       ├── AccountInfo
-│       │       ├── ActionsSection
-│       │       └── DangerZone
-│       │
-│       └── TabBar
-│           ├── DashboardTab
-│           ├── AchievementsTab
-│           └── SettingsTab
-```
+The secret achievement catalog is a plain TypeScript array `SECRET_ACHIEVEMENTS` with entries of three condition types:
 
-## 🚀 Execution Flow on App Start
+| type | Condition | Example |
+|---|---|---|
+| `total_preset` | User has logged a preset-named habit N times | Log "Kuntosali" 50x to unlock `"ironman"` |
+| `combo_same_day` | Two or more presets logged on the same date | "Sauna" + "Kuntosali" same day |
+| `any_custom` | User has at least one fully custom (non-preset) habit | Unlocks `"inventor"` |
 
-```
-1. index.ts
-   └─► Registers Expo Router entry
+After each habit log, `checkSecretAchievements(userId, dateStr)` is called fire-and-forget. It fetches already-unlocked IDs from `userSecretAchievements`, iterates the static catalog skipping already-unlocked entries, evaluates each condition, and inserts a row on match.
 
-2. app/_layout.tsx
-   ├─► Run database migrations
-   ├─► Initialize auth store
-   ├─► Check session in SecureStore
-   │   ├─► If found: Load user → Redirect to /(tabs)
-   │   └─► If not: Redirect to /(auth)/login
-   └─► Render appropriate route group
+Adding new secret achievements requires **no Drizzle migration** -- only editing `constants/secretAchievements.ts`.
 
-3a. /(auth)/login.tsx (if not authenticated)
-    └─► User enters credentials
-        └─► Hash password → Query DB → Save session
-            └─► Redirect to /(tabs)
+---
 
-3b. /(tabs)/index.tsx (if authenticated)
-    ├─► Load user's habits
-    ├─► Load logs for selected date
-    ├─► Render habit list
-    └─► Listen for user interactions
-        └─► On habit toggle
-            ├─► Update/Insert log
-            └─► Check achievements
-```
+## Authentication Flow
 
-## 🔄 State Management Strategy
+### First-Launch Detection
 
-```
-┌──────────────────────────────┐
-│      Zustand Store           │
-│  • User session data         │
-│  • Auth state (loading,      │
-│    authenticated)            │
-│  • Global actions (login,    │
-│    logout, register)         │
-└──────────────────────────────┘
-           │
-           │ (provides)
-           ▼
-┌──────────────────────────────┐
-│    React Components          │
-│  • Local state (forms,       │
-│    UI toggles)               │
-│  • useEffect for DB queries  │
-│  • Direct DB access for      │
-│    CRUD operations           │
-└──────────────────────────────┘
-```
+On startup `authStore.initialize()` checks whether any rows exist in `users`. If none, `isFirstLaunch = true` and the app routes to the mode-selection screen.
 
-**Why this approach?**
-- Auth state is global (needed across screens)
-- Habit/Achievement data is screen-specific
-- No need for complex global state
-- Keeps components simple and focused
-- Direct DB queries provide fresh data
+### Personal Device Mode (Passwordless)
 
-## 🧩 Key Design Patterns
+The user chooses "Personal Device" on first launch and enters only a username. `authService.createPersonalUser(username)` stores the sentinel constant `DUMMY_PASSWORD = "PERSONAL_DEVICE_NO_PASS"` directly in `password_hash` -- no hashing is performed.
 
-### 1. Repository Pattern (Implicit)
-- Database operations in components
-- Drizzle ORM provides abstraction
-- Could be extracted to repositories if needed
+On login, `verifyUserCredentials` detects the `DUMMY_PASSWORD` sentinel and bypasses the SHA-256 comparison, granting access immediately.
 
-### 2. Service Layer
-- `achievementService.ts` handles complex logic
-- Separates business rules from UI
+Because the device is personal, the **logout button is hidden** in the Settings screen. The user can still delete their account from the Danger Zone section.
 
-### 3. Provider Pattern
-- Zustand provides auth context
-- Available to all components via hooks
+### Shared Device Mode (Password-Protected)
 
-### 4. Compound Components
-- Forms built with reusable parts
-- Modal-like overlays for adding items
+The user creates an account with a username and password. `authService.createUser` hashes the password with `expo-crypto` SHA-256 before inserting. Login uses the same hash comparison. The logout button is fully visible.
 
-### 5. Optimistic UI
-- Immediate feedback on toggles
-- Background achievement checks
+### Session Persistence
 
-## 📦 Dependency Graph
+After successful login or registration the numeric user ID is written to `expo-secure-store` under the key `session_user_id`. On every app start, `initialize()` reads this key and re-hydrates the user object from the DB. Clearing or uninstalling the app destroys the session.
 
-```
-Core Dependencies:
-├── expo (Framework)
-├── react-native (UI)
-├── expo-router (Navigation)
-├── expo-sqlite (Database)
-├── drizzle-orm (ORM)
-├── zustand (State)
-├── nativewind (Styling)
-├── expo-crypto (Security)
-├── expo-secure-store (Security)
-├── lucide-react-native (Icons)
-└── date-fns (Dates)
+---
 
-Dev Dependencies:
-├── drizzle-kit (Migrations)
-├── typescript (Types)
-└── tailwindcss (Styling)
-```
+## Styling Architecture
 
-## 🎯 Performance Optimizations
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full hybrid styling rules. In brief:
 
-1. **Database Indexing**
-   - Composite index on (habit_id, date) for logs
+- **Layout / spacing / typography** -- NativeWind Tailwind classes via `className`.
+- **Colors** -- Always resolved at runtime via the `useThemeColors()` hook and applied as inline `style` props. Tailwind color utilities and `dark:` variants are forbidden; they trigger native cold-start crashes in Expo Router.
 
-2. **Lazy Loading**
-   - Screens loaded on-demand via Expo Router
+---
 
-3. **Memoization** (Potential)
-   - Could add useMemo for expensive calculations
-   - useCallback for event handlers
+## i18n Architecture
 
-4. **Local-First Architecture**
-   - No network latency
-   - Instant interactions
-   - Always available
+`i18n.ts` initialises `react-i18next` with two locales (`en`, `fi`) and four namespaces:
 
-## 🔮 Extensibility Points
+| Namespace | Content |
+|---|---|
+| `common` / `translation` | Shared UI strings, tab names, general labels |
+| `login` | Login screen strings |
+| `register` | Registration + mode-selection strings |
 
-1. **Add New Achievement Types**
-   - Extend `ruleType` enum in schema
-   - Add handler in `achievementService.ts`
-
-2. **Add Habit Properties**
-   - Update schema
-   - Generate migration
-   - Update UI forms
-
-3. **Add Analytics**
-   - Create analytics service
-   - Track events in components
-
-4. **Add Cloud Sync**
-   - Create sync service
-   - Add API layer
-   - Handle conflicts
-
-This architecture provides a solid foundation for growth while maintaining simplicity and type safety throughout.
+The default namespace is `common`. Language is auto-detected from `expo-localization` on first launch, then persisted to `AsyncStorage`. The Settings screen exposes a language picker that calls `i18n.changeLanguage()` and writes the new value to storage.

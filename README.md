@@ -1,151 +1,88 @@
-# Habit Tracker - Multi-User Offline-First App
+# Habit Tracker
 
-A local-only habit tracker with gamification elements (achievements) built with React Native and Expo. Supports multiple users on the same device with complete data isolation.
+A secure, offline-first habit tracking app built for accessibility — originally tailored for use by clients at rehabilitation centers. The app runs entirely on-device with no backend, no cloud sync, and no tracking of any kind.
 
 ## Features
 
-- 🔐 **Multi-User Support** - Multiple users can use the app on the same device with isolated data
-- 📱 **Offline-First** - All data stored locally using SQLite
-- ✅ **Habit Tracking** - Track boolean (yes/no) and counter-based habits
-- 🏆 **Achievements** - Create custom achievements with different unlock conditions
-- 📊 **Streak Tracking** - Monitor consecutive days of habit completion
-- 🔒 **Secure** - Password hashing with SHA-256, session management with SecureStore
+### Dual Authentication Modes
+
+- **Personal Device** — Passwordless single-user onboarding. The user enters only a username on first launch and is immediately signed in. No password is ever stored or required.
+- **Shared Device** — Full username + password authentication for environments where multiple people share one device. Passwords are hashed with SHA-256 via `expo-crypto` before storage.
+
+### Habit Tracking
+
+- Track **boolean** (done / not done) and **counter** habits (e.g. glasses of water).
+- Habits support `daily`, `weekly`, and `once` frequencies with optional end dates.
+- A **preset catalog** with localised habit names speeds up habit creation.
+- A **date paginator** lets users log habits retroactively or review past dates.
+
+### Dual Gamification System
+
+| Layer | Mechanism | Storage |
+|---|---|---|
+| **User Goals** | User-defined achievements with one or more criteria (streak, total count, sum value). Unlocked automatically when criteria are met. | SQLite — `achievements` + `achievementCriteria` tables |
+| **Auto RPG Levels** | Per-category levels calculated on-the-fly from completed log counts using `level = floor(sqrt(totalCompleted)) + 1`. Six rank tiers: Novice → Legend. | No separate storage — computed from `logs` |
+| **Secret Badges** | Hidden achievements defined in a static TypeScript catalog. Unlocked in the background by the secret achievement engine after each habit log. | SQLite — `userSecretAchievements` table (string IDs only) |
+
+### Full Internationalisation (i18n)
+
+- Finnish and English, with automatic system-locale detection.
+- Translations organised into `react-i18next` namespaces (`common`, `login`, `register`).
+- Language preference persisted to `AsyncStorage` and overridable from Settings.
+
+### 100% Offline SQLite Storage
+
+- All data lives in a local SQLite database managed by **Drizzle ORM**.
+- Migrations run automatically on app start.
+- No network permissions required.
 
 ## Tech Stack
 
-- **Framework:** React Native (Expo SDK 52+)
-- **Language:** TypeScript
-- **Database:** Expo SQLite (Next)
-- **ORM:** Drizzle ORM
-- **Navigation:** Expo Router (File-based routing)
-- **State Management:** Zustand
-- **Styling:** NativeWind (Tailwind CSS)
-- **Security:** expo-secure-store, expo-crypto
-- **Icons:** Lucide React Native
-- **Date Handling:** date-fns
+| Concern | Library |
+|---|---|
+| Framework | React Native + Expo (Expo Router) |
+| Database | SQLite via `expo-sqlite` |
+| ORM & Migrations | Drizzle ORM |
+| State Management | Zustand |
+| Internationalisation | react-i18next + expo-localization |
+| Styling | NativeWind (Tailwind CSS) + custom `useThemeColors` hook |
+| Secure Storage | expo-secure-store (session token) + expo-crypto (password hashing) |
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-- Expo Go app on your Android device
-
-### Installation
-
-1. Clone the repository:
 ```bash
-cd habit-tracker
-```
-
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-```
 
-3. Start the development server:
-```bash
-npm start
-```
+# Run on Android
+npx expo run:android
 
-4. Scan the QR code with Expo Go app on your Android device
+# Run on iOS
+npx expo run:ios
+
+# Run tests
+npm test
+```
 
 ## Project Structure
 
 ```
-habit-tracker/
-├── app/                      # Expo Router screens
-│   ├── (auth)/              # Authentication screens
-│   │   ├── login.tsx
-│   │   └── register.tsx
-│   ├── (tabs)/              # Main app screens
-│   │   ├── index.tsx        # Dashboard
-│   │   ├── achievements.tsx
-│   │   └── settings.tsx
-│   └── _layout.tsx          # Root layout with auth protection
-├── db/                       # Database layer
-│   ├── schema.ts            # Drizzle schema definitions
-│   └── index.ts             # Database initialization
-├── drizzle/                  # Auto-generated migrations
-├── services/                 # Business logic
-│   └── achievementService.ts
-├── store/                    # Zustand stores
-│   └── authStore.ts
-└── lib/                      # Utilities
-    └── utils.ts
+app/            # Expo Router screens (_layout, auth, tabs)
+components/     # UI components grouped by feature
+constants/      # Static catalogs (secretAchievements.ts)
+db/             # Drizzle schema and DB initialisation
+drizzle/        # Auto-generated SQL migrations
+hooks/          # Custom React hooks (useThemeColors, useHabits, useAchievements)
+locales/        # en.ts / fi.ts translation files
+services/       # Business logic (auth, habits, RPG, secret achievements)
+  helpers/      # Pure functions (rpgCalculations.ts, achievementLogic.ts)
+store/          # Zustand stores (authStore, themeStore)
+utils/          # Date utilities, habit scheduler
 ```
 
-## Database Schema
+## Documentation
 
-### Tables
+- [ARCHITECTURE.md](ARCHITECTURE.md) — Database design, gamification engine internals, auth flow.
+- [CONTRIBUTING.md](CONTRIBUTING.md) — Styling rules, i18n conventions, how to add secret achievements.
+- [TESTING.md](TESTING.md) — Test strategy and how to run the test suite.
 
-- **users** - User accounts with hashed passwords
-- **habits** - User-created habits (boolean or counter type)
-- **logs** - Daily habit completion records
-- **achievements** - User-defined achievements
-- **user_achievements** - Unlocked achievement records
-
-All user-generated data tables include a `user_id` column to ensure data isolation.
-
-## Key Features
-
-### Authentication & Security
-
-- SHA-256 password hashing
-- Secure session management with expo-secure-store
-- Automatic auth state restoration on app launch
-- Protected routes with auth guards
-
-### Habit Tracking
-
-- Create boolean (yes/no) or counter habits
-- Mark habits complete for any date
-- Navigate between dates to view/edit past logs
-- Long-press to delete habits
-
-### Achievement System
-
-The achievement engine supports three types of conditions:
-
-1. **Streak** - Consecutive days of completion
-2. **Total Count** - Number of completed logs
-3. **Sum Value** - Sum of counter values
-
-Achievements are automatically checked when habits are updated.
-
-### Multi-User Data Isolation
-
-All database queries filter by `user_id` to ensure:
-- Users only see their own habits, logs, and achievements
-- Cascade deletion removes all user data on account deletion
-- No data leaks between users
-
-## Security Considerations
-
-- Passwords are hashed using SHA-256 before storage
-- Plain text passwords are never stored in the database
-- Session tokens stored securely using expo-secure-store
-- All user data isolated by user_id with proper foreign key constraints
-
-## Development
-
-### Running migrations
-
-Migrations are automatically run on app startup. To generate new migrations after schema changes:
-
-```bash
-npx drizzle-kit generate
-```
-
-### Clearing the database
-
-To reset the database during development, uninstall and reinstall the app.
-
-## License
-
-MIT
-
-## Author
-
-Built as a demonstration of offline-first React Native architecture with Drizzle ORM and Expo.
