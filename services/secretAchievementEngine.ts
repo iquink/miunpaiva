@@ -1,6 +1,8 @@
 import { eq, and, count } from "drizzle-orm";
 import { db } from "../db";
 import { habits, logs, userSecretAchievements } from "../db/schema";
+import { checkComboSameDayCondition } from "./helpers/achievementLogic";
+
 import {
   SECRET_ACHIEVEMENTS,
   type SecretAchievement,
@@ -65,14 +67,13 @@ export async function checkSecretAchievements(
           ),
         );
 
-      const completedPresetNames = new Set(
-        completedToday
-          .map((r) => r.presetName)
-          .filter((n): n is string => n !== null),
-      );
+      const completedPresetNames = completedToday
+        .map((r) => r.presetName)
+        .filter((n): n is string => n !== null);
 
-      shouldUnlock = condition.presetNames.every((name) =>
-        completedPresetNames.has(name),
+      shouldUnlock = checkComboSameDayCondition(
+        completedPresetNames,
+        condition.presetNames,
       );
     }
 

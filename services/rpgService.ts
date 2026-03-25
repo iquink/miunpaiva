@@ -1,6 +1,8 @@
 import { eq, and, sql } from "drizzle-orm";
 import { db } from "../db";
 import { logs, habits } from "../db/schema";
+import { calculateLevelData, getRankKey } from "./helpers/rpgCalculations";
+export type { LevelData } from "./helpers/rpgCalculations";
 
 /**
  * RPG Achievement System
@@ -16,50 +18,6 @@ export interface CategoryProgress {
   progressPercent: number;
   nextLevelAt: number;
   lastActivityAt: string | null;
-}
-
-/**
- * Get rank translation key based on level
- */
-function getRankKey(level: number): string {
-  if (level >= 25) return "rpg_ranks.legend";
-  if (level >= 20) return "rpg_ranks.hero";
-  if (level >= 15) return "rpg_ranks.expert";
-  if (level >= 10) return "rpg_ranks.master";
-  if (level >= 5) return "rpg_ranks.adept";
-  return "rpg_ranks.novice";
-}
-
-/**
- * Calculate level from completed tasks count
- * Formula: Level = floor(sqrt(completedCount)) + 1
- */
-function calculateLevel(completedCount: number): {
-  level: number;
-  rankKey: string;
-  progressPercent: number;
-  nextLevelAt: number;
-} {
-  const level = Math.floor(Math.sqrt(completedCount)) + 1;
-  const rankKey = getRankKey(level);
-
-  // Calculate progress to next level
-  // Next level requires: (level)^2 completions
-  const currentLevelRequirement = Math.pow(level - 1, 2);
-  const nextLevelRequirement = Math.pow(level, 2);
-  const progressInLevel = completedCount - currentLevelRequirement;
-  const levelRange = nextLevelRequirement - currentLevelRequirement;
-  const progressPercent = Math.min(
-    100,
-    Math.floor((progressInLevel / levelRange) * 100),
-  );
-
-  return {
-    level,
-    rankKey,
-    progressPercent,
-    nextLevelAt: nextLevelRequirement,
-  };
 }
 
 /**
@@ -90,7 +48,7 @@ export async function getUserRPGStats(
         const category = result.category || "Uncategorized";
         const completedCount = Number(result.completedCount) || 0;
         const { level, rankKey, progressPercent, nextLevelAt } =
-          calculateLevel(completedCount);
+          calculateLevelData(completedCount);
 
         return {
           category,
