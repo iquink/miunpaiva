@@ -3,6 +3,7 @@
     "name": "miunpaiva",
     "slug": "miunpaiva",
     "version": "1.0.0",
+    "scheme": "miunpaiva",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
