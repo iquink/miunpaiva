@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { View, ActivityIndicator, useColorScheme } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import "../global.css";
 import { useAuthStore } from "../store/authStore";
@@ -103,9 +104,9 @@ export default function RootLayout() {
   );
 
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      .
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-
       {/* CRITICAL: Always render Stack immediately to establish navigation context.
           Never conditionally return a loading screen - this breaks Expo Router. */}
       <View
@@ -130,6 +131,6 @@ export default function RootLayout() {
           </View>
         )}
       </View>
-    </>
+    </GestureHandlerRootView>
   );
 }

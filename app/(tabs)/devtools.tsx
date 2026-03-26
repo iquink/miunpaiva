@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { ScrollView as GestureHandlerScrollView } from "react-native-gesture-handler";
 import {
   View,
   Text,
@@ -529,11 +530,12 @@ export default function DevToolsScreen() {
           className="mb-6 overflow-hidden rounded-xl"
           style={{ backgroundColor: "#111827", height: 250 }}
         >
-          <ScrollView
+          <GestureHandlerScrollView
             ref={terminalScrollRef}
-            className="flex-1 p-3"
-            showsVerticalScrollIndicator
-            nestedScrollEnabled
+            style={{ flex: 1 }}
+            contentContainerStyle={{ padding: 12, paddingBottom: 24 }}
+            showsVerticalScrollIndicator={true}
+            nestedScrollEnabled={true}
           >
             {logs.length === 0 ? (
               <Text
@@ -560,7 +562,7 @@ export default function DevToolsScreen() {
                 </Text>
               ))
             )}
-          </ScrollView>
+          </GestureHandlerScrollView>
         </View>
 
         {/* Disable developer mode */}
