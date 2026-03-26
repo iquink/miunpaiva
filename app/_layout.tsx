@@ -22,6 +22,7 @@ export default function RootLayout() {
   const {
     isLoading: authLoading,
     isAuthenticated,
+    isFirstLaunch,
     initialize: initAuth,
   } = useAuthStore();
   const { activeTheme, initialize: initTheme } = useThemeStore();
@@ -70,14 +71,25 @@ export default function RootLayout() {
 
     const inAuthGroup = segments[0] === "(auth)";
 
-    if (!isAuthenticated && !inAuthGroup) {
-      // Redirect to login if not authenticated
-      router.replace("/(auth)/login");
-    } else if (isAuthenticated && inAuthGroup) {
+    if (isAuthenticated && inAuthGroup) {
       // Redirect to tabs if authenticated
       router.replace("/(tabs)");
+    } else if (!isAuthenticated && !inAuthGroup) {
+      // Fresh install with no users -> go straight to register
+      if (isFirstLaunch) {
+        router.replace("/(auth)/register");
+      } else {
+        router.replace("/(auth)/login");
+      }
     }
-  }, [isAuthenticated, authLoading, segments, migrationSuccess, i18nReady]);
+  }, [
+    isAuthenticated,
+    isFirstLaunch,
+    authLoading,
+    segments,
+    migrationSuccess,
+    i18nReady,
+  ]);
 
   // Determine if we're still loading
   const isLoading = authLoading || !migrationSuccess || !i18nReady;
