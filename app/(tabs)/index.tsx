@@ -36,6 +36,7 @@ export default function DashboardScreen() {
     toggleBooleanHabit,
     updateCounterValue,
     deleteHabit,
+    toggleHabitNotification,
   } = useHabits(user?.id, selectedDate);
 
   // Close modal when tab loses focus
@@ -62,6 +63,7 @@ export default function DashboardScreen() {
     targetDate: Date | null;
     endDate: Date | null;
     timeOfDay: "morning" | "late_morning" | "afternoon" | "evening" | "all_day";
+    enableReminder: boolean;
   }) => {
     const success = await addHabit(data);
 
@@ -126,7 +128,8 @@ export default function DashboardScreen() {
               selectedDate={selectedDate}
               onToggle={toggleBooleanHabit}
               onUpdateValue={updateCounterValue}
-              onLongPress={deleteHabit}
+              onToggleNotification={toggleHabitNotification}
+              onDelete={deleteHabit}
             />
           ))
         )}

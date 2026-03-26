@@ -7,6 +7,7 @@ import m0002 from './0002_optimal_fat_cobra.sql';
 import m0003 from './0003_slow_doctor_faustus.sql';
 import m0004 from './0004_secret_achievements.sql';
 import m0005 from './0005_time_of_day.sql';
+import m0006 from './0006_notifications.sql';
 
   export default {
     journal,
@@ -16,7 +17,8 @@ m0001,
 m0002,
 m0003,
 m0004,
-m0005
+m0005,
+m0006
     }
   }
   

@@ -35,6 +35,12 @@ export const habits = sqliteTable("habits", {
   })
     .notNull()
     .default("all_day"),
+  isNotificationsEnabled: integer("is_notifications_enabled", {
+    mode: "boolean",
+  })
+    .notNull()
+    .default(false),
+  notificationId: text("notification_id"), // OS notification ID(s); JSON array string for weekly
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

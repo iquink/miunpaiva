@@ -1,10 +1,27 @@
 import { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Check, X, TrendingUp, Lock } from "lucide-react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  Alert,
+  StyleSheet,
+} from "react-native";
+import {
+  Check,
+  X,
+  TrendingUp,
+  Lock,
+  Bell,
+  BellOff,
+  Trash2,
+} from "lucide-react-native";
 import type { Habit, Log } from "../../db/schema";
 import HabitValueModal from "./HabitValueModal";
 import { isDateEditable } from "../../utils/dateUtils";
 import { useThemeColors } from "../../hooks/useThemeColors";
+import { getNotificationTimeLabel } from "../../services/notificationService";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 interface HabitCardProps {
@@ -13,7 +30,8 @@ interface HabitCardProps {
   selectedDate: Date;
   onToggle: (habit: Habit) => void;
   onUpdateValue: (habit: Habit, value: number) => void;
-  onLongPress: (habitId: number) => void;
+  onToggleNotification: (habit: Habit) => void;
+  onDelete: (habit: Habit) => void;
 }
 
 export default function HabitCard({
@@ -22,10 +40,13 @@ export default function HabitCard({
   selectedDate,
   onToggle,
   onUpdateValue,
-  onLongPress,
+  onToggleNotification,
+  onDelete,
 }: HabitCardProps) {
   const [showModal, setShowModal] = useState(false);
+  const [showActionModal, setShowActionModal] = useState(false);
   const colors = useThemeColors();
+  const { t } = useTranslation("common");
 
   const isBoolean = habit.type === "boolean";
   const isCounter = habit.type === "counter";
@@ -47,6 +68,26 @@ export default function HabitCard({
 
   const handleSaveValue = (value: number) => {
     onUpdateValue(habit, value);
+  };
+
+  const handleToggleNotification = () => {
+    setShowActionModal(false);
+    onToggleNotification(habit);
+  };
+
+  const handleDeletePress = () => {
+    setShowActionModal(false);
+    // Wait for the bottom-sheet animation to finish before showing Alert
+    setTimeout(() => {
+      Alert.alert(t("delete"), t("delete_habit_message"), [
+        { text: t("cancel"), style: "cancel" },
+        {
+          text: t("delete"),
+          style: "destructive",
+          onPress: () => onDelete(habit),
+        },
+      ]);
+    }, 300);
   };
 
   // Calculate progress for counter habits
@@ -93,8 +134,8 @@ export default function HabitCard({
     <>
       <TouchableOpacity
         onPress={handlePress}
-        onLongPress={() => onLongPress(habit.id)}
-        disabled={!isEditable}
+        onLongPress={() => setShowActionModal(true)}
+        delayLongPress={400}
         className="mb-3 rounded-xl p-4"
         style={{
           backgroundColor: getCardBgColor(),
@@ -189,6 +230,111 @@ export default function HabitCard({
           onSave={handleSaveValue}
         />
       )}
+
+      {/* Action Modal (bottom sheet) */}
+      <Modal
+        visible={showActionModal}
+        transparent
+        animationType="slide"
+        statusBarTranslucent
+        onRequestClose={() => setShowActionModal(false)}
+      >
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          {/* Backdrop */}
+          <TouchableOpacity
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              backgroundColor: "rgba(0,0,0,0.45)",
+            }}
+            activeOpacity={1}
+            onPress={() => setShowActionModal(false)}
+          />
+
+          {/* Sheet */}
+          <View
+            style={{
+              backgroundColor: colors.surface,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              padding: 24,
+              paddingBottom: 40,
+            }}
+          >
+            {/* Header */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 20,
+              }}
+            >
+              <Text
+                style={{
+                  color: colors.text,
+                  fontSize: 16,
+                  fontWeight: "700",
+                  flex: 1,
+                  marginRight: 12,
+                }}
+                numberOfLines={1}
+              >
+                {habit.title}
+              </Text>
+              <TouchableOpacity onPress={() => setShowActionModal(false)}>
+                <X color={colors.textSecondary} size={20} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Toggle notifications */}
+            <TouchableOpacity
+              onPress={handleToggleNotification}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 16,
+                borderRadius: 12,
+                backgroundColor: colors.background,
+                marginBottom: 12,
+              }}
+            >
+              <View style={{ marginRight: 14 }}>
+                {habit.isNotificationsEnabled ? (
+                  <BellOff color={colors.primary} size={20} />
+                ) : (
+                  <Bell color={colors.primary} size={20} />
+                )}
+              </View>
+              <Text style={{ color: colors.text, fontSize: 15 }}>
+                {habit.isNotificationsEnabled
+                  ? t("notif_turn_off")
+                  : `${t("notif_turn_on")} (${getNotificationTimeLabel(habit.timeOfDay)})`}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Delete */}
+            <TouchableOpacity
+              onPress={handleDeletePress}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 16,
+                borderRadius: 12,
+                backgroundColor: colors.error + "18",
+              }}
+            >
+              <View style={{ marginRight: 14 }}>
+                <Trash2 color={colors.error} size={20} />
+              </View>
+              <Text
+                style={{ color: colors.error, fontSize: 15, fontWeight: "600" }}
+              >
+                {t("delete")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }

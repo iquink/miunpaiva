@@ -257,7 +257,15 @@ const translation = {
   // Alerts
   delete_achievement_title: "Poista saavutus",
   delete_achievement_message: "Haluatko varmasti poistaa tämän saavutuksen?",
+  delete_habit_message: "Haluatko varmasti poistaa tämän toiminnan?",
   logout_message: "Haluatko varmasti kirjautua ulos?",
+
+  // Notifications
+  notif_enable_reminder: "Ota muistutus käyttöön",
+  notif_turn_on: "Ota muistutukset käyttöön",
+  notif_turn_off: "Poista muistutukset käytöstä",
+  error_notification_permission:
+    "Ota ilmoitukset käyttöön laitteen asetuksista",
 
   // Auth
   login: "Kirjaudu",

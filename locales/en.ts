@@ -256,7 +256,15 @@ const translation = {
   delete_achievement_title: "Delete Achievement",
   delete_achievement_message:
     "Are you sure you want to delete this achievement?",
+  delete_habit_message: "Are you sure you want to delete this habit?",
   logout_message: "Are you sure you want to logout?",
+
+  // Notifications
+  notif_enable_reminder: "Enable Reminder",
+  notif_turn_on: "Turn On Reminders",
+  notif_turn_off: "Turn Off Reminders",
+  error_notification_permission:
+    "Please enable notifications in your device settings",
 
   // Auth
   login: "Login",

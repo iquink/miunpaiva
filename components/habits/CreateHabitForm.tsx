@@ -3,6 +3,7 @@ import {
   View,
   Text,
   ScrollView,
+  Switch,
   TouchableOpacity,
   Platform,
 } from "react-native";
@@ -14,6 +15,7 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import PresetSelector from "./PresetSelector";
 import { useThemeColors } from "../../hooks/useThemeColors";
+import { getNotificationTimeLabel } from "../../services/notificationService";
 
 interface Category {
   id: number;
@@ -45,6 +47,7 @@ interface HabitFormData {
   targetDate: Date | null;
   endDate: Date | null;
   timeOfDay: TimeOfDay;
+  enableReminder: boolean;
 }
 
 interface CreateHabitFormProps {
@@ -82,6 +85,7 @@ export default function CreateHabitForm({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("all_day");
+  const [enableReminder, setEnableReminder] = useState(false);
 
   // Schedule state
   const [frequency, setFrequency] = useState<"daily" | "weekly" | "once">(
@@ -136,6 +140,7 @@ export default function CreateHabitForm({
       targetDate,
       endDate,
       timeOfDay,
+      enableReminder,
     });
   };
 
@@ -442,6 +447,36 @@ export default function CreateHabitForm({
               )}
             </View>
           )}
+        </View>
+
+        {/* ── Reminder Toggle ──────────────────────────────────────────── */}
+        <View
+          className="mb-4 flex-row items-center justify-between rounded-xl border p-4"
+          style={{
+            borderColor: colors.border,
+            backgroundColor: colors.surface,
+          }}
+        >
+          <View className="flex-1 mr-4">
+            <Text
+              className="text-sm font-semibold"
+              style={{ color: colors.text }}
+            >
+              {t("notif_enable_reminder")}
+            </Text>
+            <Text
+              className="text-xs mt-0.5"
+              style={{ color: colors.textSecondary }}
+            >
+              {getNotificationTimeLabel(timeOfDay)}
+            </Text>
+          </View>
+          <Switch
+            value={enableReminder}
+            onValueChange={setEnableReminder}
+            trackColor={{ false: colors.border, true: colors.primary + "80" }}
+            thumbColor={enableReminder ? colors.primary : colors.textSecondary}
+          />
         </View>
 
         <View className="flex-row gap-2">

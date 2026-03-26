@@ -10,9 +10,15 @@ import {
   toggleBooleanHabitLog,
   updateCounterHabitLog,
   deleteHabit as deleteHabitService,
+  updateHabitNotification,
   getPresetCategories,
   getPresetItems,
 } from "../services/habitService";
+import {
+  requestPermissionsAsync,
+  scheduleHabitNotification,
+  cancelHabitNotification,
+} from "../services/notificationService";
 import { checkAchievements } from "../services/achievementService";
 import { shouldShowHabit } from "../utils/habitScheduler";
 
@@ -20,7 +26,7 @@ import { shouldShowHabit } from "../utils/habitScheduler";
  * Custom hook for managing habits state and operations
  */
 export function useHabits(userId: number | undefined, selectedDate: Date) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const [userHabits, setUserHabits] = useState<Habit[]>([]);
   const [habitLogs, setHabitLogs] = useState<Map<number, Log>>(new Map());
   const [refreshing, setRefreshing] = useState(false);
@@ -93,6 +99,7 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
     targetDate: Date | null;
     endDate: Date | null;
     timeOfDay: "morning" | "late_morning" | "afternoon" | "evening" | "all_day";
+    enableReminder: boolean;
   }) => {
     if (!userId || !habitData.title.trim()) {
       Alert.alert(t("error"), t("error_title_required"));
@@ -123,7 +130,7 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
       const habitType: "boolean" | "counter" =
         hasUnit || hasGoal ? "counter" : "boolean";
 
-      await createHabit({
+      const newHabit = await createHabit({
         userId: userId,
         title: habitData.title.trim(),
         description: habitData.description.trim() || null,
@@ -144,6 +151,19 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
             : null,
         endDate: habitData.endDate,
       });
+
+      // Schedule notification if requested
+      if (habitData.enableReminder) {
+        const granted = await requestPermissionsAsync();
+        if (granted) {
+          const notifId = await scheduleHabitNotification(newHabit);
+          if (notifId) {
+            await updateHabitNotification(newHabit.id, notifId, true);
+          }
+        } else {
+          Alert.alert(t("error"), t("error_notification_permission"));
+        }
+      }
 
       await loadHabits();
       Alert.alert(t("success"), t("success_habit_created"));
@@ -203,24 +223,42 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
     }
   };
 
-  // Delete a habit
-  const deleteHabit = async (habitId: number) => {
-    Alert.alert(t("delete"), t("delete_achievement_message"), [
-      { text: t("cancel"), style: "cancel" },
-      {
-        text: t("delete"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await deleteHabitService(habitId);
-            await loadHabits();
-          } catch (error) {
-            console.error("Error deleting habit:", error);
-            Alert.alert(t("error"), t("error_update_habit"));
-          }
-        },
-      },
-    ]);
+  // Delete a habit (confirmation is handled in HabitCard's Action Modal)
+  const deleteHabit = async (habit: Habit) => {
+    try {
+      if (habit.notificationId) {
+        await cancelHabitNotification(habit.notificationId);
+      }
+      await deleteHabitService(habit.id);
+      await loadHabits();
+    } catch (error) {
+      console.error("Error deleting habit:", error);
+      Alert.alert(t("error"), t("error_update_habit"));
+    }
+  };
+
+  // Toggle scheduled notification for a habit
+  const toggleHabitNotification = async (habit: Habit) => {
+    try {
+      if (habit.isNotificationsEnabled && habit.notificationId) {
+        await cancelHabitNotification(habit.notificationId);
+        await updateHabitNotification(habit.id, null, false);
+      } else {
+        const granted = await requestPermissionsAsync();
+        if (!granted) {
+          Alert.alert(t("error"), t("error_notification_permission"));
+          return;
+        }
+        const notifId = await scheduleHabitNotification(habit);
+        if (notifId) {
+          await updateHabitNotification(habit.id, notifId, true);
+        }
+      }
+      await loadHabits();
+    } catch (error) {
+      console.error("Error toggling notification:", error);
+      Alert.alert(t("error"), t("error_update_habit"));
+    }
   };
 
   return {
@@ -234,5 +272,6 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
     toggleBooleanHabit,
     updateCounterValue,
     deleteHabit,
+    toggleHabitNotification,
   };
 }

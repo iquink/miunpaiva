@@ -68,12 +68,32 @@ export async function getLogsForDate(
 /**
  * Create a new habit
  */
-export async function createHabit(habitData: NewHabit): Promise<void> {
+export async function createHabit(habitData: NewHabit): Promise<Habit> {
   try {
-    await db.insert(habits).values(habitData);
+    const [newHabit] = await db.insert(habits).values(habitData).returning();
+    return newHabit;
   } catch (error) {
     console.error("Error creating habit:", error);
     throw new Error("Failed to create habit");
+  }
+}
+
+/**
+ * Update a habit's notification state
+ */
+export async function updateHabitNotification(
+  habitId: number,
+  notificationId: string | null,
+  isEnabled: boolean,
+): Promise<void> {
+  try {
+    await db
+      .update(habits)
+      .set({ notificationId, isNotificationsEnabled: isEnabled })
+      .where(eq(habits.id, habitId));
+  } catch (error) {
+    console.error("Error updating habit notification:", error);
+    throw new Error("Failed to update notification");
   }
 }
 

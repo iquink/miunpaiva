@@ -7,6 +7,10 @@ import {
   hasAnyUsers,
   createPersonalUser,
 } from "../services/authService";
+import {
+  clearAllDeviceNotifications,
+  syncUserNotifications,
+} from "../services/notificationService";
 import type { User } from "../db/schema";
 
 const SESSION_KEY = "session_user_id";
@@ -54,6 +58,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             isLoading: false,
             isFirstLaunch: false,
           });
+          // Restore only this user's notifications; erase any stale ones
+          syncUserNotifications(user.id).catch((err) =>
+            console.error("[Auth] syncUserNotifications error:", err),
+          );
           return;
         }
       }
@@ -87,6 +95,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await SecureStore.setItemAsync(SESSION_KEY, user.id.toString());
 
       set({ user, isAuthenticated: true });
+      // Wipe any previous user's notifications and load this user's
+      syncUserNotifications(user.id).catch((err) =>
+        console.error("[Auth] syncUserNotifications error:", err),
+      );
       return { success: true };
     } catch (error) {
       console.error("Login error:", error);
@@ -132,6 +144,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     try {
+      // Erase all OS-level notifications before clearing the session
+      // so the next user never sees this user's reminders.
+      await clearAllDeviceNotifications();
       await SecureStore.deleteItemAsync(SESSION_KEY);
       set({ user: null, isAuthenticated: false });
     } catch (error) {
