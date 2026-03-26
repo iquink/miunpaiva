@@ -42,10 +42,7 @@ export default function RPGCard({ item }: Props) {
           className="px-2.5 py-1 rounded-xl"
           style={{ backgroundColor: colors.warning + "20" }}
         >
-          <Text
-            className="text-xs font-bold"
-            style={{ color: colors.warning }}
-          >
+          <Text className="text-xs font-bold" style={{ color: colors.warning }}>
             {t(item.titleKey)}
           </Text>
         </View>
@@ -54,16 +51,10 @@ export default function RPGCard({ item }: Props) {
       {/* Progress bar */}
       <View>
         <View className="flex-row justify-between mb-1">
-          <Text
-            className="text-[11px]"
-            style={{ color: colors.textSecondary }}
-          >
+          <Text className="text-[11px]" style={{ color: colors.textSecondary }}>
             {t("rpg_progress_to_next")}
           </Text>
-          <Text
-            className="text-[11px]"
-            style={{ color: colors.textSecondary }}
-          >
+          <Text className="text-[11px]" style={{ color: colors.textSecondary }}>
             {item.progress}%
           </Text>
         </View>

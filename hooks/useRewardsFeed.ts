@@ -1,8 +1,5 @@
 import { useState, useCallback } from "react";
-import {
-  getUserRPGStats,
-  type CategoryProgress,
-} from "../services/rpgService";
+import { getUserRPGStats, type CategoryProgress } from "../services/rpgService";
 import {
   getUnlockedSecretAchievements,
   type UnlockedSecretAchievement,
