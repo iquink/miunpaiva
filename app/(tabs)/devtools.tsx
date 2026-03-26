@@ -18,6 +18,8 @@ import {
 import {
   generateMockHabits,
   generateMockLogs,
+  boostRPGStats,
+  unlockAllSecretAchievements,
 } from "../../services/devGeneratorService";
 
 interface DevActionButtonProps {
@@ -178,6 +180,46 @@ export default function DevToolsScreen() {
         console.error("[DevTools] generateMockLogs failed:", err);
         Alert.alert("Error", "Failed to generate logs. Check the console.");
       }
+    }
+  };
+
+  const handleBoostRPGStats = async () => {
+    if (!user) {
+      Alert.alert(
+        "Not Signed In",
+        "You must be signed in to use this feature.",
+      );
+      return;
+    }
+    try {
+      await boostRPGStats(user.id);
+      Alert.alert(
+        "Done",
+        "7 category habits created with 50 completions each. RPG stats will update on next app load.",
+      );
+    } catch (err) {
+      console.error("[DevTools] boostRPGStats failed:", err);
+      Alert.alert("Error", "Failed to boost RPG stats. Check the console.");
+    }
+  };
+
+  const handleUnlockAllSecretAchievements = async () => {
+    if (!user) {
+      Alert.alert(
+        "Not Signed In",
+        "You must be signed in to use this feature.",
+      );
+      return;
+    }
+    try {
+      await unlockAllSecretAchievements(user.id);
+      Alert.alert("Done", "All secret achievements have been unlocked.");
+    } catch (err) {
+      console.error("[DevTools] unlockAllSecretAchievements failed:", err);
+      Alert.alert(
+        "Error",
+        "Failed to unlock secret achievements. Check the console.",
+      );
     }
   };
 
@@ -375,6 +417,23 @@ export default function DevToolsScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+        <Text
+          className="mb-3 mt-4 text-xs font-semibold uppercase tracking-widest"
+          style={{ color: colors.textSecondary }}
+        >
+          RPG &amp; Progression
+        </Text>
+        <DevActionButton
+          label="Boost All RPG Levels"
+          description="Adds habits and injects 50 completions per category to trigger level-ups."
+          onPress={handleBoostRPGStats}
+        />
+        <DevActionButton
+          label="Unlock All Secret Badges"
+          description="Instantly unlocks every secret achievement in the catalog."
+          onPress={handleUnlockAllSecretAchievements}
+        />
 
         <Text
           className="mb-3 mt-4 text-xs font-semibold uppercase tracking-widest"

@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import i18next from "i18next";
 import { db } from "../db";
 
-import { habits, logs } from "../db/schema";
+import { habits, logs, userSecretAchievements } from "../db/schema";
+import { SECRET_ACHIEVEMENTS } from "../constants/secretAchievements";
 
 const CUSTOM_TITLES = [
   "Read 10 pages",
@@ -137,5 +138,79 @@ export async function generateMockLogs(
 
   if (entries.length > 0) {
     await db.insert(logs).values(entries);
+  }
+}
+
+// RPG category names that map 1-to-1 with the 7 RPG stat categories
+const RPG_CATEGORIES = [
+  "cat_exercise",
+  "cat_nutrition",
+  "cat_daily_routines",
+  "cat_daily_rhythm",
+  "cat_cleaning",
+  "cat_responsibilities",
+  "cat_group_activities",
+] as const;
+
+export async function boostRPGStats(userId: number): Promise<void> {
+  // Insert one boolean habit per RPG category
+  const habitRows = RPG_CATEGORIES.map((category) => ({
+    userId,
+    title: `[DEV] ${category}`,
+    type: "boolean" as const,
+    dailyGoal: null,
+    presetName: null,
+    category,
+    timeOfDay: "all_day" as const,
+    frequency: "daily" as const,
+  }));
+
+  const inserted = await db
+    .insert(habits)
+    .values(habitRows)
+    .returning({ id: habits.id });
+
+  // Build 50 log entries per habit, one per day for the last 50 days
+  const logEntries: {
+    habitId: number;
+    date: string;
+    value: number;
+    completed: boolean;
+  }[] = [];
+
+  const today = new Date();
+  for (const { id: habitId } of inserted) {
+    for (let daysAgo = 0; daysAgo < 50; daysAgo++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - daysAgo);
+      const dateStr = d.toISOString().split("T")[0];
+      logEntries.push({ habitId, date: dateStr, value: 1, completed: true });
+    }
+  }
+
+  await db.insert(logs).values(logEntries);
+}
+
+export async function unlockAllSecretAchievements(
+  userId: number,
+): Promise<void> {
+  // Find which secret achievements the user already has
+  const existing = await db
+    .select({ secretAchievementId: userSecretAchievements.secretAchievementId })
+    .from(userSecretAchievements)
+    .where(eq(userSecretAchievements.userId, userId));
+
+  const alreadyUnlocked = new Set(existing.map((r) => r.secretAchievementId));
+
+  const toInsert = SECRET_ACHIEVEMENTS.filter(
+    (a) => !alreadyUnlocked.has(a.id),
+  ).map((a) => ({
+    userId,
+    secretAchievementId: a.id,
+    unlockedAt: new Date(),
+  }));
+
+  if (toInsert.length > 0) {
+    await db.insert(userSecretAchievements).values(toInsert);
   }
 }
