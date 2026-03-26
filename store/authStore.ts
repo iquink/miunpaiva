@@ -25,6 +25,7 @@ interface AuthState {
   // Actions
   initialize: () => Promise<void>;
   setDeveloperMode: (value: boolean) => void;
+  setFirstLaunch: (value: boolean) => void;
   login: (
     username: string,
     password: string,
@@ -47,6 +48,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isDeveloperMode: false,
 
   setDeveloperMode: (value: boolean) => set({ isDeveloperMode: value }),
+  setFirstLaunch: (value: boolean) => set({ isFirstLaunch: value }),
 
   initialize: async () => {
     try {

@@ -4,7 +4,11 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "nativewind";
 import { useAuthStore } from "../../store/authStore";
-import { deleteUser, DUMMY_PASSWORD } from "../../services/authService";
+import {
+  deleteUser,
+  hasAnyUsers,
+  DUMMY_PASSWORD,
+} from "../../services/authService";
 import { changeLanguage } from "../../i18n";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import UserInfoSection from "../../components/settings/UserInfoSection";
@@ -19,7 +23,8 @@ import { useThemeColors } from "../../hooks/useThemeColors";
 export default function SettingsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
-  const { user, logout, isDeveloperMode, setDeveloperMode } = useAuthStore();
+  const { user, logout, isDeveloperMode, setDeveloperMode, setFirstLaunch } =
+    useAuthStore();
   const isPersonalAccount = user?.passwordHash === DUMMY_PASSWORD;
   const { t, i18n } = useTranslation("common");
   const { colorScheme, setColorScheme } = useColorScheme();
@@ -92,9 +97,15 @@ export default function SettingsScreen() {
             // Delete user (cascade will handle related tables)
             await deleteUser(user.id);
 
+            // If no users remain, treat next launch as a fresh install
+            const anyRemaining = await hasAnyUsers();
+            if (!anyRemaining) {
+              setFirstLaunch(true);
+            }
+
             // Logout and redirect
             await logout();
-            router.replace("/(auth)/login");
+            router.replace(anyRemaining ? "/(auth)/login" : "/(auth)/register");
 
             Alert.alert(t("success"), t("account_deleted"));
           } catch (error) {

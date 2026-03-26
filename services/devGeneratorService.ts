@@ -2,7 +2,12 @@ import { eq, inArray } from "drizzle-orm";
 import i18next from "i18next";
 import { db } from "../db";
 
-import { habits, logs, userSecretAchievements } from "../db/schema";
+import {
+  habits,
+  logs,
+  achievements,
+  userSecretAchievements,
+} from "../db/schema";
 import { SECRET_ACHIEVEMENTS } from "../constants/secretAchievements";
 
 const CUSTOM_TITLES = [
@@ -44,6 +49,17 @@ const TIME_OF_DAY = [
   "evening",
   "all_day",
 ] as const;
+
+export async function wipeUserData(userId: number): Promise<void> {
+  // Delete habits first — cascades to logs and achievementCriteria
+  await db.delete(habits).where(eq(habits.userId, userId));
+  // Delete custom achievements — cascades to userAchievements and achievementCriteria
+  await db.delete(achievements).where(eq(achievements.userId, userId));
+  // Delete secret achievement unlocks
+  await db
+    .delete(userSecretAchievements)
+    .where(eq(userSecretAchievements.userId, userId));
+}
 
 export async function generateMockHabits(
   userId: number,

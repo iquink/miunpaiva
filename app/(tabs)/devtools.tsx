@@ -18,6 +18,7 @@ import {
 import {
   generateMockHabits,
   generateMockLogs,
+  wipeUserData,
   boostRPGStats,
   unlockAllSecretAchievements,
 } from "../../services/devGeneratorService";
@@ -64,7 +65,7 @@ function DevActionButton({
 
 export default function DevToolsScreen() {
   const colors = useThemeColors();
-  const { setDeveloperMode, logout, user } = useAuthStore();
+  const { setDeveloperMode, logout, user, setFirstLaunch } = useAuthStore();
   const router = useRouter();
   const [habitCount, setHabitCount] = useState("5");
   const [logCount, setLogCount] = useState("50");
@@ -90,7 +91,8 @@ export default function DevToolsScreen() {
                   onPress: async () => {
                     try {
                       await wipeDatabaseAndSignOut(logout);
-                      router.replace("/(auth)/login");
+                      setFirstLaunch(true);
+                      router.replace("/(auth)/register");
                     } catch (err) {
                       console.error("[DevTools] Reset failed:", err);
                       Alert.alert(
@@ -223,6 +225,39 @@ export default function DevToolsScreen() {
     }
   };
 
+  const handleWipeUserData = () => {
+    if (!user) {
+      Alert.alert("Not Signed In", "You must be signed in to wipe user data.");
+      return;
+    }
+    Alert.alert(
+      "⚠️ Wipe User Data",
+      "This will permanently delete all habits, logs, and achievements for the current user. The account itself will remain. Are you sure?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Wipe My Data",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await wipeUserData(user.id);
+              Alert.alert(
+                "Done",
+                "All habits, logs, and achievements have been wiped for this account.",
+              );
+            } catch (err) {
+              console.error("[DevTools] wipeUserData failed:", err);
+              Alert.alert(
+                "Error",
+                "Failed to wipe user data. Check the console.",
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
+
   const handleTestNotification = () => {
     Alert.alert(
       "Test Local Push Notification",
@@ -292,6 +327,19 @@ export default function DevToolsScreen() {
           label="Reset Database"
           description="Drops and re-creates all tables. Irreversible."
           onPress={handleResetDatabase}
+          destructive
+        />
+
+        <Text
+          className="mb-3 mt-4 text-xs font-semibold uppercase tracking-widest"
+          style={{ color: colors.textSecondary }}
+        >
+          Danger Zone
+        </Text>
+        <DevActionButton
+          label="Wipe Current User Data"
+          description="Deletes all habits, logs, and achievements for the signed-in user. Account stays intact."
+          onPress={handleWipeUserData}
           destructive
         />
 
