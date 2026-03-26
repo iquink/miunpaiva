@@ -1,11 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import {
-  users,
-  habits,
-  logs,
-  presetCategories,
-} from "../db/schema";
+import { users, habits, logs, presetCategories } from "../db/schema";
 import { seedPresets } from "../db/seedPresets";
 
 /**

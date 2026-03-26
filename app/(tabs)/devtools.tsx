@@ -1,5 +1,12 @@
-import React from "react";
-import { View, Text, ScrollView, Alert, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "../../store/authStore";
 import { useThemeColors } from "../../hooks/useThemeColors";
@@ -8,6 +15,10 @@ import {
   wipeDatabaseAndSignOut,
   seedMockLogs,
 } from "../../services/devService";
+import {
+  generateMockHabits,
+  generateMockLogs,
+} from "../../services/devGeneratorService";
 
 interface DevActionButtonProps {
   label: string;
@@ -53,6 +64,8 @@ export default function DevToolsScreen() {
   const colors = useThemeColors();
   const { setDeveloperMode, logout, user } = useAuthStore();
   const router = useRouter();
+  const [habitCount, setHabitCount] = useState("5");
+  const [logCount, setLogCount] = useState("50");
 
   const handleResetDatabase = () => {
     Alert.alert(
@@ -100,7 +113,10 @@ export default function DevToolsScreen() {
     }
     try {
       await seedMockLogs(user.id);
-      Alert.alert("Done", "50 mock logs have been added across the last 30 days.");
+      Alert.alert(
+        "Done",
+        "50 mock logs have been added across the last 30 days.",
+      );
     } catch (err: any) {
       if (err?.message === "NO_HABITS") {
         Alert.alert(
@@ -110,6 +126,57 @@ export default function DevToolsScreen() {
       } else {
         console.error("[DevTools] seedMockLogs failed:", err);
         Alert.alert("Error", "Failed to seed mock logs. Check the console.");
+      }
+    }
+  };
+
+  const handleGenerateHabits = async () => {
+    if (!user) {
+      Alert.alert("Not Signed In", "You must be signed in to generate habits.");
+      return;
+    }
+    const count = parseInt(habitCount, 10);
+    if (isNaN(count) || count < 1) {
+      Alert.alert(
+        "Invalid Count",
+        "Enter a positive number of habits to generate.",
+      );
+      return;
+    }
+    try {
+      await generateMockHabits(user.id, count);
+      Alert.alert("Done", `${count} mock habit(s) generated successfully.`);
+    } catch (err) {
+      console.error("[DevTools] generateMockHabits failed:", err);
+      Alert.alert("Error", "Failed to generate habits. Check the console.");
+    }
+  };
+
+  const handleGenerateLogs = async () => {
+    if (!user) {
+      Alert.alert("Not Signed In", "You must be signed in to generate logs.");
+      return;
+    }
+    const count = parseInt(logCount, 10);
+    if (isNaN(count) || count < 1) {
+      Alert.alert(
+        "Invalid Count",
+        "Enter a positive number of logs to generate.",
+      );
+      return;
+    }
+    try {
+      await generateMockLogs(user.id, count);
+      Alert.alert("Done", `${count} mock log(s) generated across all habits.`);
+    } catch (err: any) {
+      if (err?.message === "NO_HABITS") {
+        Alert.alert(
+          "No Habits Found",
+          "Create or generate at least one habit before generating logs.",
+        );
+      } else {
+        console.error("[DevTools] generateMockLogs failed:", err);
+        Alert.alert("Error", "Failed to generate logs. Check the console.");
       }
     }
   };
@@ -197,6 +264,117 @@ export default function DevToolsScreen() {
           description="Seeds habit logs across the last 30 days for testing."
           onPress={handleAddMockLogs}
         />
+
+        <Text
+          className="mb-3 mt-4 text-xs font-semibold uppercase tracking-widest"
+          style={{ color: colors.textSecondary }}
+        >
+          Generators
+        </Text>
+
+        {/* Generate Habits */}
+        <View
+          className="mb-3 rounded-xl p-4"
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <Text
+            className="mb-2 text-base font-semibold"
+            style={{ color: colors.text }}
+          >
+            Generate Habits
+          </Text>
+          <Text
+            className="mb-3 text-xs"
+            style={{ color: colors.textSecondary }}
+          >
+            Insert N random custom/preset habits for your account.
+          </Text>
+          <View className="flex-row items-center gap-2">
+            <TextInput
+              value={habitCount}
+              onChangeText={setHabitCount}
+              keyboardType="number-pad"
+              maxLength={4}
+              className="mr-2 flex-1 rounded-lg px-3 py-2 text-base"
+              style={{
+                backgroundColor: colors.background,
+                borderWidth: 1,
+                borderColor: colors.border,
+                color: colors.text,
+              }}
+              selectTextOnFocus
+            />
+            <TouchableOpacity
+              className="rounded-lg px-4 py-2"
+              style={{ backgroundColor: colors.primary ?? "#6366f1" }}
+              onPress={handleGenerateHabits}
+              activeOpacity={0.7}
+            >
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: "#ffffff" }}
+              >
+                Generate
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Generate Logs */}
+        <View
+          className="mb-3 rounded-xl p-4"
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <Text
+            className="mb-2 text-base font-semibold"
+            style={{ color: colors.text }}
+          >
+            Generate Logs (All Habits)
+          </Text>
+          <Text
+            className="mb-3 text-xs"
+            style={{ color: colors.textSecondary }}
+          >
+            Insert N random completed logs spread across the last 30 days.
+          </Text>
+          <View className="flex-row items-center gap-2">
+            <TextInput
+              value={logCount}
+              onChangeText={setLogCount}
+              keyboardType="number-pad"
+              maxLength={5}
+              className="mr-2 flex-1 rounded-lg px-3 py-2 text-base"
+              style={{
+                backgroundColor: colors.background,
+                borderWidth: 1,
+                borderColor: colors.border,
+                color: colors.text,
+              }}
+              selectTextOnFocus
+            />
+            <TouchableOpacity
+              className="rounded-lg px-4 py-2"
+              style={{ backgroundColor: colors.primary ?? "#6366f1" }}
+              onPress={handleGenerateLogs}
+              activeOpacity={0.7}
+            >
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: "#ffffff" }}
+              >
+                Generate
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <Text
           className="mb-3 mt-4 text-xs font-semibold uppercase tracking-widest"
