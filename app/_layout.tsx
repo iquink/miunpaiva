@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
-import { View, ActivityIndicator, useColorScheme } from "react-native";
+import { View, useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
+import * as SplashScreen from "expo-splash-screen";
 import "../global.css";
+
+// Keep the native splash screen visible until the app is fully ready.
+SplashScreen.preventAutoHideAsync();
 import { useAuthStore } from "../store/authStore";
 import { useThemeStore } from "../store/themeStore";
 import { useThemeColors } from "../hooks/useThemeColors";
@@ -66,6 +70,14 @@ export default function RootLayout() {
     }
   }, [migrationSuccess]);
 
+  // Hide the splash screen once i18n, migrations, and auth are all ready.
+  const appIsReady = !authLoading && !!migrationSuccess && i18nReady;
+  useEffect(() => {
+    if (appIsReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
   // Handle navigation based on auth state
   useEffect(() => {
     if (authLoading || !migrationSuccess || !i18nReady) return;
@@ -92,8 +104,10 @@ export default function RootLayout() {
     i18nReady,
   ]);
 
-  // Determine if we're still loading
-  const isLoading = authLoading || !migrationSuccess || !i18nReady;
+  // While not ready, return null — the native splash screen remains visible.
+  if (!appIsReady) {
+    return null;
+  }
 
   // Build theme class names
   // CRITICAL: NO transition classes here - they cause Expo Router crashes on cold start
@@ -106,8 +120,6 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-      {/* CRITICAL: Always render Stack immediately to establish navigation context.
-          Never conditionally return a loading screen - this breaks Expo Router. */}
       <View
         className={themeClasses}
         style={{ backgroundColor: colors.background }}
@@ -116,19 +128,6 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
         </Stack>
-
-        {/* Loading overlay - shown on top of navigation, NOT instead of it */}
-        {isLoading && (
-          <View
-            className="absolute inset-0 items-center justify-center"
-            style={{
-              backgroundColor: colors.background,
-              zIndex: 9999,
-            }}
-          >
-            <ActivityIndicator size="large" color={colors.primary} />
-          </View>
-        )}
       </View>
     </GestureHandlerRootView>
   );

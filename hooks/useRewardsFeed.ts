@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import { getUserRPGStats, type CategoryProgress } from "../services/rpgService";
 import {
   getUnlockedSecretAchievements,
@@ -53,16 +54,27 @@ export function useRewardsFeed(userId: number | undefined) {
     }
   }, [userId]);
 
-  /** Kick off a fresh load, setting the loading indicator. */
+  /** Kick off a fresh load. Only shows the loading indicator on the first
+   * fetch; subsequent focus-triggered refreshes run silently in the background
+   * so the existing feed doesn't flicker away. */
   const load = useCallback(() => {
-    setLoading(true);
+    if (rpgStats.length === 0 && unlockedSecrets.length === 0) {
+      setLoading(true);
+    }
     loadRewards();
-  }, [loadRewards]);
+  }, [loadRewards, rpgStats.length, unlockedSecrets.length]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadRewards();
   }, [loadRewards]);
+
+  // Re-fetch whenever this screen comes into focus so data is never stale.
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
 
   const rpgItems: RPGFeedItem[] = rpgStats.map((cat) => ({
     id: `rpg_${cat.category}`,

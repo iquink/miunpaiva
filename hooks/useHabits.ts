@@ -40,26 +40,38 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
     if (!userId) return;
 
     try {
-      // Fetch ALL habits for current user
       const fetchedHabits = await getUserHabits(userId);
-
-      // Filter habits based on schedule
       const visibleHabits = fetchedHabits.filter((habit) =>
         shouldShowHabit(habit, selectedDate),
       );
 
-      setUserHabits(visibleHabits);
+      setUserHabits((prev) => {
+        const isSame =
+          prev.length === visibleHabits.length &&
+          prev.every((h, i) => h.id === visibleHabits[i].id);
+        return isSame ? prev : visibleHabits;
+      });
 
-      // Fetch logs for selected date
       const habitIds = visibleHabits.map((h) => h.id);
       const logsMap = await getLogsForDate(habitIds, dateStr);
 
-      setHabitLogs(logsMap);
+      setHabitLogs((prev) => {
+        if (prev.size !== logsMap.size) return logsMap;
+
+        let isSame = true;
+        for (const [key, value] of prev) {
+          if (logsMap.get(key)?.id !== value.id) {
+            isSame = false;
+            break;
+          }
+        }
+        return isSame ? prev : logsMap;
+      });
     } catch (error) {
       console.error("Error loading habits:", error);
       Alert.alert(t("error"), t("error_load_habits"));
     }
-  }, [userId, dateStr, selectedDate, t]);
+  }, [userId, dateStr, selectedDate]);
 
   // Load preset categories and items
   const loadPresets = useCallback(async () => {

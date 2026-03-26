@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
+import * as Notifications from "expo-notifications";
 import { useAuthStore } from "../store/authStore";
 import { useDevLogStore } from "../store/devLogStore";
 import { wipeDatabaseAndSignOut, seedMockLogs } from "../services/devService";
@@ -208,12 +209,30 @@ export function useDevTools() {
     );
   };
 
-  const handleTestNotification = () => {
-    Alert.alert(
-      "Test Local Push Notification",
-      "Notification test not yet implemented.",
-      [{ text: "OK" }],
-    );
+  const handleTestNotification = async () => {
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "🧪 DevTools Test",
+          body: "Push notifications are working perfectly!",
+          sound: true,
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: 2,
+        },
+      });
+      Alert.alert(
+        "Sent",
+        "Notification scheduled in 2 seconds. Background the app to see it in the OS tray.",
+      );
+    } catch (err) {
+      console.error("[DevTools] scheduleNotificationAsync failed:", err);
+      Alert.alert(
+        "Error",
+        "Failed to schedule notification. Ensure notification permissions are granted.",
+      );
+    }
   };
 
   const handleDisableDeveloperMode = () => {

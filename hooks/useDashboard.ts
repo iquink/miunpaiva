@@ -106,6 +106,14 @@ export function useDashboard(userId: number | undefined) {
     }, []),
   );
 
+  // Silently refresh habits whenever this tab comes into focus so data
+  // never appears stale after switching away and back.
+  useFocusEffect(
+    useCallback(() => {
+      onRefresh();
+    }, [onRefresh]),
+  );
+
   // ---------------------------------------------------------------------------
   // Date navigation
   // ---------------------------------------------------------------------------
