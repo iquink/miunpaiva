@@ -105,7 +105,6 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      .
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       {/* CRITICAL: Always render Stack immediately to establish navigation context.
           Never conditionally return a loading screen - this breaks Expo Router. */}
