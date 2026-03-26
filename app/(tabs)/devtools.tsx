@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "../../store/authStore";
+import { useDevLogStore } from "../../store/devLogStore";
 import { useThemeColors } from "../../hooks/useThemeColors";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import {
@@ -66,9 +67,11 @@ function DevActionButton({
 export default function DevToolsScreen() {
   const colors = useThemeColors();
   const { setDeveloperMode, logout, user, setFirstLaunch } = useAuthStore();
+  const { logs, clearLogs } = useDevLogStore();
   const router = useRouter();
   const [habitCount, setHabitCount] = useState("5");
   const [logCount, setLogCount] = useState("50");
+  const terminalScrollRef = useRef<ScrollView>(null);
 
   const handleResetDatabase = () => {
     Alert.alert(
@@ -275,6 +278,7 @@ export default function DevToolsScreen() {
         {
           text: "Disable",
           onPress: () => {
+            clearLogs();
             setDeveloperMode(false);
             router.replace("/(tabs)/settings");
           },
@@ -494,6 +498,70 @@ export default function DevToolsScreen() {
           description="Fires a local notification immediately to verify the setup."
           onPress={handleTestNotification}
         />
+
+        {/* Debug Terminal */}
+        <View className="mb-3 mt-4 flex-row items-center justify-between">
+          <Text
+            className="text-xs font-semibold uppercase tracking-widest"
+            style={{ color: colors.textSecondary }}
+          >
+            Debug Terminal
+          </Text>
+          <TouchableOpacity
+            className="rounded-md px-3 py-1"
+            style={{
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+            onPress={clearLogs}
+            activeOpacity={0.7}
+          >
+            <Text
+              className="text-xs font-semibold"
+              style={{ color: colors.textSecondary }}
+            >
+              Clear
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View
+          className="mb-6 overflow-hidden rounded-xl"
+          style={{ backgroundColor: "#111827", height: 250 }}
+        >
+          <ScrollView
+            ref={terminalScrollRef}
+            className="flex-1 p-3"
+            showsVerticalScrollIndicator
+            nestedScrollEnabled
+          >
+            {logs.length === 0 ? (
+              <Text
+                style={{
+                  color: "#4B5563",
+                  fontSize: 11,
+                  fontFamily: "monospace",
+                }}
+              >
+                No logs yet. Run a dev action to see output here.
+              </Text>
+            ) : (
+              logs.map((entry, index) => (
+                <Text
+                  key={index}
+                  style={{
+                    color: "#D1D5DB",
+                    fontSize: 11,
+                    fontFamily: "monospace",
+                    lineHeight: 18,
+                  }}
+                >
+                  {entry}
+                </Text>
+              ))
+            )}
+          </ScrollView>
+        </View>
 
         {/* Disable developer mode */}
         <TouchableOpacity

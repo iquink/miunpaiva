@@ -1,6 +1,7 @@
 import { eq, inArray } from "drizzle-orm";
 import i18next from "i18next";
 import { db } from "../db";
+import { useDevLogStore } from "../store/devLogStore";
 
 import {
   habits,
@@ -51,6 +52,8 @@ const TIME_OF_DAY = [
 ] as const;
 
 export async function wipeUserData(userId: number): Promise<void> {
+  const { addLog } = useDevLogStore.getState();
+  addLog(`Wiping all data for user ${userId}...`);
   // Delete habits first — cascades to logs and achievementCriteria
   await db.delete(habits).where(eq(habits.userId, userId));
   // Delete custom achievements — cascades to userAchievements and achievementCriteria
@@ -59,12 +62,15 @@ export async function wipeUserData(userId: number): Promise<void> {
   await db
     .delete(userSecretAchievements)
     .where(eq(userSecretAchievements.userId, userId));
+  addLog(`Wipe complete for user ${userId}.`);
 }
 
 export async function generateMockHabits(
   userId: number,
   count: number,
 ): Promise<void> {
+  const { addLog } = useDevLogStore.getState();
+  addLog(`Starting mock habits generation (count=${count})...`);
   const entries: any[] = [];
 
   for (let i = 0; i < count; i++) {
@@ -104,6 +110,7 @@ export async function generateMockHabits(
   }
 
   await db.insert(habits).values(entries);
+  addLog(`Successfully inserted ${entries.length} mock habit(s).`);
 }
 
 export async function generateMockLogs(
@@ -111,6 +118,8 @@ export async function generateMockLogs(
   count: number,
   targetHabitId?: number,
 ): Promise<void> {
+  const { addLog } = useDevLogStore.getState();
+  addLog(`Starting mock logs generation (count=${count})...`);
   let userHabits = await db
     .select({ id: habits.id })
     .from(habits)
@@ -155,6 +164,7 @@ export async function generateMockLogs(
   if (entries.length > 0) {
     await db.insert(logs).values(entries);
   }
+  addLog(`Successfully inserted ${entries.length} mock log(s).`);
 }
 
 // RPG category names that map 1-to-1 with the 7 RPG stat categories
@@ -169,6 +179,8 @@ const RPG_CATEGORIES = [
 ] as const;
 
 export async function boostRPGStats(userId: number): Promise<void> {
+  const { addLog } = useDevLogStore.getState();
+  addLog(`Boosting RPG stats for user ${userId}...`);
   // Insert one boolean habit per RPG category
   const habitRows = RPG_CATEGORIES.map((category) => ({
     userId,
@@ -205,11 +217,14 @@ export async function boostRPGStats(userId: number): Promise<void> {
   }
 
   await db.insert(logs).values(logEntries);
+  addLog(`RPG boost complete: ${inserted.length} habits × 50 days inserted.`);
 }
 
 export async function unlockAllSecretAchievements(
   userId: number,
 ): Promise<void> {
+  const { addLog } = useDevLogStore.getState();
+  addLog(`Unlocking all secret achievements for user ${userId}...`);
   // Find which secret achievements the user already has
   const existing = await db
     .select({ secretAchievementId: userSecretAchievements.secretAchievementId })
@@ -229,4 +244,7 @@ export async function unlockAllSecretAchievements(
   if (toInsert.length > 0) {
     await db.insert(userSecretAchievements).values(toInsert);
   }
+  addLog(
+    `Unlocked ${toInsert.length} secret achievement(s) (${alreadyUnlocked.size} already owned).`,
+  );
 }
