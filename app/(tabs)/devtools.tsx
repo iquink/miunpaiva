@@ -4,6 +4,10 @@ import { useRouter } from "expo-router";
 import { useAuthStore } from "../../store/authStore";
 import { useThemeColors } from "../../hooks/useThemeColors";
 import ScreenHeader from "../../components/ui/ScreenHeader";
+import {
+  wipeDatabaseAndSignOut,
+  seedMockLogs,
+} from "../../services/devService";
 
 interface DevActionButtonProps {
   label: string;
@@ -47,21 +51,67 @@ function DevActionButton({
 
 export default function DevToolsScreen() {
   const colors = useThemeColors();
-  const { setDeveloperMode } = useAuthStore();
+  const { setDeveloperMode, logout, user } = useAuthStore();
   const router = useRouter();
 
   const handleResetDatabase = () => {
     Alert.alert(
-      "Reset Database",
-      "This will wipe all data. Logic not yet implemented.",
-      [{ text: "OK" }],
+      "⚠️ Reset Database",
+      "This will permanently delete ALL user data, habits, and logs. The preset catalog will be restored. Are you sure?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Yes, Reset",
+          style: "destructive",
+          onPress: () => {
+            Alert.alert(
+              "Final Confirmation",
+              "There is no undo. All data will be gone. Continue?",
+              [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Wipe Everything",
+                  style: "destructive",
+                  onPress: async () => {
+                    try {
+                      await wipeDatabaseAndSignOut(logout);
+                      router.replace("/(auth)/login");
+                    } catch (err) {
+                      console.error("[DevTools] Reset failed:", err);
+                      Alert.alert(
+                        "Error",
+                        "Database reset failed. Check the console for details.",
+                      );
+                    }
+                  },
+                },
+              ],
+            );
+          },
+        },
+      ],
     );
   };
 
-  const handleAddMockLogs = () => {
-    Alert.alert("Add 50 Mock Logs", "Mock log injection not yet implemented.", [
-      { text: "OK" },
-    ]);
+  const handleAddMockLogs = async () => {
+    if (!user) {
+      Alert.alert("Not Signed In", "You must be signed in to seed mock logs.");
+      return;
+    }
+    try {
+      await seedMockLogs(user.id);
+      Alert.alert("Done", "50 mock logs have been added across the last 30 days.");
+    } catch (err: any) {
+      if (err?.message === "NO_HABITS") {
+        Alert.alert(
+          "No Habits Found",
+          "Create at least one habit before seeding mock logs.",
+        );
+      } else {
+        console.error("[DevTools] seedMockLogs failed:", err);
+        Alert.alert("Error", "Failed to seed mock logs. Check the console.");
+      }
+    }
   };
 
   const handleTestNotification = () => {
