@@ -1,28 +1,12 @@
-import { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  Alert,
-  StyleSheet,
-} from "react-native";
-import {
-  Check,
-  X,
-  TrendingUp,
-  Lock,
-  Bell,
-  BellOff,
-  Trash2,
-} from "lucide-react-native";
+import React, { useState, useMemo } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { Check, X, TrendingUp, Lock } from "lucide-react-native";
 import type { Habit, Log } from "../../db/schema";
 import HabitValueModal from "./HabitValueModal";
+import ActionBottomSheet from "./ActionBottomSheet";
 import { isDateEditable } from "../../utils/dateUtils";
 import { useThemeColors } from "../../hooks/useThemeColors";
-import { getNotificationTimeLabel } from "../../services/notificationService";
 import { useTranslation } from "react-i18next";
-import React from "react";
 
 interface HabitCardProps {
   habit: Habit;
@@ -43,102 +27,68 @@ export default function HabitCard({
   onToggleNotification,
   onDelete,
 }: HabitCardProps) {
-  const [showModal, setShowModal] = useState(false);
-  const [showActionModal, setShowActionModal] = useState(false);
+  const [showValueModal, setShowValueModal] = useState(false);
+  const [showActionSheet, setShowActionSheet] = useState(false);
   const colors = useThemeColors();
   const { t } = useTranslation("common");
 
   const isBoolean = habit.type === "boolean";
   const isCounter = habit.type === "counter";
-  const currentValue = log?.value || 0;
-  const isCompleted = log?.completed || false;
-
-  // Calculate if date is editable (Today or Yesterday only)
   const isEditable = isDateEditable(selectedDate);
 
-  const handlePress = () => {
-    if (!isEditable) return; // Locked - no action
+  // Single memo consolidates all state-derived colors and computed values.
+  // Re-runs only when the log, type flags, editability, goal, or theme change.
+  const derived = useMemo(() => {
+    const isCompleted = log?.completed ?? false;
+    const currentValue = log?.value ?? 0;
+    const isGoalMet =
+      isCounter && !!habit.dailyGoal && currentValue >= habit.dailyGoal;
+    const isAchieved = (isBoolean && isCompleted) || isGoalMet;
 
+    return {
+      isCompleted,
+      currentValue,
+      isGoalMet,
+      progressPercentage:
+        isCounter && habit.dailyGoal
+          ? Math.min((currentValue / habit.dailyGoal) * 100, 100)
+          : 0,
+      cardBg: isAchieved ? colors.success + "20" : colors.surface,
+      titleColor: isAchieved ? colors.success : colors.text,
+      iconBg: !isEditable
+        ? colors.border
+        : isBoolean
+          ? isCompleted
+            ? colors.success
+            : colors.border
+          : isGoalMet
+            ? colors.success
+            : colors.primary,
+      iconColor:
+        !isEditable || (isBoolean && !isCompleted)
+          ? colors.textSecondary
+          : colors.primaryForeground,
+    };
+  }, [log, isBoolean, isCounter, isEditable, habit.dailyGoal, colors]);
+
+  const handlePress = () => {
+    if (!isEditable) return;
     if (isBoolean) {
       onToggle(habit);
     } else if (isCounter) {
-      setShowModal(true);
+      setShowValueModal(true);
     }
-  };
-
-  const handleSaveValue = (value: number) => {
-    onUpdateValue(habit, value);
-  };
-
-  const handleToggleNotification = () => {
-    setShowActionModal(false);
-    onToggleNotification(habit);
-  };
-
-  const handleDeletePress = () => {
-    setShowActionModal(false);
-    // Wait for the bottom-sheet animation to finish before showing Alert
-    setTimeout(() => {
-      Alert.alert(t("delete"), t("delete_habit_message"), [
-        { text: t("cancel"), style: "cancel" },
-        {
-          text: t("delete"),
-          style: "destructive",
-          onPress: () => onDelete(habit),
-        },
-      ]);
-    }, 300);
-  };
-
-  // Calculate progress for counter habits
-  const getProgressPercentage = () => {
-    if (!isCounter || !habit.dailyGoal) return 0;
-    return Math.min((currentValue / habit.dailyGoal) * 100, 100);
-  };
-
-  const progressPercentage = getProgressPercentage();
-  const isGoalMet =
-    isCounter && habit.dailyGoal && currentValue >= habit.dailyGoal;
-
-  // Determine card background color
-  const getCardBgColor = () => {
-    if (isBoolean && isCompleted) return colors.success + "20";
-    if (isCounter && isGoalMet) return colors.success + "20";
-    return colors.surface;
-  };
-
-  // Determine text color for title
-  const getTitleColor = () => {
-    if (isBoolean && isCompleted) return colors.success;
-    if (isCounter && isGoalMet) return colors.success;
-    return colors.text;
-  };
-
-  // Determine icon background color
-  const getIconBgColor = () => {
-    if (!isEditable) return colors.border;
-    if (isBoolean) {
-      return isCompleted ? colors.success : colors.border;
-    }
-    return isGoalMet ? colors.success : colors.primary;
-  };
-
-  // Determine icon color
-  const getIconColor = () => {
-    if (!isEditable) return colors.textSecondary;
-    if (isBoolean && !isCompleted) return colors.textSecondary;
-    return colors.primaryForeground;
   };
 
   return (
     <>
       <TouchableOpacity
         onPress={handlePress}
-        onLongPress={() => setShowActionModal(true)}
+        onLongPress={() => setShowActionSheet(true)}
         delayLongPress={400}
         className="mb-3 rounded-xl p-4"
         style={{
-          backgroundColor: getCardBgColor(),
+          backgroundColor: derived.cardBg,
           opacity: isEditable ? 1 : 0.5,
         }}
       >
@@ -146,7 +96,7 @@ export default function HabitCard({
           <View className="flex-1">
             <Text
               className="text-base font-semibold"
-              style={{ color: getTitleColor() }}
+              style={{ color: derived.titleColor }}
             >
               {habit.title}
             </Text>
@@ -167,7 +117,7 @@ export default function HabitCard({
                   className="text-sm font-medium"
                   style={{ color: colors.text }}
                 >
-                  {currentValue}
+                  {derived.currentValue}
                   {habit.dailyGoal && ` / ${habit.dailyGoal}`}
                   {habit.unit && ` ${habit.unit}`}
                 </Text>
@@ -180,8 +130,8 @@ export default function HabitCard({
                     <View
                       className="h-full"
                       style={{
-                        width: `${progressPercentage}%`,
-                        backgroundColor: isGoalMet
+                        width: `${derived.progressPercentage}%`,
+                        backgroundColor: derived.isGoalMet
                           ? colors.success
                           : colors.primary,
                       }}
@@ -191,30 +141,30 @@ export default function HabitCard({
               </View>
             )}
 
-            {/* Type Label */}
+            {/* Type Label — uses existing translation keys */}
             <Text
               className="mt-2 text-xs"
               style={{ color: colors.textSecondary }}
             >
-              {isBoolean ? "Yes/No" : "Counter"}
+              {isBoolean ? t("habit_type_boolean") : t("habit_type_counter")}
             </Text>
           </View>
 
           {/* Icon */}
           <View
             className="h-12 w-12 items-center justify-center rounded-full"
-            style={{ backgroundColor: getIconBgColor() }}
+            style={{ backgroundColor: derived.iconBg }}
           >
             {!isEditable ? (
-              <Lock color={getIconColor()} size={20} />
+              <Lock color={derived.iconColor} size={20} />
             ) : isBoolean ? (
-              isCompleted ? (
-                <Check color={getIconColor()} size={24} />
+              derived.isCompleted ? (
+                <Check color={derived.iconColor} size={24} />
               ) : (
-                <X color={getIconColor()} size={24} />
+                <X color={derived.iconColor} size={24} />
               )
             ) : (
-              <TrendingUp color={getIconColor()} size={24} />
+              <TrendingUp color={derived.iconColor} size={24} />
             )}
           </View>
         </View>
@@ -223,118 +173,21 @@ export default function HabitCard({
       {/* Counter Value Modal */}
       {isCounter && (
         <HabitValueModal
-          visible={showModal}
+          visible={showValueModal}
           habit={habit}
-          currentValue={currentValue}
-          onClose={() => setShowModal(false)}
-          onSave={handleSaveValue}
+          currentValue={derived.currentValue}
+          onClose={() => setShowValueModal(false)}
+          onSave={(value) => onUpdateValue(habit, value)}
         />
       )}
 
-      {/* Action Modal (bottom sheet) */}
-      <Modal
-        visible={showActionModal}
-        transparent
-        animationType="slide"
-        statusBarTranslucent
-        onRequestClose={() => setShowActionModal(false)}
-      >
-        <View style={{ flex: 1, justifyContent: "flex-end" }}>
-          {/* Backdrop */}
-          <TouchableOpacity
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              backgroundColor: "rgba(0,0,0,0.45)",
-            }}
-            activeOpacity={1}
-            onPress={() => setShowActionModal(false)}
-          />
-
-          {/* Sheet */}
-          <View
-            style={{
-              backgroundColor: colors.surface,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              padding: 24,
-              paddingBottom: 40,
-            }}
-          >
-            {/* Header */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 20,
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.text,
-                  fontSize: 16,
-                  fontWeight: "700",
-                  flex: 1,
-                  marginRight: 12,
-                }}
-                numberOfLines={1}
-              >
-                {habit.title}
-              </Text>
-              <TouchableOpacity onPress={() => setShowActionModal(false)}>
-                <X color={colors.textSecondary} size={20} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Toggle notifications */}
-            <TouchableOpacity
-              onPress={handleToggleNotification}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 16,
-                borderRadius: 12,
-                backgroundColor: colors.background,
-                marginBottom: 12,
-              }}
-            >
-              <View style={{ marginRight: 14 }}>
-                {habit.isNotificationsEnabled ? (
-                  <BellOff color={colors.primary} size={20} />
-                ) : (
-                  <Bell color={colors.primary} size={20} />
-                )}
-              </View>
-              <Text style={{ color: colors.text, fontSize: 15 }}>
-                {habit.isNotificationsEnabled
-                  ? t("notif_turn_off")
-                  : `${t("notif_turn_on")} (${getNotificationTimeLabel(habit.timeOfDay)})`}
-              </Text>
-            </TouchableOpacity>
-
-            {/* Delete */}
-            <TouchableOpacity
-              onPress={handleDeletePress}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 16,
-                borderRadius: 12,
-                backgroundColor: colors.error + "18",
-              }}
-            >
-              <View style={{ marginRight: 14 }}>
-                <Trash2 color={colors.error} size={20} />
-              </View>
-              <Text
-                style={{ color: colors.error, fontSize: 15, fontWeight: "600" }}
-              >
-                {t("delete")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <ActionBottomSheet
+        visible={showActionSheet}
+        habit={habit}
+        onClose={() => setShowActionSheet(false)}
+        onToggleNotification={() => onToggleNotification(habit)}
+        onDelete={() => onDelete(habit)}
+      />
     </>
   );
 }
