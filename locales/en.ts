@@ -84,6 +84,14 @@ const translation = {
   time_of_day_afternoon: "Afternoon",
   time_of_day_evening: "Evening",
   time_of_day_all_day: "All Day",
+  // Time zone section headers (dashboard grouping)
+  time_zones: {
+    morning: "☀️ Morning",
+    late_morning: "🌤️ Late Morning",
+    afternoon: "🌞 Afternoon",
+    evening: "🌙 Evening",
+    all_day: "🕐 All Day",
+  },
   // Preset categories
   cat_group_activities: "Group Activities",
   cat_exercise: "Exercise",

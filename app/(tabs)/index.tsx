@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { View, Text, ScrollView, RefreshControl } from "react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
@@ -24,6 +24,17 @@ export default function DashboardScreen() {
   const [showPicker, setShowPicker] = useState(false);
   const [showAddHabit, setShowAddHabit] = useState(false);
 
+  // Chronological order for time-of-day sections
+  const TIME_OF_DAY_ORDER = [
+    "morning",
+    "late_morning",
+    "afternoon",
+    "evening",
+    "all_day",
+  ] as const;
+
+  type TimeOfDay = (typeof TIME_OF_DAY_ORDER)[number];
+
   // Use the custom hook for habits management
   const {
     userHabits,
@@ -38,6 +49,30 @@ export default function DashboardScreen() {
     deleteHabit,
     toggleHabitNotification,
   } = useHabits(user?.id, selectedDate);
+
+  // Group visible habits into chronological sections; omit empty sections
+  const groupedHabits = useMemo(() => {
+    const groups: Record<TimeOfDay, typeof userHabits> = {
+      morning: [],
+      late_morning: [],
+      afternoon: [],
+      evening: [],
+      all_day: [],
+    };
+
+    for (const habit of userHabits) {
+      const slot = (habit.timeOfDay ?? "all_day") as TimeOfDay;
+      if (slot in groups) {
+        groups[slot].push(habit);
+      } else {
+        groups.all_day.push(habit);
+      }
+    }
+
+    return TIME_OF_DAY_ORDER.filter((key) => groups[key].length > 0).map(
+      (key) => ({ key, habits: groups[key] }),
+    );
+  }, [userHabits]);
 
   // Close modal when tab loses focus
   useFocusEffect(
@@ -120,17 +155,27 @@ export default function DashboardScreen() {
             </Text>
           </View>
         ) : (
-          userHabits.map((habit) => (
-            <HabitCard
-              key={habit.id}
-              habit={habit}
-              log={habitLogs.get(habit.id)}
-              selectedDate={selectedDate}
-              onToggle={toggleBooleanHabit}
-              onUpdateValue={updateCounterValue}
-              onToggleNotification={toggleHabitNotification}
-              onDelete={deleteHabit}
-            />
+          groupedHabits.map(({ key, habits }) => (
+            <View key={key}>
+              <Text
+                className="text-xl font-bold mt-6 mb-3 px-2"
+                style={{ color: colors.text }}
+              >
+                {t(`time_zones.${key}`)}
+              </Text>
+              {habits.map((habit) => (
+                <HabitCard
+                  key={habit.id}
+                  habit={habit}
+                  log={habitLogs.get(habit.id)}
+                  selectedDate={selectedDate}
+                  onToggle={toggleBooleanHabit}
+                  onUpdateValue={updateCounterValue}
+                  onToggleNotification={toggleHabitNotification}
+                  onDelete={deleteHabit}
+                />
+              ))}
+            </View>
           ))
         )}
       </ScrollView>

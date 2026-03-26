@@ -81,10 +81,18 @@ const translation = {
   // Time of day
   time_of_day: "Vuorokaudenaika",
   time_of_day_morning: "Aamu",
-  time_of_day_late_morning: "Myöhäisaamu",
+  time_of_day_late_morning: "Aamupäivä",
   time_of_day_afternoon: "Iltapäivä",
   time_of_day_evening: "Ilta",
   time_of_day_all_day: "Koko päivä",
+  // Time zone section headers (dashboard grouping)
+  time_zones: {
+    morning: "☀️ Aamu",
+    late_morning: "🌤️ Aamupäivä",
+    afternoon: "🌞 Iltapäivä",
+    evening: "🌙 Ilta",
+    all_day: "🕐 Koko päivä",
+  },
   // Preset categories
   cat_group_activities: "Ryhmätoiminta",
   cat_exercise: "Liikunta",
