@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, Text, ScrollView, Alert, Image } from "react-native";
+import { useState, useRef } from "react";
+import { View, Text, ScrollView, Alert, Image, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "nativewind";
@@ -19,11 +19,50 @@ import { useThemeColors } from "../../hooks/useThemeColors";
 export default function SettingsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
-  const { user, logout } = useAuthStore();
+  const { user, logout, isDeveloperMode, setDeveloperMode } = useAuthStore();
   const isPersonalAccount = user?.passwordHash === DUMMY_PASSWORD;
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation("common");
   const { colorScheme, setColorScheme } = useColorScheme();
   const [isDeleting, setIsDeleting] = useState(false);
+  const tapCountRef = useRef(0);
+  const lastTapRef = useRef<number>(0);
+
+  const handleEuLogoTap = () => {
+    if (isDeveloperMode) return;
+    const now = Date.now();
+    if (now - lastTapRef.current > 1000) {
+      tapCountRef.current = 1;
+    } else {
+      tapCountRef.current += 1;
+    }
+    lastTapRef.current = now;
+
+    if (tapCountRef.current >= 5) {
+      tapCountRef.current = 0;
+      Alert.alert(t("enable_dev_mode_title"), t("enable_dev_mode_message"), [
+        { text: t("no"), style: "cancel" },
+        {
+          text: t("yes"),
+          onPress: () => {
+            Alert.alert(t("danger_title"), t("danger_message"), [
+              { text: t("cancel"), style: "cancel" },
+              {
+                text: t("enable"),
+                style: "destructive",
+                onPress: () => {
+                  setDeveloperMode(true);
+                  Alert.alert(
+                    t("dev_mode_enabled_title"),
+                    t("dev_mode_enabled_message"),
+                  );
+                },
+              },
+            ]);
+          },
+        },
+      ]);
+    }
+  };
 
   const handleLogout = () => {
     Alert.alert(t("logout"), t("logout_confirm"), [
@@ -113,14 +152,18 @@ export default function SettingsScreen() {
           isDeleting={isDeleting}
         />
 
-        {/* EU Logo */}
-        <View className="mt-8 items-center pb-4">
+        {/* EU Logo — tap 5 times quickly to unlock Developer Mode */}
+        <Pressable
+          className="mt-8 items-center pb-4"
+          onPress={handleEuLogoTap}
+          accessibilityLabel="EU Logo"
+        >
           <Image
             source={require("../../assets/eu-logo.png")}
             className="h-12 w-auto"
             resizeMode="contain"
           />
-        </View>
+        </Pressable>
 
         {/* App Info */}
         <View className="mt-4 items-center pb-8">

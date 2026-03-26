@@ -243,6 +243,17 @@ const translation = {
   no_user: "No user logged in",
   app_version: "Miunpäivä v1.0.0",
   made_with_love: "Made with ❤️ using React Native & Expo",
+  // Developer Mode
+  enable_dev_mode_title: "Enable Developer Mode?",
+  enable_dev_mode_message: "This unlocks the DevTools tab.",
+  danger_title: "⚠️ DANGER",
+  danger_message:
+    "Developer mode allows destructive actions like wiping the database. You could lose all data. Are you absolutely sure?",
+  enable: "Enable",
+  dev_mode_enabled_title: "Developer Mode Enabled",
+  dev_mode_enabled_message: "The DevTools tab is now visible.",
+  yes: "Yes",
+  no: "No",
 
   // Errors
   error: "Error",

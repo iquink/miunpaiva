@@ -1,12 +1,14 @@
 import { Tabs } from "expo-router";
-import { Home, Award, Settings, Wind } from "lucide-react-native";
+import { Home, Award, Settings, Wind, Wrench } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { useThemeColors } from "../../hooks/useThemeColors";
+import { useAuthStore } from "../../store/authStore";
 
 export default function TabsLayout() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const colors = useThemeColors();
+  const isDeveloperMode = useAuthStore((s) => s.isDeveloperMode);
 
   return (
     <Tabs
@@ -49,6 +51,14 @@ export default function TabsLayout() {
         options={{
           title: t("relax"),
           tabBarIcon: ({ color, size }) => <Wind color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="devtools"
+        options={{
+          href: isDeveloperMode ? "/devtools" : null,
+          title: "DevTools",
+          tabBarIcon: ({ color, size }) => <Wrench color={color} size={size} />,
         }}
       />
     </Tabs>

@@ -245,6 +245,17 @@ const translation = {
   no_user: "Ei kirjautunutta käyttäjää",
   app_version: "Miunpäivä v1.0.0",
   made_with_love: "Tehty ❤️:lla React Nativella & Expolla",
+  // Developer Mode
+  enable_dev_mode_title: "Ota kehittäjätila käyttöön?",
+  enable_dev_mode_message: "Tämä avaa DevTools-välilehden.",
+  danger_title: "⚠️ VAARA",
+  danger_message:
+    "Kehittäjätila mahdollistaa tuhoavat toiminnot kuten tietokannan tyhjennyksen. Voit menettää kaikki tiedot. Oletko aivan varma?",
+  enable: "Ota käyttöön",
+  dev_mode_enabled_title: "Kehittäjätila käytössä",
+  dev_mode_enabled_message: "DevTools-välilehti on nyt näkyvissä.",
+  yes: "Kyllä",
+  no: "Ei",
 
   // Errors
   error: "Virhe",
