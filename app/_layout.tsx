@@ -6,9 +6,10 @@ import "../global.css";
 import { useAuthStore } from "../store/authStore";
 import { useThemeStore } from "../store/themeStore";
 import { useThemeColors } from "../hooks/useThemeColors";
-import { useDatabaseMigrations } from "../db";
+import { useDatabaseMigrations, db } from "../db";
 import { initI18n } from "../i18n";
 import { seedPresets } from "../db/seedPresets";
+import { migrateOldPresets } from "../utils/presetMigration";
 import { cn } from "../lib/utils";
 import React from "react";
 
@@ -46,16 +47,20 @@ export default function RootLayout() {
   // Initialize i18n and seed presets
   useEffect(() => {
     if (migrationSuccess) {
-      Promise.all([initI18n(), seedPresets()])
-        .then(() => {
+      (async () => {
+        try {
+          console.log("[init] Running data migration...");
+          await migrateOldPresets(db);
+          console.log("[init] Data migration complete.");
+          await Promise.all([initI18n(), seedPresets()]);
           setI18nReady(true);
           initAuth();
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Initialization error:", error);
           setI18nReady(true); // Continue anyway
           initAuth();
-        });
+        }
+      })();
     }
   }, [migrationSuccess]);
 

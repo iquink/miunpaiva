@@ -25,67 +25,67 @@ export const SECRET_ACHIEVEMENTS: SecretAchievement[] = [
     id: "aquaman",
     icon: "💧",
     type: "total_preset",
-    condition: { presetName: "Nesteytys/veden juonti", target: 100 },
+    condition: { presetName: "preset_hydration", target: 100 },
   },
   {
     id: "ironman",
     icon: "🏋️",
     type: "total_preset",
-    condition: { presetName: "Kuntosali", target: 50 },
+    condition: { presetName: "preset_gym", target: 50 },
   },
   {
     id: "sauna_master",
     icon: "🧖",
     type: "total_preset",
-    condition: { presetName: "Sauna", target: 50 },
+    condition: { presetName: "preset_sauna", target: 50 },
   },
   {
     id: "bingo_champion",
     icon: "🎱",
     type: "total_preset",
-    condition: { presetName: "Bingo", target: 20 },
+    condition: { presetName: "preset_bingo", target: 20 },
   },
   {
     id: "picasso",
     icon: "🎨",
     type: "total_preset",
-    condition: { presetName: "Taide", target: 30 },
+    condition: { presetName: "preset_art", target: 30 },
   },
   {
     id: "disco_king",
     icon: "🕺",
     type: "total_preset",
-    condition: { presetName: "Disco", target: 10 },
+    condition: { presetName: "preset_disco", target: 10 },
   },
   {
     id: "forest_spirit",
     icon: "🌲",
     type: "total_preset",
-    condition: { presetName: "Ulkoilu", target: 100 },
+    condition: { presetName: "preset_outdoor_activity", target: 100 },
   },
   {
     id: "zen_master",
     icon: "🧘",
     type: "total_preset",
-    condition: { presetName: "Rentoutus", target: 30 },
+    condition: { presetName: "preset_relaxation", target: 30 },
   },
   {
     id: "clean_smile",
     icon: "🦷",
     type: "total_preset",
-    condition: { presetName: "Hampaiden pesu", target: 100 },
+    condition: { presetName: "preset_teeth_brush", target: 100 },
   },
   {
     id: "marathoner",
     icon: "🏃",
     type: "total_preset",
-    condition: { presetName: "Juoksu", target: 50 },
+    condition: { presetName: "preset_running", target: 50 },
   },
   {
     id: "health_first",
     icon: "💊",
     type: "total_preset",
-    condition: { presetName: "Lääkkeiden otto", target: 100 },
+    condition: { presetName: "preset_medication", target: 100 },
   },
 
   // ==========================================
@@ -96,7 +96,11 @@ export const SECRET_ACHIEVEMENTS: SecretAchievement[] = [
     icon: "🌅",
     type: "combo_same_day",
     condition: {
-      presetNames: ["Sängyn petaus", "Hampaiden pesu", "Aamupalan syönti"],
+      presetNames: [
+        "preset_make_bed",
+        "preset_teeth_brush",
+        "preset_breakfast",
+      ],
     },
   },
   {
@@ -104,7 +108,11 @@ export const SECRET_ACHIEVEMENTS: SecretAchievement[] = [
     icon: "🌙",
     type: "combo_same_day",
     condition: {
-      presetNames: ["Iltapalan syönti", "Hampaiden pesu", "Nukkumaan meno"],
+      presetNames: [
+        "preset_evening_snack",
+        "preset_teeth_brush",
+        "preset_bedtime",
+      ],
     },
   },
   {
@@ -113,10 +121,10 @@ export const SECRET_ACHIEVEMENTS: SecretAchievement[] = [
     type: "combo_same_day",
     condition: {
       presetNames: [
-        "Aamupalan syönti",
-        "Lounaan syönti",
-        "Päivällisen syönti",
-        "Iltapalan syönti",
+        "preset_breakfast",
+        "preset_lunch",
+        "preset_dinner",
+        "preset_evening_snack",
       ],
     },
   },
@@ -126,9 +134,9 @@ export const SECRET_ACHIEVEMENTS: SecretAchievement[] = [
     type: "combo_same_day",
     condition: {
       presetNames: [
-        "Oman huoneen siivous",
-        "Tavaroiden järjestely",
-        "Pyykinpesu",
+        "preset_room_cleaning",
+        "preset_organizing",
+        "preset_laundry",
       ],
     },
   },
@@ -137,7 +145,7 @@ export const SECRET_ACHIEVEMENTS: SecretAchievement[] = [
     icon: "🧖‍♀️",
     type: "combo_same_day",
     condition: {
-      presetNames: ["Sauna", "Suihku", "Rentoutus"],
+      presetNames: ["preset_sauna", "preset_shower", "preset_relaxation"],
     },
   },
   {
@@ -145,7 +153,11 @@ export const SECRET_ACHIEVEMENTS: SecretAchievement[] = [
     icon: "💪",
     type: "combo_same_day",
     condition: {
-      presetNames: ["Ulkoilu", "Jumppa", "Suihku"],
+      presetNames: [
+        "preset_outdoor_activity",
+        "preset_gymnastics",
+        "preset_shower",
+      ],
     },
   },
 ];

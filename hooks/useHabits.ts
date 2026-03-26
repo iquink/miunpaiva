@@ -92,6 +92,7 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
     selectedWeekdays: number[];
     targetDate: Date | null;
     endDate: Date | null;
+    timeOfDay: "morning" | "late_morning" | "afternoon" | "evening" | "all_day";
   }) => {
     if (!userId || !habitData.title.trim()) {
       Alert.alert(t("error"), t("error_title_required"));
@@ -131,6 +132,7 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
         dailyGoal: hasGoal ? parseInt(habitData.dailyGoal, 10) : null,
         category: habitData.category,
         presetName: habitData.selectedPreset ?? null,
+        timeOfDay: habitData.timeOfDay,
         frequency: habitData.frequency,
         frequencyDays:
           habitData.frequency === "weekly"

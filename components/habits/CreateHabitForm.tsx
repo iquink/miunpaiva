@@ -26,6 +26,13 @@ interface Preset {
   categoryId: number;
 }
 
+type TimeOfDay =
+  | "morning"
+  | "late_morning"
+  | "afternoon"
+  | "evening"
+  | "all_day";
+
 interface HabitFormData {
   title: string;
   description: string;
@@ -37,6 +44,7 @@ interface HabitFormData {
   selectedWeekdays: number[];
   targetDate: Date | null;
   endDate: Date | null;
+  timeOfDay: TimeOfDay;
 }
 
 interface CreateHabitFormProps {
@@ -46,14 +54,25 @@ interface CreateHabitFormProps {
   onCancel: () => void;
 }
 
+const TIME_OF_DAY_OPTIONS: TimeOfDay[] = [
+  "morning",
+  "late_morning",
+  "afternoon",
+  "evening",
+  "all_day",
+];
+
 export default function CreateHabitForm({
   categories,
   presets,
   onSubmit,
   onCancel,
 }: CreateHabitFormProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const colors = useThemeColors();
+
+  // Tab: "preset" | "custom"
+  const [activeTab, setActiveTab] = useState<"preset" | "custom">("preset");
 
   // Form state
   const [title, setTitle] = useState("");
@@ -62,6 +81,7 @@ export default function CreateHabitForm({
   const [dailyGoal, setDailyGoal] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("all_day");
 
   // Schedule state
   const [frequency, setFrequency] = useState<"daily" | "weekly" | "once">(
@@ -79,14 +99,28 @@ export default function CreateHabitForm({
     );
   };
 
+  const handleTabChange = (tab: "preset" | "custom") => {
+    setActiveTab(tab);
+    if (tab === "custom") {
+      // Clear preset selection when switching to custom
+      setSelectedCategory(null);
+      setSelectedPreset(null);
+    } else {
+      // Clear custom title when switching to preset
+      setTitle("");
+    }
+  };
+
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
     setSelectedPreset(null);
+    setTitle("");
   };
 
-  const handlePresetSelect = (presetName: string) => {
-    setTitle(presetName);
-    setSelectedPreset(presetName);
+  const handlePresetSelect = (presetId: string) => {
+    setSelectedPreset(presetId);
+    // Title is derived from t(presetId) at submit time; store the ID for now
+    setTitle(t(presetId));
   };
 
   const handleSubmit = () => {
@@ -101,6 +135,7 @@ export default function CreateHabitForm({
       selectedWeekdays,
       targetDate,
       endDate,
+      timeOfDay,
     });
   };
 
@@ -120,28 +155,95 @@ export default function CreateHabitForm({
           {t("new_habit")}
         </Text>
 
-        <PresetSelector
-          categories={categories}
-          presets={presets}
-          selectedCategory={selectedCategory}
-          selectedPreset={selectedPreset}
-          onCategorySelect={handleCategorySelect}
-          onPresetSelect={handlePresetSelect}
-        />
+        {/* ── Tab Bar ─────────────────────────────────────────────────────── */}
+        <View
+          className="mb-4 flex-row rounded-xl p-1"
+          style={{ backgroundColor: colors.border }}
+        >
+          {(["preset", "custom"] as const).map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <TouchableOpacity
+                key={tab}
+                onPress={() => handleTabChange(tab)}
+                className="flex-1 items-center rounded-lg py-3"
+                style={{
+                  backgroundColor: isActive ? colors.surface : "transparent",
+                }}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: isActive }}
+              >
+                <Text
+                  className="text-sm font-semibold"
+                  style={{
+                    color: isActive ? colors.primary : colors.textSecondary,
+                  }}
+                >
+                  {tab === "preset"
+                    ? t("tab_choose_preset")
+                    : t("tab_custom_task")}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
 
+        {/* ── Tab 1: Choose Preset ─────────────────────────────────────────── */}
+        {activeTab === "preset" && (
+          <PresetSelector
+            categories={categories}
+            presets={presets}
+            selectedCategory={selectedCategory}
+            selectedPreset={selectedPreset}
+            onCategorySelect={handleCategorySelect}
+            onPresetSelect={handlePresetSelect}
+          />
+        )}
+
+        {/* ── Tab 2: Custom Task ───────────────────────────────────────────── */}
+        {activeTab === "custom" && (
+          <Input
+            className="mb-3"
+            placeholder={t("habit_title")}
+            value={title}
+            onChangeText={setTitle}
+          />
+        )}
+
+        {/* ── Time of Day Selector ─────────────────────────────────────────── */}
         <Text
-          className="mb-2 text-sm font-medium"
+          className="mb-2 text-sm font-semibold"
           style={{ color: colors.text }}
         >
-          {t("or_custom")}
+          {t("time_of_day")}
         </Text>
-
-        <Input
-          className="mb-3"
-          placeholder={t("habit_title")}
-          value={title}
-          onChangeText={setTitle}
-        />
+        <View className="mb-4 flex-row flex-wrap gap-2">
+          {TIME_OF_DAY_OPTIONS.map((option) => {
+            const isSelected = timeOfDay === option;
+            return (
+              <TouchableOpacity
+                key={option}
+                onPress={() => setTimeOfDay(option)}
+                className="rounded-full border px-4 py-2"
+                style={{
+                  backgroundColor: isSelected
+                    ? colors.primary + "20"
+                    : colors.surface,
+                  borderColor: isSelected ? colors.primary : colors.border,
+                }}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: isSelected }}
+              >
+                <Text
+                  className="text-sm font-medium"
+                  style={{ color: isSelected ? colors.primary : colors.text }}
+                >
+                  {t(`time_of_day_${option}`)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
 
         <Input
           className="mb-4"

@@ -1,105 +1,129 @@
-import { eq, and } from "drizzle-orm";
+import { eq, not, like } from "drizzle-orm";
 import { db } from "./index";
 import { presetCategories, presetItems } from "./schema";
 
-// Finnish preset data
-const PRESET_DATA = {
-  Ryhmätoiminta: [
-    "Askartelu",
-    "Puutyöt",
-    "Ulkoilu",
-    "Lenkki",
-    "Laulu",
-    "Seurakunta",
-    "Musiikki",
-    "Bingo",
-    "Taide",
-    "Peli",
-    "Rentoutus",
-    "Disco",
-    "Vapaamuotoinen teksti",
+// String-ID-based preset data — keys are i18n IDs
+const PRESET_DATA: Record<string, string[]> = {
+  cat_group_activities: [
+    "preset_crafts",
+    "preset_woodwork",
+    "preset_outdoor_activity",
+    "preset_walk",
+    "preset_singing",
+    "preset_congregation",
+    "preset_music",
+    "preset_bingo",
+    "preset_art",
+    "preset_games",
+    "preset_relaxation",
+    "preset_disco",
+    "preset_free_text",
   ],
-  Liikunta: ["Kävely", "Jumppa", "Kuntosali", "Juoksu"],
-  Päivärutiinit: [
-    "Sängyn petaus",
-    "Hampaiden pesu",
-    "Suihku",
-    "Sauna",
-    "Lääkkeiden otto",
-    "Parran ajo",
-    "Pyykinpesu",
+  cat_exercise: [
+    "preset_walking",
+    "preset_gymnastics",
+    "preset_gym",
+    "preset_running",
   ],
-  Vuorokausirytmi: ["Nukkumaan meno", "Herätys", "Lepo"],
-  Ravitsemus: [
-    "Aamupalan syönti",
-    "Lounaan syönti",
-    "Päivällisen syönti",
-    "Iltapalan syönti",
-    "Herkuttelu",
-    "Nesteytys/veden juonti",
+  cat_daily_routines: [
+    "preset_make_bed",
+    "preset_teeth_brush",
+    "preset_shower",
+    "preset_sauna",
+    "preset_medication",
+    "preset_shaving",
+    "preset_laundry",
   ],
-  Siivous: ["Oman huoneen siivous", "Tavaroiden järjestely"],
-  Vastuutehtävä: ["Keittiö", "Siivous"],
+  cat_daily_rhythm: ["preset_bedtime", "preset_wake_up", "preset_rest"],
+  cat_nutrition: [
+    "preset_breakfast",
+    "preset_lunch",
+    "preset_dinner",
+    "preset_evening_snack",
+    "preset_treats",
+    "preset_hydration",
+  ],
+  cat_cleaning: ["preset_room_cleaning", "preset_organizing"],
+  cat_responsibilities: ["preset_kitchen_duty", "preset_cleaning_duty"],
 };
 
 /**
- * Seeds preset categories and items into the database
- * Uses smart sync: adds new categories/items without wiping existing data
+ * Seeds preset categories and items into the database.
+ * Clears existing preset data first to ensure a clean slate with the new string IDs.
  */
 export async function seedPresets(): Promise<void> {
   try {
-    console.log("Syncing preset categories and items...");
+    console.log("[seedPresets] Checking preset data...");
 
-    // Iterate through all categories in the JSON
-    for (const [categoryLabel, items] of Object.entries(PRESET_DATA)) {
-      // Check if category already exists
+    // ── One-time legacy cleanup ──────────────────────────────────────────────
+    // Delete any category whose label is not a string ID (i.e. old Finnish strings).
+    // Cascade delete removes their items automatically.
+    const legacyCategories = await db
+      .select({ id: presetCategories.id, label: presetCategories.label })
+      .from(presetCategories)
+      .where(not(like(presetCategories.label, "cat_%")));
+
+    if (legacyCategories.length > 0) {
+      for (const legacy of legacyCategories) {
+        await db
+          .delete(presetCategories)
+          .where(eq(presetCategories.id, legacy.id));
+      }
+      console.log(
+        `[seedPresets] Removed ${legacyCategories.length} legacy category row(s).`,
+      );
+    }
+
+    // ── Smart insert ────────────────────────────────────────────────────────
+    let newCategoryCount = 0;
+    let newItemCount = 0;
+
+    for (const [categoryId, itemIds] of Object.entries(PRESET_DATA)) {
+      // Find or create the category row
       const [existingCategory] = await db
-        .select()
+        .select({ id: presetCategories.id })
         .from(presetCategories)
-        .where(eq(presetCategories.label, categoryLabel));
+        .where(eq(presetCategories.label, categoryId));
 
-      let categoryId: number;
-
+      let categoryRowId: number;
       if (!existingCategory) {
-        // Category doesn't exist - insert it
-        const [newCategory] = await db
+        const [inserted] = await db
           .insert(presetCategories)
-          .values({ label: categoryLabel })
+          .values({ label: categoryId })
           .returning();
-        categoryId = newCategory.id;
-        console.log(`✓ Added new category: ${categoryLabel}`);
+        categoryRowId = inserted.id;
+        newCategoryCount++;
       } else {
-        // Category exists - use its ID
-        categoryId = existingCategory.id;
+        categoryRowId = existingCategory.id;
       }
 
-      // Now sync items for this category
-      for (const itemName of items) {
-        // Check if this item already exists for this category
-        const [existingItem] = await db
-          .select()
-          .from(presetItems)
-          .where(
-            and(
-              eq(presetItems.categoryId, categoryId),
-              eq(presetItems.name, itemName),
-            ),
-          );
+      // Fetch existing item names for this category
+      const existingItems = await db
+        .select({ name: presetItems.name })
+        .from(presetItems)
+        .where(eq(presetItems.categoryId, categoryRowId));
+      const existingNames = new Set(existingItems.map((i) => i.name));
 
-        if (!existingItem) {
-          // Item doesn't exist - insert it
-          await db.insert(presetItems).values({
-            categoryId: categoryId,
-            name: itemName,
-          });
-          console.log(`  ✓ Added new item: ${itemName}`);
+      // Insert only missing items
+      for (const itemId of itemIds) {
+        if (!existingNames.has(itemId)) {
+          await db
+            .insert(presetItems)
+            .values({ categoryId: categoryRowId, name: itemId });
+          newItemCount++;
         }
       }
     }
 
-    console.log("Preset sync completed successfully");
+    if (newCategoryCount === 0 && newItemCount === 0) {
+      console.log("[seedPresets] All presets up-to-date, nothing to insert.");
+    } else {
+      console.log(
+        `[seedPresets] Done — added ${newCategoryCount} category/categories and ${newItemCount} item(s).`,
+      );
+    }
   } catch (error) {
-    console.error("Error syncing presets:", error);
+    console.error("[seedPresets] Error:", error);
     // Don't throw - allow app to continue even if seeding fails
   }
 }

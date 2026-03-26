@@ -30,6 +30,11 @@ export const habits = sqliteTable("habits", {
   targetDate: integer("target_date", { mode: "timestamp" }), // For 'once' frequency
   endDate: integer("end_date", { mode: "timestamp" }), // For 'daily'/'weekly' - null means forever
   presetName: text("preset_name"), // Original preset name; null for fully custom habits
+  timeOfDay: text("time_of_day", {
+    enum: ["morning", "late_morning", "afternoon", "evening", "all_day"],
+  })
+    .notNull()
+    .default("all_day"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

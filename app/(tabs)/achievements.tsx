@@ -51,7 +51,7 @@ interface SecretFeedItem {
 type FeedItem = RPGFeedItem | SecretFeedItem;
 
 export default function AchievementsScreen() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -273,7 +273,7 @@ export default function AchievementsScreen() {
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text }}>
-            {item.category}
+            {t(item.category)}
           </Text>
           <Text style={{ fontSize: 12, color: colors.textSecondary }}>
             {`Level ${item.level}`}

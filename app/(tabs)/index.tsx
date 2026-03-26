@@ -61,6 +61,7 @@ export default function DashboardScreen() {
     selectedWeekdays: number[];
     targetDate: Date | null;
     endDate: Date | null;
+    timeOfDay: "morning" | "late_morning" | "afternoon" | "evening" | "all_day";
   }) => {
     const success = await addHabit(data);
 

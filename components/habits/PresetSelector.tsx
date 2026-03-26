@@ -70,7 +70,7 @@ export default function PresetSelector({
                   className="text-sm font-medium"
                   style={{ color: isSelected ? colors.primary : colors.text }}
                 >
-                  {category.label}
+                  {t(category.label)}
                 </Text>
               </TouchableOpacity>
             );
@@ -113,7 +113,7 @@ export default function PresetSelector({
                         color: isSelected ? colors.success : colors.text,
                       }}
                     >
-                      {preset.name}
+                      {t(preset.name)}
                     </Text>
                   </TouchableOpacity>
                 );
