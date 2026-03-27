@@ -13,7 +13,6 @@ import {
   unlockAllSecretAchievements,
 } from "../services/devGeneratorService";
 import { fi } from "date-fns/locale";
-import { checkAchievements } from "../services/achievementService";
 
 export function useDevTools() {
   const { setDeveloperMode, logout, user, setFirstLaunch } = useAuthStore();

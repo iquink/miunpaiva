@@ -11,6 +11,7 @@ import {
   type PresetItem,
   type NewHabit,
 } from "../db/schema";
+import { checkAchievements } from "./achievementService";
 import { checkSecretAchievements } from "./secretAchievementEngine";
 
 /**
@@ -133,7 +134,10 @@ export async function toggleBooleanHabitLog(
       result = newLog;
     }
 
-    // Fire-and-forget: check secret achievements without blocking the UI
+    // Fire-and-forget: check achievements without blocking the UI
+    checkAchievements(userId).catch((err) => {
+      console.error("[Achievements] Engine error:", err);
+    });
     checkSecretAchievements(userId, dateStr).catch((err) => {
       console.error("[SecretAchievements] Engine error:", err);
     });
@@ -186,7 +190,10 @@ export async function updateCounterHabitLog(
       result = newLog;
     }
 
-    // Fire-and-forget: check secret achievements without blocking the UI
+    // Fire-and-forget: check achievements without blocking the UI
+    checkAchievements(userId).catch((err) => {
+      console.error("[Achievements] Engine error:", err);
+    });
     checkSecretAchievements(userId, dateStr).catch((err) => {
       console.error("[SecretAchievements] Engine error:", err);
     });

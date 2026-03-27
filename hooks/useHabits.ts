@@ -19,7 +19,6 @@ import {
   scheduleHabitNotification,
   cancelHabitNotification,
 } from "../services/notificationService";
-import { checkAchievements } from "../services/achievementService";
 import { shouldShowHabit } from "../utils/habitScheduler";
 
 /**
@@ -201,9 +200,6 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
       );
 
       setHabitLogs((prev) => new Map(prev).set(habit.id, updatedLog));
-
-      // Check for achievement unlocks
-      await checkAchievements(userId);
     } catch (error) {
       console.error("Error toggling habit:", error);
       Alert.alert("Error", "Failed to update habit");
@@ -226,9 +222,6 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
       );
 
       setHabitLogs((prev) => new Map(prev).set(habit.id, updatedLog));
-
-      // Check for achievement unlocks
-      await checkAchievements(userId);
     } catch (error) {
       console.error("Error updating counter:", error);
       Alert.alert("Error", "Failed to update counter");
