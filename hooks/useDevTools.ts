@@ -62,30 +62,6 @@ export function useDevTools() {
     );
   };
 
-  const handleAddMockLogs = async () => {
-    if (!user) {
-      Alert.alert("Not Signed In", "You must be signed in to seed mock logs.");
-      return;
-    }
-    try {
-      await seedMockLogs(user.id);
-      Alert.alert(
-        "Done",
-        "50 mock logs have been added across the last 30 days.",
-      );
-    } catch (err: any) {
-      if (err?.message === "NO_HABITS") {
-        Alert.alert(
-          "No Habits Found",
-          "Create at least one habit before seeding mock logs.",
-        );
-      } else {
-        console.error("[DevTools] seedMockLogs failed:", err);
-        Alert.alert("Error", "Failed to seed mock logs. Check the console.");
-      }
-    }
-  };
-
   const handleGenerateHabits = async () => {
     if (!user) {
       Alert.alert("Not Signed In", "You must be signed in to generate habits.");
@@ -260,7 +236,6 @@ export function useDevTools() {
     logCount,
     setLogCount,
     handleResetDatabase,
-    handleAddMockLogs,
     handleGenerateHabits,
     handleGenerateLogs,
     handleBoostRPGStats,

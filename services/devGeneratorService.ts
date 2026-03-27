@@ -2,6 +2,7 @@ import { eq, inArray } from "drizzle-orm";
 import i18next from "i18next";
 import { db } from "../db";
 import { useDevLogStore } from "../store/devLogStore";
+import { checkSecretAchievements } from "./secretAchievementEngine";
 
 import {
   habits,
@@ -163,6 +164,10 @@ export async function generateMockLogs(
 
   if (entries.length > 0) {
     await db.insert(logs).values(entries);
+    await checkSecretAchievements(
+      userId,
+      new Date().toISOString().split("T")[0],
+    );
   }
   addLog(`Successfully inserted ${entries.length} mock log(s).`);
 }

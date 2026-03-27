@@ -90,18 +90,6 @@ export default function DevToolsScreen() {
           className="mb-3 mt-4 text-xs font-semibold uppercase tracking-widest"
           style={{ color: colors.textSecondary }}
         >
-          Fixtures
-        </Text>
-        <DevActionButton
-          label="Add 50 Mock Logs"
-          description="Seeds habit logs across the last 30 days for testing."
-          onPress={handleAddMockLogs}
-        />
-
-        <Text
-          className="mb-3 mt-4 text-xs font-semibold uppercase tracking-widest"
-          style={{ color: colors.textSecondary }}
-        >
           Generators
         </Text>
         <GeneratorCard
