@@ -47,7 +47,9 @@ export function useHabits(userId: number | undefined, selectedDate: Date) {
       setUserHabits((prev) => {
         const isSame =
           prev.length === visibleHabits.length &&
-          prev.every((h, i) => h.id === visibleHabits[i].id);
+          prev.every(
+            (h, i) => JSON.stringify(h) === JSON.stringify(visibleHabits[i]),
+          );
         return isSame ? prev : visibleHabits;
       });
 
