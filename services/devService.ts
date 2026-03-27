@@ -19,6 +19,18 @@ export async function wipeDatabaseAndSignOut(
 }
 
 /**
+ * Resets isNotificationsEnabled and notificationId for all habits belonging
+ * to the given user. Call this after cancelling all OS-level scheduled
+ * notifications so that the DB stays in sync with the OS queue.
+ */
+export async function resetAllNotificationFlags(userId: number): Promise<void> {
+  await db
+    .update(habits)
+    .set({ isNotificationsEnabled: false, notificationId: null })
+    .where(eq(habits.userId, userId));
+}
+
+/**
  * Seeds 50 mock habit logs distributed randomly over the last 30 days
  * for the given user. Throws "NO_HABITS" if the user has no habits yet.
  */

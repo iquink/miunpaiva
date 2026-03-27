@@ -4,7 +4,11 @@ import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
 import { useAuthStore } from "../store/authStore";
 import { useDevLogStore } from "../store/devLogStore";
-import { wipeDatabaseAndSignOut, seedMockLogs } from "../services/devService";
+import {
+  wipeDatabaseAndSignOut,
+  seedMockLogs,
+  resetAllNotificationFlags,
+} from "../services/devService";
 import {
   generateMockHabits,
   generateMockLogs,
@@ -212,6 +216,58 @@ export function useDevTools() {
     }
   };
 
+  const handleInspectNotifications = async () => {
+    const { addLog } = useDevLogStore.getState();
+    try {
+      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+      addLog("=== PUSH INSPECTOR ===");
+      addLog(`Total scheduled: ${scheduled.length}`);
+      scheduled.forEach((n) => {
+        addLog(
+          `[${n.identifier}] ${n.content.title ?? "(no title)"} — ${n.content.body ?? "(no body)"}`,
+        );
+      });
+      Alert.alert(
+        "Inspector",
+        `Found ${scheduled.length} scheduled notification(s). Check the terminal for details.`,
+      );
+    } catch (err) {
+      console.error(
+        "[DevTools] getAllScheduledNotificationsAsync failed:",
+        err,
+      );
+      Alert.alert(
+        "Error",
+        "Failed to inspect notifications. Check the console.",
+      );
+    }
+  };
+
+  const handleClearAllNotifications = async () => {
+    if (!user) {
+      Alert.alert(
+        "Not Signed In",
+        "You must be signed in to use this feature.",
+      );
+      return;
+    }
+    const { addLog } = useDevLogStore.getState();
+    try {
+      await Notifications.cancelAllScheduledNotificationsAsync();
+      await resetAllNotificationFlags(user.id);
+      addLog(
+        "Cleared all OS-level scheduled notifications and reset DB flags.",
+      );
+      Alert.alert(
+        "Done",
+        "All scheduled notifications cancelled and DB notification state reset.",
+      );
+    } catch (err) {
+      console.error("[DevTools] handleClearAllNotifications failed:", err);
+      Alert.alert("Error", "Failed to clear notifications. Check the console.");
+    }
+  };
+
   const handleDisableDeveloperMode = () => {
     Alert.alert(
       "Disable Developer Mode",
@@ -242,6 +298,8 @@ export function useDevTools() {
     handleUnlockAllSecretAchievements,
     handleWipeUserData,
     handleTestNotification,
+    handleInspectNotifications,
+    handleClearAllNotifications,
     handleDisableDeveloperMode,
   };
 }

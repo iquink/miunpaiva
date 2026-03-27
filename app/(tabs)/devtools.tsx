@@ -17,13 +17,14 @@ export default function DevToolsScreen() {
     logCount,
     setLogCount,
     handleResetDatabase,
-    handleAddMockLogs,
     handleGenerateHabits,
     handleGenerateLogs,
     handleBoostRPGStats,
     handleUnlockAllSecretAchievements,
     handleWipeUserData,
     handleTestNotification,
+    handleInspectNotifications,
+    handleClearAllNotifications,
     handleDisableDeveloperMode,
   } = useDevTools();
 
@@ -134,6 +135,17 @@ export default function DevToolsScreen() {
           label="Test Local Push Notification"
           description="Fires a local notification immediately to verify the setup."
           onPress={handleTestNotification}
+        />
+        <DevActionButton
+          label="Inspect Scheduled Notifications"
+          description="Dumps all OS-level scheduled pushes to the debug terminal."
+          onPress={handleInspectNotifications}
+        />
+        <DevActionButton
+          label="Clear ALL Scheduled Pushes"
+          description="Nukes every pending notification in the OS queue. Use to clear ghosts."
+          onPress={handleClearAllNotifications}
+          destructive
         />
 
         <DebugTerminal logs={logs} onClear={clearLogs} />
