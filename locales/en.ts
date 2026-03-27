@@ -403,6 +403,114 @@ const translation = {
       title: "Aktiivinen Päivä",
       description: "Went outdoors, exercised, and took a shower.",
     },
+
+    // ---- Tiered: Walking ----
+    walker_1: {
+      title: "First Step",
+      description: "A great start! You completed your first walk.",
+    },
+    walker_5: {
+      title: "Explorer",
+      description:
+        "5 walks completed. You're getting to know the neighborhood.",
+    },
+    walker_15: {
+      title: "Pathfinder",
+      description: "15 walks. You know every trail by heart.",
+    },
+    walker_30: {
+      title: "Park Master",
+      description: "30 walks. Trees greet you first.",
+    },
+    walker_100: {
+      title: "Globe Trotter",
+      description: "100 walks! Did you just walk around the equator?",
+    },
+
+    // ---- Tiered: Hydration ----
+    water_1: { title: "First Sip", description: "Hydration journey started." },
+    water_5: {
+      title: "Stay Hydrated",
+      description: "5 days of good hydration. Your body thanks you.",
+    },
+    water_15: {
+      title: "Clear Stream",
+      description: "15 days. You're flowing with energy.",
+    },
+    water_30: {
+      title: "Oasis",
+      description: "30 days of perfect water balance.",
+    },
+    water_100: {
+      title: "Ocean Master",
+      description: "100 days! Aquaman is taking notes.",
+    },
+
+    // ---- Tiered: Medication ----
+    meds_1: {
+      title: "On Track",
+      description: "First medication taken on time.",
+    },
+    meds_5: {
+      title: "Routine Builder",
+      description: "5 times on schedule. Keep it up!",
+    },
+    meds_15: {
+      title: "Health Guardian",
+      description: "15 times. Your health routine is solid.",
+    },
+    meds_30: {
+      title: "Iron Discipline",
+      description: "30 times. Clockwork precision.",
+    },
+    meds_100: {
+      title: "Unbreakable",
+      description: "100 times! Perfect health discipline.",
+    },
+
+    // ---- Tiered: Room Cleaning ----
+    clean_1: {
+      title: "Tidy Start",
+      description: "Room cleaned for the first time.",
+    },
+    clean_5: {
+      title: "Neat & Clean",
+      description: "5 cleanings. Your space is looking great.",
+    },
+    clean_15: {
+      title: "Spotless",
+      description: "15 cleanings. Not a speck of dust in sight.",
+    },
+    clean_30: {
+      title: "Organizer",
+      description: "30 cleanings. Everything in its perfect place.",
+    },
+    clean_100: {
+      title: "Marie Kondo",
+      description: "100 cleanings! This sparks joy.",
+    },
+
+    // ---- Tiered: Bedtime ----
+    sleep_1: {
+      title: "Good Night",
+      description: "First bedtime routine completed.",
+    },
+    sleep_5: {
+      title: "Sweet Dreams",
+      description: "5 nights of healthy sleep routine.",
+    },
+    sleep_15: {
+      title: "Rested",
+      description: "15 nights. Your circadian rhythm is healing.",
+    },
+    sleep_30: {
+      title: "Sleep Champion",
+      description: "30 nights. Perfect sleep hygiene.",
+    },
+    sleep_100: {
+      title: "Sleeping Beauty",
+      description: "100 nights! Waking up refreshed every single day.",
+    },
   },
 };
 

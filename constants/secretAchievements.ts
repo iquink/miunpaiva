@@ -1,163 +1,311 @@
-export type TotalPresetCondition = {
-  presetName: string;
-  target: number;
-};
-
-export type ComboSameDayCondition = {
-  presetNames: string[];
-};
-
-export type SecretAchievement = {
+export interface SecretAchievementDef {
   id: string;
   icon: string;
-  type: "total_preset" | "combo_same_day" | "any_custom";
-  condition:
-    | TotalPresetCondition
-    | ComboSameDayCondition
-    | Record<string, never>;
-};
+  titleKey: string;
+  descKey: string;
+  requirement: {
+    type: "preset_count";
+    presetName: string;
+    count: number;
+  };
+}
 
-export const SECRET_ACHIEVEMENTS: SecretAchievement[] = [
+export const SECRET_ACHIEVEMENTS_CATALOG: SecretAchievementDef[] = [
   // ==========================================
-  // 💧 total_preset
+  // 🌳 WALKING (preset_walking)
   // ==========================================
   {
-    id: "aquaman",
+    id: "walker_1",
+    icon: "🌳",
+    titleKey: "walker_1_title",
+    descKey: "walker_1_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_walking",
+      count: 1,
+    },
+  },
+  {
+    id: "walker_5",
+    icon: "🧭",
+    titleKey: "walker_5_title",
+    descKey: "walker_5_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_walking",
+      count: 5,
+    },
+  },
+  {
+    id: "walker_15",
+    icon: "🗺️",
+    titleKey: "walker_15_title",
+    descKey: "walker_15_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_walking",
+      count: 15,
+    },
+  },
+  {
+    id: "walker_30",
+    icon: "🏔️",
+    titleKey: "walker_30_title",
+    descKey: "walker_30_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_walking",
+      count: 30,
+    },
+  },
+  {
+    id: "walker_100",
+    icon: "🌍",
+    titleKey: "walker_100_title",
+    descKey: "walker_100_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_walking",
+      count: 100,
+    },
+  },
+
+  // ==========================================
+  // 💧 HYDRATION (preset_hydration)
+  // ==========================================
+  {
+    id: "water_1",
     icon: "💧",
-    type: "total_preset",
-    condition: { presetName: "preset_hydration", target: 100 },
+    titleKey: "water_1_title",
+    descKey: "water_1_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_hydration",
+      count: 1,
+    },
   },
   {
-    id: "ironman",
-    icon: "🏋️",
-    type: "total_preset",
-    condition: { presetName: "preset_gym", target: 50 },
+    id: "water_5",
+    icon: "🥤",
+    titleKey: "water_5_title",
+    descKey: "water_5_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_hydration",
+      count: 5,
+    },
   },
   {
-    id: "sauna_master",
-    icon: "🧖",
-    type: "total_preset",
-    condition: { presetName: "preset_sauna", target: 50 },
+    id: "water_15",
+    icon: "🧊",
+    titleKey: "water_15_title",
+    descKey: "water_15_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_hydration",
+      count: 15,
+    },
   },
   {
-    id: "bingo_champion",
-    icon: "🎱",
-    type: "total_preset",
-    condition: { presetName: "preset_bingo", target: 20 },
+    id: "water_30",
+    icon: "🌊",
+    titleKey: "water_30_title",
+    descKey: "water_30_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_hydration",
+      count: 30,
+    },
   },
   {
-    id: "picasso",
-    icon: "🎨",
-    type: "total_preset",
-    condition: { presetName: "preset_art", target: 30 },
-  },
-  {
-    id: "disco_king",
-    icon: "🕺",
-    type: "total_preset",
-    condition: { presetName: "preset_disco", target: 10 },
-  },
-  {
-    id: "forest_spirit",
-    icon: "🌲",
-    type: "total_preset",
-    condition: { presetName: "preset_outdoor_activity", target: 100 },
-  },
-  {
-    id: "zen_master",
-    icon: "🧘",
-    type: "total_preset",
-    condition: { presetName: "preset_relaxation", target: 30 },
-  },
-  {
-    id: "clean_smile",
-    icon: "🦷",
-    type: "total_preset",
-    condition: { presetName: "preset_teeth_brush", target: 100 },
-  },
-  {
-    id: "marathoner",
-    icon: "🏃",
-    type: "total_preset",
-    condition: { presetName: "preset_running", target: 50 },
-  },
-  {
-    id: "health_first",
-    icon: "💊",
-    type: "total_preset",
-    condition: { presetName: "preset_medication", target: 100 },
+    id: "water_100",
+    icon: "🔱",
+    titleKey: "water_100_title",
+    descKey: "water_100_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_hydration",
+      count: 100,
+    },
   },
 
   // ==========================================
-  // 🌪 combo_same_day
+  // 💊 MEDICATION (preset_medication)
   // ==========================================
   {
-    id: "perfect_morning",
-    icon: "🌅",
-    type: "combo_same_day",
-    condition: {
-      presetNames: [
-        "preset_make_bed",
-        "preset_teeth_brush",
-        "preset_breakfast",
-      ],
+    id: "meds_1",
+    icon: "💊",
+    titleKey: "meds_1_title",
+    descKey: "meds_1_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_medication",
+      count: 1,
     },
   },
   {
-    id: "good_night",
-    icon: "🌙",
-    type: "combo_same_day",
-    condition: {
-      presetNames: [
-        "preset_evening_snack",
-        "preset_teeth_brush",
-        "preset_bedtime",
-      ],
+    id: "meds_5",
+    icon: "🛡️",
+    titleKey: "meds_5_title",
+    descKey: "meds_5_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_medication",
+      count: 5,
     },
   },
   {
-    id: "perfect_diet",
-    icon: "🥗",
-    type: "combo_same_day",
-    condition: {
-      presetNames: [
-        "preset_breakfast",
-        "preset_lunch",
-        "preset_dinner",
-        "preset_evening_snack",
-      ],
+    id: "meds_15",
+    icon: "⚕️",
+    titleKey: "meds_15_title",
+    descKey: "meds_15_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_medication",
+      count: 15,
     },
   },
   {
-    id: "spring_cleaning",
+    id: "meds_30",
+    icon: "🏥",
+    titleKey: "meds_30_title",
+    descKey: "meds_30_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_medication",
+      count: 30,
+    },
+  },
+  {
+    id: "meds_100",
+    icon: "🦸",
+    titleKey: "meds_100_title",
+    descKey: "meds_100_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_medication",
+      count: 100,
+    },
+  },
+
+  // ==========================================
+  // 🧹 ROOM CLEANING (preset_room_cleaning)
+  // ==========================================
+  {
+    id: "clean_1",
+    icon: "🧹",
+    titleKey: "clean_1_title",
+    descKey: "clean_1_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_room_cleaning",
+      count: 1,
+    },
+  },
+  {
+    id: "clean_5",
     icon: "✨",
-    type: "combo_same_day",
-    condition: {
-      presetNames: [
-        "preset_room_cleaning",
-        "preset_organizing",
-        "preset_laundry",
-      ],
+    titleKey: "clean_5_title",
+    descKey: "clean_5_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_room_cleaning",
+      count: 5,
     },
   },
   {
-    id: "spa_day",
-    icon: "🧖‍♀️",
-    type: "combo_same_day",
-    condition: {
-      presetNames: ["preset_sauna", "preset_shower", "preset_relaxation"],
+    id: "clean_15",
+    icon: "🧼",
+    titleKey: "clean_15_title",
+    descKey: "clean_15_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_room_cleaning",
+      count: 15,
     },
   },
   {
-    id: "active_day",
-    icon: "💪",
-    type: "combo_same_day",
-    condition: {
-      presetNames: [
-        "preset_outdoor_activity",
-        "preset_gymnastics",
-        "preset_shower",
-      ],
+    id: "clean_30",
+    icon: "💎",
+    titleKey: "clean_30_title",
+    descKey: "clean_30_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_room_cleaning",
+      count: 30,
+    },
+  },
+  {
+    id: "clean_100",
+    icon: "🪄",
+    titleKey: "clean_100_title",
+    descKey: "clean_100_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_room_cleaning",
+      count: 100,
+    },
+  },
+
+  // ==========================================
+  // 🌙 BEDTIME (preset_bedtime)
+  // ==========================================
+  {
+    id: "sleep_1",
+    icon: "🌙",
+    titleKey: "sleep_1_title",
+    descKey: "sleep_1_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_bedtime",
+      count: 1,
+    },
+  },
+  {
+    id: "sleep_5",
+    icon: "💤",
+    titleKey: "sleep_5_title",
+    descKey: "sleep_5_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_bedtime",
+      count: 5,
+    },
+  },
+  {
+    id: "sleep_15",
+    icon: "🛌",
+    titleKey: "sleep_15_title",
+    descKey: "sleep_15_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_bedtime",
+      count: 15,
+    },
+  },
+  {
+    id: "sleep_30",
+    icon: "🦉",
+    titleKey: "sleep_30_title",
+    descKey: "sleep_30_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_bedtime",
+      count: 30,
+    },
+  },
+  {
+    id: "sleep_100",
+    icon: "👑",
+    titleKey: "sleep_100_title",
+    descKey: "sleep_100_desc",
+    requirement: {
+      type: "preset_count",
+      presetName: "preset_bedtime",
+      count: 100,
     },
   },
 ];
+
+/** Backward-compatibility alias — existing importers of SECRET_ACHIEVEMENTS continue to work. */
+export const SECRET_ACHIEVEMENTS = SECRET_ACHIEVEMENTS_CATALOG;

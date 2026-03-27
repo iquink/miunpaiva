@@ -1,36 +1,43 @@
 import { checkComboSameDayCondition } from "../helpers/achievementLogic";
-import {
-  SECRET_ACHIEVEMENTS,
-  type ComboSameDayCondition,
-} from "../../constants/secretAchievements";
+import { SECRET_ACHIEVEMENTS_CATALOG } from "../../constants/secretAchievements";
 
 // ---------------------------------------------------------------------------
-// SECRET_ACHIEVEMENTS catalog integrity
+// SECRET_ACHIEVEMENTS_CATALOG integrity
 // ---------------------------------------------------------------------------
-describe("SECRET_ACHIEVEMENTS catalog", () => {
+describe("SECRET_ACHIEVEMENTS_CATALOG catalog", () => {
   it("has no duplicate IDs", () => {
-    const ids = SECRET_ACHIEVEMENTS.map((a) => a.id);
+    const ids = SECRET_ACHIEVEMENTS_CATALOG.map((a) => a.id);
     const uniqueIds = new Set(ids);
     expect(uniqueIds.size).toBe(ids.length);
   });
 
-  it("every achievement has a non-empty id, icon, and type", () => {
-    SECRET_ACHIEVEMENTS.forEach((a) => {
+  it("every achievement has a non-empty id, icon, titleKey, and descKey", () => {
+    SECRET_ACHIEVEMENTS_CATALOG.forEach((a) => {
       expect(a.id.length).toBeGreaterThan(0);
       expect(a.icon.length).toBeGreaterThan(0);
-      expect(["total_preset", "combo_same_day", "any_custom"]).toContain(
-        a.type,
-      );
+      expect(a.titleKey.length).toBeGreaterThan(0);
+      expect(a.descKey.length).toBeGreaterThan(0);
     });
   });
 
-  it("all combo_same_day achievements have at least 2 preset names", () => {
-    const combos = SECRET_ACHIEVEMENTS.filter(
-      (a) => a.type === "combo_same_day",
-    );
-    combos.forEach((a) => {
-      const condition = a.condition as ComboSameDayCondition;
-      expect(condition.presetNames.length).toBeGreaterThanOrEqual(2);
+  it("every achievement has a valid preset_count requirement", () => {
+    SECRET_ACHIEVEMENTS_CATALOG.forEach((a) => {
+      expect(a.requirement.type).toBe("preset_count");
+      expect(a.requirement.presetName.length).toBeGreaterThan(0);
+      expect(a.requirement.count).toBeGreaterThan(0);
+    });
+  });
+
+  it("tiers for each preset are in ascending order", () => {
+    const byPreset: Record<string, number[]> = {};
+    SECRET_ACHIEVEMENTS_CATALOG.forEach((a) => {
+      const { presetName, count } = a.requirement;
+      (byPreset[presetName] ??= []).push(count);
+    });
+    Object.values(byPreset).forEach((counts) => {
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i]).toBeGreaterThan(counts[i - 1]);
+      }
     });
   });
 });
@@ -104,34 +111,5 @@ describe("checkComboSameDayCondition", () => {
         perfectMorningPresets,
       ),
     ).toBe(false);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// checkComboSameDayCondition — verify against actual achievement definitions
-// ---------------------------------------------------------------------------
-describe("checkComboSameDayCondition — real achievement conditions", () => {
-  function getComboPresets(id: string): string[] {
-    const achievement = SECRET_ACHIEVEMENTS.find((a) => a.id === id);
-    if (!achievement || achievement.type !== "combo_same_day") {
-      throw new Error(`Achievement ${id} not found or wrong type`);
-    }
-    return (achievement.condition as ComboSameDayCondition).presetNames;
-  }
-
-  it("unlocks good_night when Iltapalan syönti, Hampaiden pesu and Nukkumaan meno are all done", () => {
-    const required = getComboPresets("good_night");
-    expect(checkComboSameDayCondition(required, required)).toBe(true);
-  });
-
-  it("does not unlock good_night when Nukkumaan meno is missing", () => {
-    const required = getComboPresets("good_night");
-    const completed = required.filter((p) => p !== "Nukkumaan meno");
-    expect(checkComboSameDayCondition(completed, required)).toBe(false);
-  });
-
-  it("unlocks spa_day when Sauna, Suihku and Rentoutus are all done", () => {
-    const required = getComboPresets("spa_day");
-    expect(checkComboSameDayCondition(required, required)).toBe(true);
   });
 });

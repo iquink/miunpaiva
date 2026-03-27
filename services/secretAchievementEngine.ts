@@ -1,14 +1,13 @@
-import { eq, and, count } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "../db";
 import { habits, logs, userSecretAchievements } from "../db/schema";
-import { checkComboSameDayCondition } from "./helpers/achievementLogic";
 
 import {
-  SECRET_ACHIEVEMENTS,
-  type SecretAchievement,
+  SECRET_ACHIEVEMENTS_CATALOG,
+  type SecretAchievementDef,
 } from "../constants/secretAchievements";
 
-export interface UnlockedSecretAchievement extends SecretAchievement {
+export interface UnlockedSecretAchievement extends SecretAchievementDef {
   unlockedAt: Date;
 }
 
@@ -18,9 +17,24 @@ export interface UnlockedSecretAchievement extends SecretAchievement {
  */
 export async function checkSecretAchievements(
   userId: number,
-  dateStr: string,
+  _dateStr: string,
 ): Promise<void> {
-  // Fetch already-unlocked secret achievement IDs so we skip them
+  // Single query: all completed logs for this user, joined to retrieve presetName
+  const rows = await db
+    .select({ presetName: habits.presetName })
+    .from(logs)
+    .innerJoin(habits, eq(logs.habitId, habits.id))
+    .where(and(eq(habits.userId, userId), eq(logs.completed, true)));
+
+  // Reduce to a count map: { preset_walking: 17, preset_hydration: 4, ... }
+  const presetCounts: Record<string, number> = {};
+  for (const row of rows) {
+    if (row.presetName) {
+      presetCounts[row.presetName] = (presetCounts[row.presetName] ?? 0) + 1;
+    }
+  }
+
+  // Fetch already-unlocked IDs so we skip them
   const unlocked = await db
     .select({ secretAchievementId: userSecretAchievements.secretAchievementId })
     .from(userSecretAchievements)
@@ -28,62 +42,17 @@ export async function checkSecretAchievements(
 
   const unlockedIds = new Set(unlocked.map((r) => r.secretAchievementId));
 
-  for (const achievement of SECRET_ACHIEVEMENTS) {
-    if (unlockedIds.has(achievement.id)) continue;
+  for (const ach of SECRET_ACHIEVEMENTS_CATALOG) {
+    if (unlockedIds.has(ach.id)) continue;
 
-    let shouldUnlock = false;
-
-    if (achievement.type === "total_preset") {
-      const condition = achievement.condition as {
-        presetName: string;
-        target: number;
-      };
-
-      const [result] = await db
-        .select({ total: count() })
-        .from(logs)
-        .innerJoin(habits, eq(logs.habitId, habits.id))
-        .where(
-          and(
-            eq(habits.userId, userId),
-            eq(habits.presetName, condition.presetName),
-            eq(logs.completed, true),
-          ),
-        );
-
-      shouldUnlock = (result?.total ?? 0) >= condition.target;
-    } else if (achievement.type === "combo_same_day") {
-      const condition = achievement.condition as { presetNames: string[] };
-
-      const completedToday = await db
-        .select({ presetName: habits.presetName })
-        .from(logs)
-        .innerJoin(habits, eq(logs.habitId, habits.id))
-        .where(
-          and(
-            eq(habits.userId, userId),
-            eq(logs.date, dateStr),
-            eq(logs.completed, true),
-          ),
-        );
-
-      const completedPresetNames = completedToday
-        .map((r) => r.presetName)
-        .filter((n): n is string => n !== null);
-
-      shouldUnlock = checkComboSameDayCondition(
-        completedPresetNames,
-        condition.presetNames,
-      );
-    }
-
-    if (shouldUnlock) {
+    const count = presetCounts[ach.requirement.presetName] ?? 0;
+    if (count >= ach.requirement.count) {
       await db.insert(userSecretAchievements).values({
         userId,
-        secretAchievementId: achievement.id,
+        secretAchievementId: ach.id,
       });
       console.log(
-        `[SecretAchievements] Unlocked: ${achievement.id} (${achievement.icon}) for user ${userId}`,
+        `[SecretAchievements] Unlocked: ${ach.id} (${ach.icon}) for user ${userId}`,
       );
     }
   }
@@ -103,7 +72,7 @@ export async function getUnlockedSecretAchievements(
     .from(userSecretAchievements)
     .where(eq(userSecretAchievements.userId, userId));
 
-  const catalog = new Map(SECRET_ACHIEVEMENTS.map((a) => [a.id, a]));
+  const catalog = new Map(SECRET_ACHIEVEMENTS_CATALOG.map((a) => [a.id, a]));
 
   return rows
     .map((row) => {

@@ -407,6 +407,116 @@ const translation = {
       title: "Aktiivinen Päivä",
       description: "Ulkoilu, jumppa ja suihku yhtenä päivänä.",
     },
+
+    // ---- Tiered: Walking ----
+    walker_1: {
+      title: "Ensimmäinen askel",
+      description: "Hieno alku! Suoritit ensimmäisen kävelysi.",
+    },
+    walker_5: {
+      title: "Tutkimusmatkailija",
+      description: "5 kävelyä suoritettu. Opit tuntemaan naapuruston.",
+    },
+    walker_15: {
+      title: "Reitin löytäjä",
+      description: "15 kävelyä. Tiedät jokaisen polun ulkoa.",
+    },
+    walker_30: {
+      title: "Puiston mestari",
+      description: "30 kävelyä. Puut tervehtivät sinua ensin.",
+    },
+    walker_100: {
+      title: "Maailmanvaeltaja",
+      description: "100 kävelyä! Kiersit päiväntasaajan?",
+    },
+
+    // ---- Tiered: Hydration ----
+    water_1: {
+      title: "Ensimmäinen siemaisu",
+      description: "Nestytysmatka on alkanut.",
+    },
+    water_5: {
+      title: "Pysy nestytettynä",
+      description: "5 päivää hyvää nestytystä. Kehosi kiittää.",
+    },
+    water_15: {
+      title: "Kirkas virta",
+      description: "15 päivää. Energiasi virtaa.",
+    },
+    water_30: {
+      title: "Keidas",
+      description: "30 päivää täydellinen vesitasapaino.",
+    },
+    water_100: {
+      title: "Meren mestari",
+      description: "100 päivää! Aquaman ottaa muistiinpanoja.",
+    },
+
+    // ---- Tiered: Medication ----
+    meds_1: {
+      title: "Aikataulussa",
+      description: "Ensimmäinen lääke otettu ajoissa.",
+    },
+    meds_5: {
+      title: "Rutiinin rakentaja",
+      description: "5 kertaa aikataulussa. Jatka samaan tapaan!",
+    },
+    meds_15: {
+      title: "Terveyden vartija",
+      description: "15 kertaa. Terveysrutiinisi on vakaa.",
+    },
+    meds_30: {
+      title: "Rautainen kuri",
+      description: "30 kertaa. Kellon tarkkuudella.",
+    },
+    meds_100: {
+      title: "Murtumaton",
+      description: "100 kertaa! Täydellinen terveydenhoidon kuri.",
+    },
+
+    // ---- Tiered: Room Cleaning ----
+    clean_1: {
+      title: "Siisti alku",
+      description: "Huone siivottu ensimmäistä kertaa.",
+    },
+    clean_5: {
+      title: "Siisti ja puhdas",
+      description: "5 siivousta. Tilasi näyttää hienolta.",
+    },
+    clean_15: {
+      title: "Täpläpuhdas",
+      description: "15 siivousta. Ei pölyä eikä likaa missään.",
+    },
+    clean_30: {
+      title: "Järjestelijä",
+      description: "30 siivousta. Kaikki täydellisellä paikallaan.",
+    },
+    clean_100: {
+      title: "Marie Kondo",
+      description: "100 siivousta! Tämä tuottaa iloa.",
+    },
+
+    // ---- Tiered: Bedtime ----
+    sleep_1: {
+      title: "Hyvää yötä",
+      description: "Ensimmäinen nukkumaanmenorituaali suoritettu.",
+    },
+    sleep_5: {
+      title: "Suloiset unet",
+      description: "5 yötä tervettä nukkumaanmenorituaalia.",
+    },
+    sleep_15: {
+      title: "Levännyt",
+      description: "15 yötä. Vuorokausirytmisi korjaantuu.",
+    },
+    sleep_30: {
+      title: "Unimestari",
+      description: "30 yötä. Täydellinen unihygienia.",
+    },
+    sleep_100: {
+      title: "Prinsessa Ruusunen",
+      description: "100 yötä! Herää virkistyneenä joka päivä.",
+    },
   },
 };
 
