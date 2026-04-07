@@ -45,8 +45,7 @@ export function useHubRewards(userId: number | undefined) {
             .sort((a, b) => {
               if (b.level !== a.level) return b.level - a.level;
               return b.progressPercent - a.progressPercent;
-            })
-            .slice(0, 4);
+            });
 
           setTopRpgStats(filtered);
         } catch (e) {

@@ -115,7 +115,7 @@ export default function HubScreen() {
         {/* Badges / Goals Widget */}
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => router.push("/(tabs)/achievements")}
+          onPress={() => router.push("/(tabs)/rewards")}
           className="rounded-2xl p-5"
           style={{
             backgroundColor: colors.surface,
@@ -147,7 +147,7 @@ export default function HubScreen() {
         {/* RPG Levels Widget */}
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => router.push("/(tabs)/achievements")}
+          onPress={() => router.push("/(tabs)/rewards")}
           className="rounded-2xl p-5"
           style={{
             backgroundColor: colors.surface,
@@ -156,7 +156,11 @@ export default function HubScreen() {
           }}
         >
           {topRpgStats.length > 0 ? (
-            <View className="flex-row justify-around">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 16, paddingHorizontal: 4 }}
+            >
               {topRpgStats.map((stat, i) => (
                 <View
                   key={i}
@@ -192,7 +196,7 @@ export default function HubScreen() {
                   </Text>
                 </View>
               ))}
-            </View>
+            </ScrollView>
           ) : (
             <Text
               className="text-sm text-center"

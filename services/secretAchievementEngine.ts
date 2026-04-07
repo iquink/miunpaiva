@@ -82,3 +82,19 @@ export async function getUnlockedSecretAchievements(
     })
     .filter((x): x is UnlockedSecretAchievement => x !== null);
 }
+
+/**
+ * Marks all unread badges as viewed for a user.
+ * Call this when the user opens the Badges tab so the Hub notification dot clears.
+ */
+export async function markBadgesAsViewed(userId: number): Promise<void> {
+  await db
+    .update(userSecretAchievements)
+    .set({ isViewed: true })
+    .where(
+      and(
+        eq(userSecretAchievements.userId, userId),
+        eq(userSecretAchievements.isViewed, false),
+      ),
+    );
+}

@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../store/authStore";
 import { useAchievements } from "../../hooks/useAchievements";
 import { useRewardsFeed } from "../../hooks/useRewardsFeed";
+import type { RPGFeedItem, SecretFeedItem } from "../../hooks/useRewardsFeed";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import IconButton from "../../components/ui/IconButton";
 import AchievementCard from "../../components/achievements/AchievementCard";
@@ -19,17 +20,17 @@ import AchievementSection from "../../components/achievements/AchievementSection
 import CreateAchievementForm from "../../components/achievements/CreateAchievementForm";
 import RPGCard from "../../components/achievements/RPGCard";
 import SecretCard from "../../components/achievements/SecretCard";
-import FilterToggle from "../../components/achievements/FilterToggle";
 import { useThemeColors } from "../../hooks/useThemeColors";
+import { markBadgesAsViewed } from "../../services/secretAchievementEngine";
 
-type MainTab = "goals" | "rewards";
+type Tab = "goals" | "badges" | "levels";
 
-export default function AchievementsScreen() {
+export default function RewardsScreen() {
   const { t } = useTranslation("common");
   const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<MainTab>("goals");
+  const [activeTab, setActiveTab] = useState<Tab>("goals");
 
   const {
     allAchievements,
@@ -44,17 +45,31 @@ export default function AchievementsScreen() {
     feed,
     loading: rewardsLoading,
     refreshing: rewardsRefreshing,
-    load: loadRewards,
     onRefresh: onRewardsRefresh,
-    filters,
   } = useRewardsFeed(user?.id);
 
-  // Load rewards when switching to the rewards tab
+  const rpgItems = feed.filter(
+    (item): item is RPGFeedItem => item.type === "rpg",
+  );
+  const secretItems = feed.filter(
+    (item): item is SecretFeedItem => item.type === "secret",
+  );
+
+  // Mark badges viewed when the Badges tab is active
   useEffect(() => {
-    if (activeTab === "rewards") {
-      loadRewards();
+    if (activeTab === "badges" && user?.id) {
+      markBadgesAsViewed(user.id).catch(console.error);
     }
-  }, [activeTab, loadRewards]);
+  }, [activeTab, user?.id]);
+
+  // Also mark on re-focus while already on Badges tab
+  useFocusEffect(
+    useCallback(() => {
+      if (activeTab === "badges" && user?.id) {
+        markBadgesAsViewed(user.id).catch(console.error);
+      }
+    }, [activeTab, user?.id]),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -74,17 +89,17 @@ export default function AchievementsScreen() {
     if (success) setShowAddForm(false);
   };
 
-  // ── Goal sections ─────────────────────────────────────────────
   const unlockedAchievements = allAchievements.filter((a) => a.unlocked);
   const lockedAchievements = allAchievements.filter(
     (a) => !a.unlocked && !a.missed,
   );
   const missedAchievements = allAchievements.filter((a) => a.missed);
 
-  const renderMainTab = (tab: MainTab, label: string) => {
+  const renderTab = (tab: Tab, label: string) => {
     const isActive = activeTab === tab;
     return (
       <TouchableOpacity
+        key={tab}
         onPress={() => setActiveTab(tab)}
         className="flex-1 py-2 px-4 rounded-lg"
         style={{
@@ -104,16 +119,20 @@ export default function AchievementsScreen() {
     );
   };
 
+  const subtitleMap: Record<Tab, string> = {
+    goals: t("achievements_subtitle"),
+    badges: t("rpg_subtitle"),
+    levels: t("rpg_subtitle"),
+  };
+
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScreenHeader
         title={t("achievements")}
-        subtitle={
-          activeTab === "goals" ? t("achievements_subtitle") : t("rpg_subtitle")
-        }
+        subtitle={subtitleMap[activeTab]}
       />
 
-      {/* Main Tab Selector */}
+      {/* Segmented control */}
       <View
         className="mx-6 mt-2 mb-3 p-1 rounded-[10px] flex-row border"
         style={{
@@ -121,11 +140,13 @@ export default function AchievementsScreen() {
           borderColor: colors.border,
         }}
       >
-        {renderMainTab("goals", t("tab_goals"))}
-        {renderMainTab("rewards", t("tab_rewards"))}
+        {renderTab("goals", t("tab_goals"))}
+        {renderTab("badges", t("filter_secrets"))}
+        {renderTab("levels", t("filter_rpg"))}
       </View>
 
-      {activeTab === "goals" ? (
+      {/* Goals tab */}
+      {activeTab === "goals" && (
         <>
           <ScrollView
             className="flex-1 px-6 py-4"
@@ -196,60 +217,78 @@ export default function AchievementsScreen() {
             />
           )}
         </>
-      ) : (
-        /* Rewards Tab */
-        <>
-          {/* Filter row */}
-          <View className="flex-row px-6 pb-3">
-            <FilterToggle
-              label={t("filter_rpg")}
-              active={filters.showRPG}
-              onToggle={filters.toggleRPG}
-            />
-            <FilterToggle
-              label={t("filter_secrets")}
-              active={filters.showSecrets}
-              onToggle={filters.toggleSecrets}
-            />
-          </View>
+      )}
 
-          <ScrollView
-            className="flex-1 px-6"
-            refreshControl={
-              <RefreshControl
-                refreshing={rewardsRefreshing}
-                onRefresh={onRewardsRefresh}
-              />
-            }
-          >
-            {rewardsLoading ? (
-              <View className="mt-8 items-center">
-                <Text style={{ color: colors.textSecondary }}>
-                  {t("loading")}
-                </Text>
-              </View>
-            ) : feed.length === 0 ? (
-              <View className="mt-8 items-center">
-                <Text
-                  className="text-center leading-[22px]"
-                  style={{ color: colors.textSecondary }}
-                >
-                  {t("no_rewards")}
-                </Text>
-              </View>
-            ) : (
-              <View className="pt-1 pb-6">
-                {feed.map((item) =>
-                  item.type === "rpg" ? (
-                    <RPGCard key={item.id} item={item} />
-                  ) : (
-                    <SecretCard key={item.id} item={item} />
-                  ),
-                )}
-              </View>
-            )}
-          </ScrollView>
-        </>
+      {/* Badges tab */}
+      {activeTab === "badges" && (
+        <ScrollView
+          className="flex-1 px-6"
+          refreshControl={
+            <RefreshControl
+              refreshing={rewardsRefreshing}
+              onRefresh={onRewardsRefresh}
+            />
+          }
+        >
+          {rewardsLoading ? (
+            <View className="mt-8 items-center">
+              <Text style={{ color: colors.textSecondary }}>
+                {t("loading")}
+              </Text>
+            </View>
+          ) : secretItems.length === 0 ? (
+            <View className="mt-8 items-center">
+              <Text
+                className="text-center leading-[22px]"
+                style={{ color: colors.textSecondary }}
+              >
+                {t("no_rewards")}
+              </Text>
+            </View>
+          ) : (
+            <View className="pt-1 pb-6">
+              {secretItems.map((item) => (
+                <SecretCard key={item.id} item={item} />
+              ))}
+            </View>
+          )}
+        </ScrollView>
+      )}
+
+      {/* Levels tab */}
+      {activeTab === "levels" && (
+        <ScrollView
+          className="flex-1 px-6"
+          refreshControl={
+            <RefreshControl
+              refreshing={rewardsRefreshing}
+              onRefresh={onRewardsRefresh}
+            />
+          }
+        >
+          {rewardsLoading ? (
+            <View className="mt-8 items-center">
+              <Text style={{ color: colors.textSecondary }}>
+                {t("loading")}
+              </Text>
+            </View>
+          ) : rpgItems.length === 0 ? (
+            <View className="mt-8 items-center">
+              <Text
+                className="text-center leading-[22px]"
+                style={{ color: colors.textSecondary }}
+              >
+                {t("no_rpg_stats")}
+              </Text>
+            </View>
+          ) : (
+            <View className="pt-1 pb-6">
+              {rpgItems.map((item) => (
+                <RPGCard key={item.id} item={item} />
+              ))}
+            </View>
+          )}
+        </ScrollView>
       )}
 
       {showAddForm && (
