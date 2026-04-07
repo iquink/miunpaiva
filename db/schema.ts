@@ -116,6 +116,7 @@ export const userSecretAchievements = sqliteTable("user_secret_achievements", {
   unlockedAt: integer("unlocked_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
+  isViewed: integer("is_viewed", { mode: "boolean" }).notNull().default(false),
 });
 
 // Preset Categories table

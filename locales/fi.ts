@@ -525,6 +525,8 @@ const translation = {
   hub_todays_progress: "Tänään tehty",
   hub_completed_count: "{{current}} / {{total}} suoritettu",
   hub_new_badges: "{{count}} uutta merkkiä!",
+  hub_badges_all_viewed: "Kaikki nähty!",
+  hub_no_rpg_stats: "Suorita tapoja noustaksesi tasossa!",
   hub_relaxing_ambient: "Rentouttava ambient",
 };
 

@@ -1,0 +1,1 @@
+ALTER TABLE `user_secret_achievements` ADD `is_viewed` integer DEFAULT false NOT NULL;

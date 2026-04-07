@@ -9,6 +9,7 @@ import m0004 from './0004_secret_achievements.sql';
 import m0005 from './0005_time_of_day.sql';
 import m0006 from './0006_notifications.sql';
 import m0007 from './0007_lowly_robin_chapel.sql';
+import m0008 from './0008_misty_lila_cheney.sql';
 
   export default {
     journal,
@@ -20,7 +21,8 @@ m0003,
 m0004,
 m0005,
 m0006,
-m0007
+m0007,
+m0008
     }
   }
   

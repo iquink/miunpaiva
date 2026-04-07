@@ -519,6 +519,8 @@ const translation = {
   hub_todays_progress: "Today's Progress",
   hub_completed_count: "{{current}} / {{total}} completed",
   hub_new_badges: "{{count}} New Badges!",
+  hub_badges_all_viewed: "All caught up!",
+  hub_no_rpg_stats: "Complete habits to level up!",
   hub_relaxing_ambient: "Relaxing Ambient",
 };
 

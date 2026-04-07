@@ -15,13 +15,34 @@ import { useThemeColors } from "../../hooks/useThemeColors";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import { useAuthStore } from "../../store/authStore";
 import { useHubStats } from "../../hooks/useHubStats";
+import { useHubRewards } from "../../hooks/useHubRewards";
 
-const RPG_CATEGORIES = [
-  { emoji: "💪", level: 4, progress: 0.6 },
-  { emoji: "🧠", level: 7, progress: 0.35 },
-  { emoji: "🧹", level: 2, progress: 0.8 },
-  { emoji: "🏃", level: 5, progress: 0.5 },
-] as const;
+const CATEGORY_EMOJI: Record<string, string> = {
+  cat_exercise: "💪",
+  cat_daily_routines: "🧹",
+  cat_daily_rhythm: "🛌",
+  cat_nutrition: "🍳",
+  cat_cleaning: "🧹",
+  cat_responsibilities: "📋",
+  cat_group_activities: "🎉",
+  exercise: "💪",
+  running: "🏃",
+  sleep: "🛌",
+  nutrition: "🍳",
+  hydration: "💧",
+  mindfulness: "🧠",
+  cleaning: "🧹",
+};
+
+function getCategoryEmoji(category: string): string {
+  const lower = category.toLowerCase();
+  for (const key of Object.keys(CATEGORY_EMOJI)) {
+    if (lower.includes(key.replace("cat_", "").replace("_", ""))) {
+      return CATEGORY_EMOJI[key];
+    }
+  }
+  return CATEGORY_EMOJI[category] ?? "⭐";
+}
 
 export default function HubScreen() {
   const router = useRouter();
@@ -30,6 +51,7 @@ export default function HubScreen() {
   const [isPlaying, setIsPlaying] = useState(false);
   const { user } = useAuthStore();
   const { todayTotal, todayCompleted, progressPercent } = useHubStats(user?.id);
+  const { unreadBadgesCount, topRpgStats } = useHubRewards(user?.id);
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
@@ -103,12 +125,19 @@ export default function HubScreen() {
         >
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center" style={{ gap: 10 }}>
-              <Trophy size={22} color={colors.warning} />
+              <Trophy
+                size={22}
+                color={unreadBadgesCount > 0 ? colors.primary : colors.warning}
+              />
               <Text
                 className="text-lg font-semibold"
-                style={{ color: colors.text }}
+                style={{
+                  color: unreadBadgesCount > 0 ? colors.primary : colors.text,
+                }}
               >
-                {t("hub_new_badges", { count: 2 })}
+                {unreadBadgesCount > 0
+                  ? t("hub_new_badges", { count: unreadBadgesCount })
+                  : t("hub_badges_all_viewed")}
               </Text>
             </View>
             <ChevronRight size={18} color={colors.textSecondary} />
@@ -126,41 +155,52 @@ export default function HubScreen() {
             borderColor: colors.border,
           }}
         >
-          <View className="flex-row justify-around">
-            {RPG_CATEGORIES.map((cat, i) => (
-              <View
-                key={i}
-                className="items-center"
-                style={{ width: 56, gap: 6 }}
-              >
-                <Text style={{ fontSize: 28 }}>{cat.emoji}</Text>
-
+          {topRpgStats.length > 0 ? (
+            <View className="flex-row justify-around">
+              {topRpgStats.map((stat, i) => (
                 <View
-                  className="rounded-full overflow-hidden"
-                  style={{
-                    height: 4,
-                    width: "100%",
-                    backgroundColor: colors.border,
-                  }}
+                  key={i}
+                  className="items-center"
+                  style={{ width: 56, gap: 6 }}
                 >
-                  <View
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${cat.progress * 100}%`,
-                      backgroundColor: colors.accent,
-                    }}
-                  />
-                </View>
+                  <Text style={{ fontSize: 28 }}>
+                    {getCategoryEmoji(stat.category)}
+                  </Text>
 
-                <Text
-                  className="text-xs font-semibold"
-                  style={{ color: colors.textSecondary }}
-                >
-                  {"Lv " + cat.level}
-                </Text>
-              </View>
-            ))}
-          </View>
+                  <View
+                    className="rounded-full overflow-hidden"
+                    style={{
+                      height: 4,
+                      width: "100%",
+                      backgroundColor: colors.border,
+                    }}
+                  >
+                    <View
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${stat.progressPercent}%`,
+                        backgroundColor: colors.accent,
+                      }}
+                    />
+                  </View>
+
+                  <Text
+                    className="text-xs font-semibold"
+                    style={{ color: colors.textSecondary }}
+                  >
+                    {`Lv ${stat.level}`}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <Text
+              className="text-sm text-center"
+              style={{ color: colors.textSecondary }}
+            >
+              {t("hub_no_rpg_stats")}
+            </Text>
+          )}
         </TouchableOpacity>
 
         {/* Mini Music Player Widget */}
