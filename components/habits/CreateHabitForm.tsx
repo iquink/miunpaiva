@@ -26,6 +26,9 @@ interface Preset {
   id: number;
   name: string;
   categoryId: number;
+  defaultType?: string | null;
+  defaultGoal?: number | null;
+  defaultUnit?: string | null;
 }
 
 type TimeOfDay =
@@ -123,9 +126,20 @@ export default function CreateHabitForm({
 
   const handlePresetSelect = (presetId: string) => {
     setSelectedPreset(presetId);
-    // Title is derived from t(presetId) at submit time; store the ID for now
     setTitle(t(presetId));
+
+    const presetData = presets.find((p) => p.name === presetId);
+    if (presetData) {
+      setUnit(presetData.defaultUnit || "");
+      setDailyGoal(
+        presetData.defaultGoal ? presetData.defaultGoal.toString() : "",
+      );
+    }
   };
+
+  const selectedPresetData = presets.find((p) => p.name === selectedPreset);
+  const showCounterFields =
+    activeTab === "custom" || selectedPresetData?.defaultType === "counter";
 
   const handleSubmit = () => {
     onSubmit({
@@ -259,23 +273,30 @@ export default function CreateHabitForm({
           numberOfLines={2}
         />
 
-        <Text className="mb-2 text-xs" style={{ color: colors.textSecondary }}>
-          {t("habit_type_hint")}
-        </Text>
+        {showCounterFields && (
+          <>
+            <Text
+              className="mb-2 text-xs"
+              style={{ color: colors.textSecondary }}
+            >
+              {t("habit_type_hint")}
+            </Text>
 
-        <View className="mb-4 space-y-3">
-          <Input
-            placeholder={t("habit_unit")}
-            value={unit}
-            onChangeText={setUnit}
-          />
-          <Input
-            placeholder={t("habit_daily_goal")}
-            value={dailyGoal}
-            onChangeText={setDailyGoal}
-            keyboardType="numeric"
-          />
-        </View>
+            <View className="mb-4 space-y-3">
+              <Input
+                placeholder={t("habit_unit")}
+                value={unit}
+                onChangeText={setUnit}
+              />
+              <Input
+                placeholder={t("habit_daily_goal")}
+                value={dailyGoal}
+                onChangeText={setDailyGoal}
+                keyboardType="numeric"
+              />
+            </View>
+          </>
+        )}
 
         {/* Schedule Section */}
         <View className="mb-4">

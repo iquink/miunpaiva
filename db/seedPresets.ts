@@ -47,6 +47,33 @@ const PRESET_DATA: Record<string, string[]> = {
   cat_responsibilities: ["preset_kitchen_duty", "preset_cleaning_duty"],
 };
 
+const PRESET_DEFAULTS: Record<
+  string,
+  {
+    defaultType: "boolean" | "counter";
+    defaultGoal: number | null;
+    defaultUnit: string | null;
+  }
+> = {
+  preset_hydration: {
+    defaultType: "counter",
+    defaultGoal: 2,
+    defaultUnit: "L",
+  },
+  preset_walking: {
+    defaultType: "counter",
+    defaultGoal: 30,
+    defaultUnit: "min",
+  },
+  preset_running: { defaultType: "counter", defaultGoal: 5, defaultUnit: "km" },
+  preset_medication: {
+    defaultType: "counter",
+    defaultGoal: 1,
+    defaultUnit: "pcs",
+  },
+  preset_sleep: { defaultType: "counter", defaultGoal: 8, defaultUnit: "h" },
+};
+
 /**
  * Seeds preset categories and items into the database.
  * Clears existing preset data first to ensure a clean slate with the new string IDs.
@@ -104,13 +131,23 @@ export async function seedPresets(): Promise<void> {
         .where(eq(presetItems.categoryId, categoryRowId));
       const existingNames = new Set(existingItems.map((i) => i.name));
 
-      // Insert only missing items
+      // Insert missing items; update defaults on existing ones
       for (const itemId of itemIds) {
+        const defaults = PRESET_DEFAULTS[itemId] ?? {
+          defaultType: "boolean" as const,
+          defaultGoal: null,
+          defaultUnit: null,
+        };
         if (!existingNames.has(itemId)) {
           await db
             .insert(presetItems)
-            .values({ categoryId: categoryRowId, name: itemId });
+            .values({ categoryId: categoryRowId, name: itemId, ...defaults });
           newItemCount++;
+        } else {
+          await db
+            .update(presetItems)
+            .set(defaults)
+            .where(eq(presetItems.name, itemId));
         }
       }
     }

@@ -131,6 +131,11 @@ export const presetItems = sqliteTable("preset_items", {
     .notNull()
     .references(() => presetCategories.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
+  defaultType: text("default_type", { enum: ["boolean", "counter"] })
+    .notNull()
+    .default("boolean"),
+  defaultGoal: integer("default_goal"),
+  defaultUnit: text("default_unit"),
 });
 
 // Type exports for TypeScript
