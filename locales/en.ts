@@ -512,6 +512,14 @@ const translation = {
       description: "100 nights! Waking up refreshed every single day.",
     },
   },
+
+  // Hub (Dashboard)
+  hub: "Hub",
+  hub_subtitle: "Your daily overview",
+  hub_todays_progress: "Today's Progress",
+  hub_completed_count: "{{current}} / {{total}} completed",
+  hub_new_badges: "{{count}} New Badges!",
+  hub_relaxing_ambient: "Relaxing Ambient",
 };
 
 export default translation;

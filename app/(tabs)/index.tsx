@@ -1,93 +1,201 @@
-import React from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Plus } from "lucide-react-native";
+import React, { useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { useAuthStore } from "../../store/authStore";
+import {
+  CheckCircle2,
+  Trophy,
+  Music2,
+  Play,
+  Pause,
+  SkipForward,
+  ChevronRight,
+} from "lucide-react-native";
 import { useThemeColors } from "../../hooks/useThemeColors";
-import { useDashboard } from "../../hooks/useDashboard";
-import HabitCard from "../../components/habits/HabitCard";
 import ScreenHeader from "../../components/ui/ScreenHeader";
-import IconButton from "../../components/ui/IconButton";
-import DatePaginator from "../../components/habits/DatePaginator";
-import CreateHabitForm from "../../components/habits/CreateHabitForm";
-import EmptyState from "../../components/ui/EmptyState";
-import TimeSectionHeader from "../../components/habits/TimeSectionHeader";
 
-export default function DashboardScreen() {
+const RPG_CATEGORIES = [
+  { emoji: "💪", level: 4, progress: 0.6 },
+  { emoji: "🧠", level: 7, progress: 0.35 },
+  { emoji: "🧹", level: 2, progress: 0.8 },
+  { emoji: "🏃", level: 5, progress: 0.5 },
+] as const;
+
+export default function HubScreen() {
+  const router = useRouter();
   const { t } = useTranslation("common");
   const colors = useThemeColors();
-  const user = useAuthStore((state) => state.user);
-  const dashboard = useDashboard(user?.id);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
-      <ScreenHeader title={t("dashboard")} subtitle={t("dashboard_subtitle")} />
-
-      <DatePaginator
-        selectedDate={dashboard.selectedDate}
-        onPrevDay={dashboard.goToPrevDay}
-        onNextDay={dashboard.goToNextDay}
-        onDatePress={dashboard.openDatePicker}
-      />
-
-      {dashboard.showPicker && (
-        <DateTimePicker
-          value={dashboard.selectedDate}
-          mode="date"
-          display="default"
-          onChange={dashboard.onDateChange}
-        />
-      )}
+      <ScreenHeader title={t("hub")} subtitle={t("hub_subtitle")} />
 
       <ScrollView
-        className="flex-1 px-6 py-4"
-        refreshControl={
-          <RefreshControl
-            refreshing={dashboard.refreshing}
-            onRefresh={dashboard.onRefresh}
-          />
-        }
+        className="flex-1"
+        contentContainerStyle={{ padding: 20, gap: 16 }}
+        showsVerticalScrollIndicator={false}
       >
-        {dashboard.isEmpty ? (
-          <EmptyState title={t("no_habits")} />
-        ) : (
-          dashboard.sections.map(({ key, titleKey, habits }) => (
-            <View key={key}>
-              <TimeSectionHeader title={t(titleKey)} />
-              {habits.map((habit) => (
-                <HabitCard
-                  key={habit.id}
-                  habit={habit}
-                  log={dashboard.getLogFor(habit.id)}
-                  selectedDate={dashboard.selectedDate}
-                  onToggle={dashboard.toggleBooleanHabit}
-                  onUpdateValue={dashboard.updateCounterValue}
-                  onToggleNotification={dashboard.toggleHabitNotification}
-                  onDelete={dashboard.deleteHabit}
-                />
-              ))}
+        {/* Daily Progress Widget */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => router.push("/(tabs)/tasks")}
+          className="rounded-2xl p-5"
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <View className="flex-row items-center justify-between mb-3">
+            <View className="flex-row items-center" style={{ gap: 10 }}>
+              <CheckCircle2 size={22} color={colors.primary} />
+              <Text
+                className="text-lg font-semibold"
+                style={{ color: colors.text }}
+              >
+                {t("hub_todays_progress")}
+              </Text>
             </View>
-          ))
-        )}
+            <ChevronRight size={18} color={colors.textSecondary} />
+          </View>
+
+          <Text
+            className="text-sm mb-3"
+            style={{ color: colors.textSecondary }}
+          >
+            {t("hub_completed_count", { current: 3, total: 5 })}
+          </Text>
+
+          <View
+            className="rounded-full overflow-hidden"
+            style={{ height: 8, backgroundColor: colors.border }}
+          >
+            <View
+              className="h-full rounded-full"
+              style={{ width: "60%", backgroundColor: colors.primary }}
+            />
+          </View>
+        </TouchableOpacity>
+
+        {/* Badges / Goals Widget */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => router.push("/(tabs)/achievements")}
+          className="rounded-2xl p-5"
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center" style={{ gap: 10 }}>
+              <Trophy size={22} color={colors.warning} />
+              <Text
+                className="text-lg font-semibold"
+                style={{ color: colors.text }}
+              >
+                {t("hub_new_badges", { count: 2 })}
+              </Text>
+            </View>
+            <ChevronRight size={18} color={colors.textSecondary} />
+          </View>
+        </TouchableOpacity>
+
+        {/* RPG Levels Widget */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => router.push("/(tabs)/achievements")}
+          className="rounded-2xl p-5"
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <View className="flex-row justify-around">
+            {RPG_CATEGORIES.map((cat, i) => (
+              <View
+                key={i}
+                className="items-center"
+                style={{ width: 56, gap: 6 }}
+              >
+                <Text style={{ fontSize: 28 }}>{cat.emoji}</Text>
+
+                <View
+                  className="rounded-full overflow-hidden"
+                  style={{
+                    height: 4,
+                    width: "100%",
+                    backgroundColor: colors.border,
+                  }}
+                >
+                  <View
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${cat.progress * 100}%`,
+                      backgroundColor: colors.accent,
+                    }}
+                  />
+                </View>
+
+                <Text
+                  className="text-xs font-semibold"
+                  style={{ color: colors.textSecondary }}
+                >
+                  {"Lv " + cat.level}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </TouchableOpacity>
+
+        {/* Mini Music Player Widget */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => router.push("/(tabs)/relax")}
+          className="rounded-2xl p-5"
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center flex-1" style={{ gap: 10 }}>
+              <Music2 size={22} color={colors.accent} />
+              <Text
+                className="text-lg font-semibold flex-1"
+                style={{ color: colors.text }}
+                numberOfLines={1}
+              >
+                {t("hub_relaxing_ambient")}
+              </Text>
+            </View>
+
+            <View className="flex-row items-center" style={{ gap: 16 }}>
+              <TouchableOpacity
+                onPress={() => setIsPlaying((p) => !p)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                {isPlaying ? (
+                  <Pause size={22} color={colors.primary} />
+                ) : (
+                  <Play size={22} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => router.push("/(tabs)/relax")}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <SkipForward size={22} color={colors.primary} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableOpacity>
       </ScrollView>
-
-      {!dashboard.showAddHabit && (
-        <IconButton
-          icon={<Plus color="white" size={28} />}
-          onPress={dashboard.openAddHabit}
-          className="absolute bottom-6 right-6"
-        />
-      )}
-
-      {dashboard.showAddHabit && (
-        <CreateHabitForm
-          categories={dashboard.categories}
-          presets={dashboard.presets}
-          onSubmit={dashboard.handleAddHabit}
-          onCancel={dashboard.closeAddHabit}
-        />
-      )}
     </View>
   );
 }

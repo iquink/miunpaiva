@@ -518,6 +518,14 @@ const translation = {
       description: "100 yötä! Herää virkistyneenä joka päivä.",
     },
   },
+
+  // Hub (Dashboard)
+  hub: "Kotinäkymä",
+  hub_subtitle: "Päivän yhteenveto",
+  hub_todays_progress: "Tänään tehty",
+  hub_completed_count: "{{current}} / {{total}} suoritettu",
+  hub_new_badges: "{{count}} uutta merkkiä!",
+  hub_relaxing_ambient: "Rentouttava ambient",
 };
 
 export default translation;
