@@ -13,6 +13,8 @@ import {
 } from "lucide-react-native";
 import { useThemeColors } from "../../hooks/useThemeColors";
 import ScreenHeader from "../../components/ui/ScreenHeader";
+import { useAuthStore } from "../../store/authStore";
+import { useHubStats } from "../../hooks/useHubStats";
 
 const RPG_CATEGORIES = [
   { emoji: "💪", level: 4, progress: 0.6 },
@@ -26,6 +28,8 @@ export default function HubScreen() {
   const { t } = useTranslation("common");
   const colors = useThemeColors();
   const [isPlaying, setIsPlaying] = useState(false);
+  const { user } = useAuthStore();
+  const { todayTotal, todayCompleted, progressPercent } = useHubStats(user?.id);
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
@@ -64,7 +68,10 @@ export default function HubScreen() {
             className="text-sm mb-3"
             style={{ color: colors.textSecondary }}
           >
-            {t("hub_completed_count", { current: 3, total: 5 })}
+            {t("hub_completed_count", {
+              current: todayCompleted,
+              total: todayTotal,
+            })}
           </Text>
 
           <View
@@ -73,7 +80,12 @@ export default function HubScreen() {
           >
             <View
               className="h-full rounded-full"
-              style={{ width: "60%", backgroundColor: colors.primary }}
+              style={{
+                width: `${progressPercent}%`,
+                backgroundColor: colors.primary,
+                height: "100%",
+                borderRadius: 9999,
+              }}
             />
           </View>
         </TouchableOpacity>
