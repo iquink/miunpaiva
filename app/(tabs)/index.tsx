@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ import ScreenHeader from "../../components/ui/ScreenHeader";
 import { useAuthStore } from "../../store/authStore";
 import { useHubStats } from "../../hooks/useHubStats";
 import { useHubRewards } from "../../hooks/useHubRewards";
+import { useAudioStore } from "../../store/audioStore";
 
 const CATEGORY_EMOJI: Record<string, string> = {
   cat_exercise: "💪",
@@ -48,10 +49,11 @@ export default function HubScreen() {
   const router = useRouter();
   const { t } = useTranslation("common");
   const colors = useThemeColors();
-  const [isPlaying, setIsPlaying] = useState(false);
   const { user } = useAuthStore();
   const { todayTotal, todayCompleted, progressPercent } = useHubStats(user?.id);
   const { unreadBadgesCount, topRpgStats } = useHubRewards(user?.id);
+  const { isPlaying, currentTrackName, player, togglePlayPause } =
+    useAudioStore();
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
@@ -226,13 +228,19 @@ export default function HubScreen() {
                 style={{ color: colors.text }}
                 numberOfLines={1}
               >
-                {t("hub_relaxing_ambient")}
+                {currentTrackName ?? t("hub_relaxing_ambient")}
               </Text>
             </View>
 
             <View className="flex-row items-center" style={{ gap: 16 }}>
               <TouchableOpacity
-                onPress={() => setIsPlaying((p) => !p)}
+                onPress={() => {
+                  if (!player) {
+                    router.push("/(tabs)/relax");
+                  } else {
+                    togglePlayPause();
+                  }
+                }}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
                 {isPlaying ? (
