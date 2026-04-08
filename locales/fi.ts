@@ -524,10 +524,22 @@ const translation = {
   hub_subtitle: "Päivän yhteenveto",
   hub_todays_progress: "Tänään tehty",
   hub_completed_count: "{{current}} / {{total}} suoritettu",
+  hub_no_tasks_today: "Ei tehtäviä tänään.",
+  hub_all_tasks_done: "Kaikki tehtävät tehty — hienoa!",
   hub_new_badges: "{{count}} uutta merkkiä!",
   hub_badges_all_viewed: "Kaikki nähty!",
+  hub_badges_empty_state: "Suorita tapoja avataksesi salaisia merkkejä!",
+  hub_personal_goals: "Henkilökohtaiset tavoitteet",
   hub_no_rpg_stats: "Suorita tapoja noustaksesi tasossa!",
   hub_relaxing_ambient: "Rentouttava ambient",
+  hub_no_track_selected: "Ei mitään soimassa. Napauta valitaksesi.",
+  hub_secret_badges: "Salaiset merkit",
+  hub_rpg_levels: "RPG-tasot",
+  hub_relaxation: "Rentoutuminen",
+  hub_empty_goals: "Ei tavoitteita vielä. Luo ensimmäinen!",
+  hub_all_goals_done: "Kaikki tavoitteet saavutettu — upea suoritus!",
+  hub_goals_completed_count: "{{current}} / {{total}} tavoitetta saavutettu",
+  level_short: "Taso",
 };
 
 export default translation;

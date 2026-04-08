@@ -34,7 +34,7 @@ export default function RPGCard({ item }: Props) {
             {t(item.category)}
           </Text>
           <Text className="text-xs" style={{ color: colors.textSecondary }}>
-            {`Level ${item.level}`}
+            {`${t("level_short")} ${item.level}`}
           </Text>
         </View>
 

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Plus } from "lucide-react-native";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../store/authStore";
 import { useAchievements } from "../../hooks/useAchievements";
@@ -31,6 +31,15 @@ export default function RewardsScreen() {
   const user = useAuthStore((state) => state.user);
   const [showAddForm, setShowAddForm] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("goals");
+  const { tab } = useLocalSearchParams<{
+    tab?: "goals" | "badges" | "levels";
+  }>();
+
+  useEffect(() => {
+    if (tab && ["goals", "badges", "levels"].includes(tab)) {
+      setActiveTab(tab as Tab);
+    }
+  }, [tab]);
 
   const {
     allAchievements,
