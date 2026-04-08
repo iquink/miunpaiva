@@ -546,6 +546,28 @@ const translation = {
   hub_all_goals_done: "Kaikki tavoitteet saavutettu — upea suoritus!",
   hub_goals_completed_count: "{{current}} / {{total}} tavoitetta saavutettu",
   level_short: "Taso",
+  hub_active_sounds: "{{count}} ääni aktiivisena",
+
+  // Relax screen tabs
+  tab_mixer: "Mikseri",
+  tab_music: "Musiikki",
+
+  // Mixer master button
+  mixer_play: "Toista mikseri",
+  mixer_pause: "Pysäytä mikseri",
+
+  // Mixer track names
+  track_rain: "Sade",
+  track_fire: "Takkatuli",
+  track_birds: "Linnut",
+  track_bg_morning: "Aamupäivä",
+  track_bg_guitar: "Akustinen kitara",
+  track_bg_piano: "Piano",
+  track_bg_piano2: "Piano II",
+
+  // Player track names
+  track_guitar1: "Kesämetsä",
+  track_guitar2: "Syvä avaruus",
 };
 
 export default translation;

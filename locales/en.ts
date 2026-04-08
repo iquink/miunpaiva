@@ -540,6 +540,28 @@ const translation = {
   hub_all_goals_done: "All goals achieved — amazing!",
   hub_goals_completed_count: "{{current}} / {{total}} goals achieved",
   level_short: "Lv",
+  hub_active_sounds: "{{count}} active sound(s)",
+
+  // Relax screen tabs
+  tab_mixer: "Mixer",
+  tab_music: "Music",
+
+  // Mixer master button
+  mixer_play: "Play Mixer",
+  mixer_pause: "Pause Mixer",
+
+  // Mixer track names
+  track_rain: "Rain",
+  track_fire: "Fireplace",
+  track_birds: "Birds",
+  track_bg_morning: "Morning",
+  track_bg_guitar: "Acoustic Guitar",
+  track_bg_piano: "Piano",
+  track_bg_piano2: "Piano II",
+
+  // Player track names
+  track_guitar1: "Summer Forest",
+  track_guitar2: "Deep Space",
 };
 
 export default translation;

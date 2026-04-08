@@ -6,7 +6,6 @@ import ScreenHeader from "../../components/ui/ScreenHeader";
 import { useAuthStore } from "../../store/authStore";
 import { useHubStats } from "../../hooks/useHubStats";
 import { useHubRewards } from "../../hooks/useHubRewards";
-import { useAudioStore } from "../../store/audioStore";
 import DailyProgressWidget from "../../components/hub/DailyProgressWidget";
 import PersonalGoalsWidget from "../../components/hub/PersonalGoalsWidget";
 import SecretBadgesWidget from "../../components/hub/SecretBadgesWidget";
@@ -25,8 +24,6 @@ export default function HubScreen() {
     totalGoals,
     completedGoals,
   } = useHubRewards(user?.id);
-  const { isPlaying, currentTrackName, player, togglePlayPause } =
-    useAudioStore();
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
@@ -55,12 +52,7 @@ export default function HubScreen() {
 
         <RPGLevelsWidget topRpgStats={topRpgStats} />
 
-        <MusicPlayerWidget
-          isPlaying={isPlaying}
-          currentTrackName={currentTrackName}
-          player={player}
-          togglePlayPause={togglePlayPause}
-        />
+        <MusicPlayerWidget />
       </ScrollView>
     </View>
   );

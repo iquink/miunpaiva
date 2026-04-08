@@ -4,24 +4,35 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Music2, Play, Pause, ChevronRight } from "lucide-react-native";
 import { useThemeColors } from "../../hooks/useThemeColors";
-import type { AudioPlayer } from "expo-audio";
+import { useAudioStore, PLAYER_TRACKS } from "../../store/audioStore";
 
-interface Props {
-  isPlaying: boolean;
-  currentTrackName: string | null;
-  player: AudioPlayer | null;
-  togglePlayPause: () => void;
-}
-
-export default function MusicPlayerWidget({
-  isPlaying,
-  currentTrackName,
-  player,
-  togglePlayPause,
-}: Props) {
+export default function MusicPlayerWidget() {
   const router = useRouter();
   const { t } = useTranslation("common");
   const colors = useThemeColors();
+
+  const {
+    isMixerPlaying,
+    isPlayerPlaying,
+    playerTrackId,
+    getActiveMixerCount,
+    globalTogglePlayPause,
+  } = useAudioStore();
+
+  const isAnythingPlaying = isMixerPlaying || isPlayerPlaying;
+  const activeMixerCount = getActiveMixerCount();
+  const hasContent = playerTrackId !== null || activeMixerCount > 0;
+
+  let trackLabel: string;
+  if (playerTrackId) {
+    trackLabel = t(
+      PLAYER_TRACKS[playerTrackId]?.nameKey ?? "hub_no_track_selected",
+    );
+  } else if (activeMixerCount > 0) {
+    trackLabel = t("hub_active_sounds", { count: activeMixerCount });
+  } else {
+    trackLabel = t("hub_no_track_selected");
+  }
 
   return (
     <TouchableOpacity
@@ -47,35 +58,31 @@ export default function MusicPlayerWidget({
         <ChevronRight size={18} color={colors.textSecondary} />
       </View>
 
-      <View>
-        <View className="flex-row items-center justify-between">
-          <Text
-            className="text-sm flex-1 mr-4"
-            style={{ color: colors.textSecondary }}
-            numberOfLines={1}
-          >
-            {!player && !currentTrackName
-              ? t("hub_no_track_selected")
-              : currentTrackName || t("hub_relaxing_ambient")}
-          </Text>
+      <View className="flex-row items-center justify-between">
+        <Text
+          className="text-sm flex-1 mr-4"
+          style={{ color: colors.textSecondary }}
+          numberOfLines={1}
+        >
+          {trackLabel}
+        </Text>
 
-          <TouchableOpacity
-            onPress={() => {
-              if (!player) {
-                router.push("/(tabs)/relax");
-              } else {
-                togglePlayPause();
-              }
-            }}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            {isPlaying ? (
-              <Pause size={22} color={colors.primary} />
-            ) : (
-              <Play size={22} color={colors.primary} />
-            )}
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            if (!hasContent) {
+              router.push("/(tabs)/relax");
+            } else {
+              globalTogglePlayPause();
+            }
+          }}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          {isAnythingPlaying ? (
+            <Pause size={22} color={colors.primary} />
+          ) : (
+            <Play size={22} color={colors.primary} />
+          )}
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
