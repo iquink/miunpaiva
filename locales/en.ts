@@ -286,6 +286,11 @@ const translation = {
   error_notification_permission:
     "Please enable notifications in your device settings",
 
+  // Habit Details Modal
+  habit_details: "Details",
+  habit_done: "Mark as Done",
+  habit_undo: "Undo",
+
   // Auth
   login: "Login",
   register: "Register",

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
+import { startOfToday } from "date-fns";
 import { useAuthStore } from "../store/authStore";
 import { useDevLogStore } from "../store/devLogStore";
 import {
@@ -16,6 +17,8 @@ import {
   boostRPGStats,
   unlockAllSecretAchievements,
 } from "../services/devGeneratorService";
+import { getUserHabits } from "../services/habitService";
+import { shouldShowHabit } from "../utils/habitScheduler";
 import { fi } from "date-fns/locale";
 
 export function useDevTools() {
@@ -268,6 +271,55 @@ export function useDevTools() {
     }
   };
 
+  const handleTestDeepLinkNotification = async () => {
+    if (!user) {
+      Alert.alert(
+        "Not Signed In",
+        "You must be signed in to use this feature.",
+      );
+      return;
+    }
+    try {
+      const today = startOfToday();
+      const allHabits = await getUserHabits(user.id);
+      const todayHabits = allHabits.filter((h) => shouldShowHabit(h, today));
+
+      if (todayHabits.length === 0) {
+        Alert.alert(
+          "No Habits Today",
+          "No habits are scheduled for today. Add or generate some first.",
+        );
+        return;
+      }
+
+      const habit = todayHabits[Math.floor(Math.random() * todayHabits.length)];
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: `Test: ${habit.title}`,
+          body: "Tap to open details",
+          data: { habitId: habit.id },
+          sound: true,
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: 5,
+        },
+      });
+
+      Alert.alert(
+        "Scheduled",
+        `Deep-link notification for "${habit.title}" will fire in 5 seconds. Background the app, then tap it.`,
+      );
+    } catch (err) {
+      console.error("[DevTools] handleTestDeepLinkNotification failed:", err);
+      Alert.alert(
+        "Error",
+        "Failed to schedule deep-link notification. Check the console.",
+      );
+    }
+  };
+
   const handleDisableDeveloperMode = () => {
     Alert.alert(
       "Disable Developer Mode",
@@ -300,6 +352,7 @@ export function useDevTools() {
     handleTestNotification,
     handleInspectNotifications,
     handleClearAllNotifications,
+    handleTestDeepLinkNotification,
     handleDisableDeveloperMode,
   };
 }

@@ -25,6 +25,7 @@ export default function DevToolsScreen() {
     handleTestNotification,
     handleInspectNotifications,
     handleClearAllNotifications,
+    handleTestDeepLinkNotification,
     handleDisableDeveloperMode,
   } = useDevTools();
 
@@ -146,6 +147,11 @@ export default function DevToolsScreen() {
           description="Nukes every pending notification in the OS queue. Use to clear ghosts."
           onPress={handleClearAllNotifications}
           destructive
+        />
+        <DevActionButton
+          label="Test Deep Link Notification (5s)"
+          description="Schedules a notification for a random today's habit with a 5-second delay."
+          onPress={handleTestDeepLinkNotification}
         />
 
         <DebugTerminal logs={logs} onClear={clearLogs} />

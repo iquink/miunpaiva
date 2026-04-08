@@ -287,6 +287,11 @@ const translation = {
   error_notification_permission:
     "Ota ilmoitukset käyttöön laitteen asetuksista",
 
+  // Habit Details Modal
+  habit_details: "Tiedot",
+  habit_done: "Merkitse tehdyksi",
+  habit_undo: "Peru",
+
   // Auth
   login: "Kirjaudu",
   register: "Rekisteröidy",

@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, ScrollView, RefreshControl } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { useLocalSearchParams } from "expo-router";
 import { useAuthStore } from "../../store/authStore";
 import { useThemeColors } from "../../hooks/useThemeColors";
 import { useDashboard } from "../../hooks/useDashboard";
+import type { Habit } from "../../db/schema";
 import HabitCard from "../../components/habits/HabitCard";
+import HabitDetailsModal from "../../components/habits/HabitDetailsModal";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import IconButton from "../../components/ui/IconButton";
 import DatePaginator from "../../components/habits/DatePaginator";
@@ -19,6 +22,36 @@ export default function DashboardScreen() {
   const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const dashboard = useDashboard(user?.id);
+  const { openModalId } = useLocalSearchParams<{ openModalId?: string }>();
+
+  const [modalHabitId, setModalHabitId] = useState<number | null>(null);
+
+  // Deep-link: open details modal when openModalId query param is present.
+  useEffect(() => {
+    if (!openModalId) return;
+    const id = Number(openModalId);
+    if (!isNaN(id)) {
+      setModalHabitId(id);
+    }
+  }, [openModalId]);
+
+  const modalHabit =
+    modalHabitId !== null
+      ? (dashboard.sections
+          .flatMap((s) => s.habits)
+          .find((h) => h.id === modalHabitId) ?? null)
+      : null;
+
+  const handleModalUpdateLog = useCallback(
+    (habit: Habit, value?: number) => {
+      if (value !== undefined) {
+        dashboard.updateCounterValue(habit, value);
+      } else {
+        dashboard.toggleBooleanHabit(habit);
+      }
+    },
+    [dashboard],
+  );
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
@@ -65,6 +98,7 @@ export default function DashboardScreen() {
                   onUpdateValue={dashboard.updateCounterValue}
                   onToggleNotification={dashboard.toggleHabitNotification}
                   onDelete={dashboard.deleteHabit}
+                  onDetails={(h) => setModalHabitId(h.id)}
                 />
               ))}
             </View>
@@ -88,6 +122,14 @@ export default function DashboardScreen() {
           onCancel={dashboard.closeAddHabit}
         />
       )}
+
+      <HabitDetailsModal
+        visible={modalHabitId !== null}
+        habit={modalHabit}
+        log={modalHabit ? dashboard.getLogFor(modalHabit.id) : undefined}
+        onClose={() => setModalHabitId(null)}
+        onUpdateLog={handleModalUpdateLog}
+      />
     </View>
   );
 }

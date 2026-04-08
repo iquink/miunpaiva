@@ -16,6 +16,7 @@ interface HabitCardProps {
   onUpdateValue: (habit: Habit, value: number) => void;
   onToggleNotification: (habit: Habit) => void;
   onDelete: (habit: Habit) => void;
+  onDetails?: (habit: Habit) => void;
 }
 
 export default function HabitCard({
@@ -26,6 +27,7 @@ export default function HabitCard({
   onUpdateValue,
   onToggleNotification,
   onDelete,
+  onDetails,
 }: HabitCardProps) {
   const [showValueModal, setShowValueModal] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
@@ -187,6 +189,7 @@ export default function HabitCard({
         onClose={() => setShowActionSheet(false)}
         onToggleNotification={() => onToggleNotification(habit)}
         onDelete={() => onDelete(habit)}
+        onDetails={onDetails ? () => onDetails(habit) : undefined}
       />
     </>
   );

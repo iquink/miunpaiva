@@ -59,6 +59,7 @@ export async function scheduleHabitNotification(
   const content: Notifications.NotificationContentInput = {
     title: habit.title,
     body: habit.description ?? "Time to complete your habit!",
+    data: { habitId: habit.id },
   };
 
   try {

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Modal, Alert } from "react-native";
-import { X, Bell, BellOff, Trash2 } from "lucide-react-native";
+import { X, Bell, BellOff, Trash2, Info } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import type { Habit } from "../../db/schema";
 import { useThemeColors } from "../../hooks/useThemeColors";
@@ -14,6 +14,7 @@ interface ActionBottomSheetProps {
   onClose: () => void;
   onToggleNotification: () => void;
   onDelete: () => void;
+  onDetails?: () => void;
 }
 
 export default function ActionBottomSheet({
@@ -22,6 +23,7 @@ export default function ActionBottomSheet({
   onClose,
   onToggleNotification,
   onDelete,
+  onDetails,
 }: ActionBottomSheetProps) {
   const colors = useThemeColors();
   const { t } = useTranslation("common");
@@ -99,6 +101,25 @@ export default function ActionBottomSheet({
                 : `${t("notif_turn_on")} (${notifTimeLabel})`}
             </Text>
           </TouchableOpacity>
+
+          {/* Details */}
+          {onDetails && (
+            <TouchableOpacity
+              className="mb-3 flex-row items-center rounded-xl p-4"
+              style={{ backgroundColor: colors.background }}
+              onPress={() => {
+                onClose();
+                onDetails();
+              }}
+            >
+              <View className="mr-3.5">
+                <Info color={colors.primary} size={20} />
+              </View>
+              <Text className="text-base" style={{ color: colors.text }}>
+                {t("habit_details")}
+              </Text>
+            </TouchableOpacity>
+          )}
 
           {/* Delete */}
           <TouchableOpacity

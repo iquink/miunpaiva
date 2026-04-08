@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { View, useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
+import * as Notifications from "expo-notifications";
 import "../global.css";
 
 // Keep the native splash screen visible until the app is fully ready.
@@ -103,6 +104,20 @@ export default function RootLayout() {
     migrationSuccess,
     i18nReady,
   ]);
+
+  // Deep-link from notification taps: navigate to the Tasks tab and open the
+  // Habit Details Modal for the tapped habit.
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const habitId = response.notification.request.content.data?.habitId;
+        if (habitId != null) {
+          router.push(`/(tabs)/tasks?openModalId=${habitId}`);
+        }
+      },
+    );
+    return () => subscription.remove();
+  }, [router]);
 
   // While not ready, return null — the native splash screen remains visible.
   if (!appIsReady) {
