@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import {
-  Home,
+  ListTodo,
   Award,
   Settings,
   Wind,
@@ -43,7 +43,9 @@ export default function TabsLayout() {
         name="tasks"
         options={{
           title: t("tasks"),
-          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => (
+            <ListTodo color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen

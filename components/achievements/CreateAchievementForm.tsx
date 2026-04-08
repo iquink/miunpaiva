@@ -27,7 +27,7 @@ export default function CreateAchievementForm({
   onSubmit,
   onCancel,
 }: CreateAchievementFormProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const colors = useThemeColors();
 
   // Form state
@@ -111,7 +111,7 @@ export default function CreateAchievementForm({
     >
       <ScrollView
         className="p-6"
-        contentContainerStyle={{ paddingBottom: 150 }}
+        contentContainerStyle={{ paddingBottom: 200 }}
       >
         <Text className="mb-4 text-lg font-bold" style={{ color: colors.text }}>
           {t("new_achievement")}
