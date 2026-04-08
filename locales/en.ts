@@ -48,6 +48,7 @@ export const register = {
 const translation = {
   // Tab names
   dashboard: "Dashboard",
+  tasks: "Tasks",
   achievements: "Achievements",
   settings: "Settings",
 

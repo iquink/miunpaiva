@@ -1,14 +1,7 @@
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
-import { eq, and, count, desc } from "drizzle-orm";
-import { db } from "../db";
-import {
-  userSecretAchievements,
-  achievements,
-  userAchievements,
-} from "../db/schema";
-import { getUserRPGStats } from "../services/rpgService";
-import type { CategoryProgress } from "../services/rpgService";
+import { getHubDashboardData } from "../services/hubService";
+import type { CategoryProgress } from "../services/hubService";
 import { SECRET_ACHIEVEMENTS_CATALOG } from "../constants/secretAchievements";
 
 export interface RecentBadge {
@@ -37,37 +30,8 @@ export function useHubRewards(userId: number | undefined) {
       async function fetchData() {
         setLoading(true);
         try {
-          const [badgeRows, recentRows, rpgStats, goalRows, completedRows] =
-            await Promise.all([
-              db
-                .select({ value: count() })
-                .from(userSecretAchievements)
-                .where(
-                  and(
-                    eq(userSecretAchievements.userId, userId!),
-                    eq(userSecretAchievements.isViewed, false),
-                  ),
-                ),
-              db
-                .select({
-                  id: userSecretAchievements.id,
-                  secretAchievementId:
-                    userSecretAchievements.secretAchievementId,
-                  isViewed: userSecretAchievements.isViewed,
-                })
-                .from(userSecretAchievements)
-                .where(eq(userSecretAchievements.userId, userId!))
-                .orderBy(desc(userSecretAchievements.unlockedAt)),
-              getUserRPGStats(userId!),
-              db
-                .select({ value: count() })
-                .from(achievements)
-                .where(eq(achievements.userId, userId!)),
-              db
-                .select({ value: count() })
-                .from(userAchievements)
-                .where(eq(userAchievements.userId, userId!)),
-            ]);
+          const { badgeRows, recentRows, rpgStats, goalRows, completedRows } =
+            await getHubDashboardData(userId!);
 
           if (cancelled) return;
 

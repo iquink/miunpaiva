@@ -42,7 +42,7 @@ export interface CriterionForm {
  * Custom hook for managing achievements state and operations
  */
 export function useAchievements(userId: number | undefined) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const [allAchievements, setAllAchievements] = useState<
     AchievementWithStatus[]
   >([]);
@@ -91,7 +91,9 @@ export function useAchievements(userId: number | undefined) {
 
         const criteriaWithTitles = await Promise.all(
           crits.map(async (crit) => {
-            const habit = fetchedHabits.find((h) => h.id === crit.habitId);
+            const habit = fetchedHabits.find(
+              (h) => Number(h.id) === Number(crit.habitId),
+            );
             return {
               ruleType: crit.ruleType,
               targetValue: crit.targetValue,
@@ -170,9 +172,9 @@ export function useAchievements(userId: number | undefined) {
         description: achievementData.description.trim() || "",
         iconSlug: achievementData.iconSlug,
         criteria: achievementData.criteria.map((c) => ({
-          habitId: c.habitId!,
+          habitId: Number(c.habitId!),
           ruleType: c.ruleType,
-          targetValue: parseInt(c.targetValue, 10),
+          targetValue: Number(c.targetValue),
           daysPeriod: c.daysPeriod === "" ? 0 : parseInt(c.daysPeriod, 10),
         })),
       });

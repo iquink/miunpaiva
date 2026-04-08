@@ -48,6 +48,7 @@ export const register = {
 const translation = {
   // Tab names
   dashboard: "Kojelauta",
+  tasks: "Toiminnat",
   achievements: "Saavutukset",
   settings: "Asetukset",
 

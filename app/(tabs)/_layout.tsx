@@ -33,7 +33,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: t("hub"),
+          title: t("dashboard"),
           tabBarIcon: ({ color, size }) => (
             <LayoutDashboard color={color} size={size} />
           ),
@@ -42,7 +42,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="tasks"
         options={{
-          title: t("dashboard"),
+          title: t("tasks"),
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
       />
