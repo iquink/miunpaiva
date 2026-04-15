@@ -82,7 +82,9 @@ utils/          # Date utilities, habit scheduler
 
 ## Documentation
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) — Database design, gamification engine internals, auth flow.
-- [CONTRIBUTING.md](CONTRIBUTING.md) — Styling rules, i18n conventions, how to add secret achievements.
-- [TESTING.md](TESTING.md) — Test strategy and how to run the test suite.
+- [docs/AI_CONTEXT.md](docs/AI_CONTEXT.md) — LLM onboarding: full tech stack, architecture, feature index, and developer gotchas.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Database design, gamification engine internals, audio system, auth flow.
+- [docs/USER_MANUAL.md](docs/USER_MANUAL.md) — End-user guide for all features, including troubleshooting tips.
+- [docs/MANUAL_TESTING.md](docs/MANUAL_TESTING.md) — Step-by-step manual test cases for every feature.
+- [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — Styling rules, i18n conventions, PR checklist, how to add secret achievements.
 

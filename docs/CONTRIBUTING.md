@@ -2,6 +2,13 @@
 
 Thank you for contributing to the Habit Tracker. Please read this guide before opening a pull request. The rules below exist to prevent hard-to-debug crashes in Expo Router and to keep the codebase consistent.
 
+> **Documentation sync rule:** Any new feature must be documented in **all three** of these files simultaneously:
+> - `docs/AI_CONTEXT.md` — technical architecture note
+> - `docs/USER_MANUAL.md` — user-facing feature description
+> - `docs/MANUAL_TESTING.md` — one or more manual test cases
+>
+> A PR that adds a feature without updating all three will be sent back.
+
 ---
 
 ## Styling Rules (Critical)
@@ -65,6 +72,21 @@ The hook reads the active theme from `themeStore` and the system color scheme, a
 
 ---
 
+## Architecture Layering
+
+This project enforces strict UI → Hooks → Services → DB layering. Never skip a tier.
+
+| Tier | Allowed | Forbidden |
+|---|---|---|
+| TSX / UI | `useState`, hooks, render | `db.select()`, Drizzle imports |
+| Hooks | Service calls, Zustand reads/writes | Drizzle imports |
+| Services | Drizzle queries, Zustand writes | Direct UI state |
+| Stores | AsyncStorage, SecureStore | Drizzle queries |
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full architecture diagram.
+
+---
+
 ## Internationalisation (i18n)
 
 ### Namespace Architecture
@@ -73,30 +95,31 @@ Translations live in `locales/en.ts` and `locales/fi.ts`. Each file exports name
 
 | Namespace | Exported as | Contents |
 |---|---|---|
-| `common` | default export | Shared strings: tab names, buttons, status labels |
+| `common` | default export | Shared strings: tab names, buttons, status labels, category keys, RPG ranks |
 | `login` | named `login` export | Login screen strings |
 | `register` | named `register` export | Registration + mode-selection strings |
 
 ### Using Translations in a Component
 
-Import `useTranslation` and declare the namespaces you need:
-
 ```tsx
 import { useTranslation } from 'react-i18next';
 
 export function DashboardScreen() {
-  // Load multiple namespaces; the first in the array is the default for this call
   const { t } = useTranslation(['common', 'login']);
 
-  return <Text>{t('dashboard')}</Text>;           // resolved from 'common'
-  //     <Text>{t('login:button')}</Text>          // explicit namespace prefix
+  return <Text>{t('dashboard')}</Text>;
 }
 ```
 
-When a component only needs one namespace you can pass a string directly:
+### Using Translations in a Service
 
-```tsx
-const { t } = useTranslation('login');
+Services cannot use the `useTranslation` hook (not a React component). Use the global `i18n` instance directly:
+
+```ts
+import i18n from 'i18next';
+
+const label = i18n.t('cat_exercise');         // "Exercise" or "Liikunta"
+const lv    = i18n.t('level_short');          // "Lv" or "Taso"
 ```
 
 ### Adding New Strings
@@ -105,7 +128,7 @@ const { t } = useTranslation('login');
 2. Add the Finnish translation to `locales/fi.ts` under the same key.
 3. If the string belongs to a new screen with its own namespace, export it as a named export and register it in `i18n.ts` under both the `en` and `fi` resource objects.
 
-Do not use hardcoded English strings in component JSX except for temporary debugging code that will be removed before merging.
+Do not use hardcoded English strings in component JSX or service files.
 
 ---
 
@@ -155,17 +178,7 @@ Secret achievements live entirely in `constants/secretAchievements.ts`. The data
 
 5. Add translation keys for the new achievement's title and description in both `locales/en.ts` and `locales/fi.ts` under the `common` namespace, using the pattern `secret_achievements.<id>.title` and `secret_achievements.<id>.description`.
 6. **No database migration is needed.** The engine reads the catalog at runtime; the database only records which catalog IDs have been unlocked.
-
-### How the engine works
-
-After every habit log, `services/secretAchievementEngine.ts` calls `checkSecretAchievements(userId, dateStr)`. The function:
-
-1. Queries `userSecretAchievements` for already-unlocked IDs.
-2. Iterates `SECRET_ACHIEVEMENTS`, skipping already-unlocked entries.
-3. Evaluates the condition with a targeted SQL query or pure helper function.
-4. Inserts a `userSecretAchievements` row when the condition is met.
-
-The call is fire-and-forget; errors are swallowed so a bug in a new achievement cannot break habit logging.
+7. **Update documentation:** Add an entry in `docs/USER_MANUAL.md` (Badges section) and a test case in `docs/MANUAL_TESTING.md`.
 
 ---
 
@@ -190,6 +203,8 @@ npm test -- --watch    # watch mode
 
 Pure helper functions in `services/helpers/` must have corresponding test files in `services/__tests__/`. Do not import native modules (`expo-sqlite`, `expo-crypto`, etc.) inside helper files — keep them dependency-free so tests run in the Node environment without mocking.
 
+For manual end-to-end testing, follow the procedures in `docs/MANUAL_TESTING.md`.
+
 ---
 
 ## Pull Request Checklist
@@ -198,5 +213,8 @@ Pure helper functions in `services/helpers/` must have corresponding test files 
 - [ ] No Tailwind color classes or `dark:` modifiers anywhere in component files.
 - [ ] New user-visible strings added to both `locales/en.ts` and `locales/fi.ts`.
 - [ ] New secret achievements added only to the static catalog (no migration).
-- [ ] Schema changes accompanied by a generated and committed Drizzle migration.
-- [ ] Pure business logic extracted to `services/helpers/` with unit tests.
+- [ ] `docs/AI_CONTEXT.md` updated with any architecture changes.
+- [ ] `docs/USER_MANUAL.md` updated with any user-facing feature changes.
+- [ ] `docs/MANUAL_TESTING.md` updated with test cases for any new or changed behaviour.
+- [ ] No Drizzle imports in hooks or UI components.
+- [ ] No `db.select()` / `db.insert()` calls outside of `services/`.
