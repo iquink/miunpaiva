@@ -20,7 +20,6 @@ import {
 } from "../services/devGeneratorService";
 import { getUserHabits } from "../services/habitService";
 import { shouldShowHabit } from "../utils/habitScheduler";
-import { fi } from "date-fns/locale";
 
 export function useDevTools() {
   const { setDeveloperMode, logout, user, setFirstLaunch } = useAuthStore();
