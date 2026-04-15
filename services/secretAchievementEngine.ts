@@ -1,6 +1,8 @@
 import { eq, and } from "drizzle-orm";
+import i18n from "i18next";
 import { db } from "../db";
 import { habits, logs, userSecretAchievements } from "../db/schema";
+import { useToastStore } from "../store/toastStore";
 
 import {
   SECRET_ACHIEVEMENTS_CATALOG,
@@ -50,6 +52,12 @@ export async function checkSecretAchievements(
       await db.insert(userSecretAchievements).values({
         userId,
         secretAchievementId: ach.id,
+      });
+      useToastStore.getState().showToast({
+        icon: ach.icon,
+        title: i18n.t("toast_badge_unlocked"),
+        description: ach.title,
+        tab: "badges",
       });
       console.log(
         `[SecretAchievements] Unlocked: ${ach.id} (${ach.icon}) for user ${userId}`,

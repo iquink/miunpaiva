@@ -1,5 +1,13 @@
 import { useState, useRef } from "react";
-import { View, Text, ScrollView, Alert, Image, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  Image,
+  Pressable,
+  Switch,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "nativewind";
@@ -19,6 +27,7 @@ import DangerZoneSection from "../../components/settings/DangerZoneSection";
 import React from "react";
 import ColorThemeSelector from "../../components/settings/ColorThemeSelector";
 import { useThemeColors } from "../../hooks/useThemeColors";
+import { useSettingsStore } from "../../store/settingsStore";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -29,6 +38,8 @@ export default function SettingsScreen() {
   const { t, i18n } = useTranslation("common");
   const { colorScheme, setColorScheme } = useColorScheme();
   const [isDeleting, setIsDeleting] = useState(false);
+  const { isToastsEnabled, isSoundEnabled, toggleToasts, toggleSound } =
+    useSettingsStore();
   const tapCountRef = useRef(0);
   const lastTapRef = useRef<number>(0);
 
@@ -155,6 +166,71 @@ export default function SettingsScreen() {
         />
 
         <ColorThemeSelector />
+
+        {/* Notifications & Feedback */}
+        <View className="mb-6">
+          <Text
+            className="mb-3 text-xs font-semibold uppercase tracking-widest"
+            style={{ color: colors.textSecondary }}
+          >
+            {t("settings_feedback_section")}
+          </Text>
+          <View
+            className="rounded-2xl overflow-hidden"
+            style={{
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            {/* Pop-up notifications */}
+            <View
+              className="flex-row items-center justify-between px-4 py-4"
+              style={{ borderBottomWidth: 1, borderBottomColor: colors.border }}
+            >
+              <View style={{ flex: 1, marginRight: 12 }}>
+                <Text
+                  className="text-sm font-semibold"
+                  style={{ color: colors.text }}
+                >
+                  {t("settings_toasts_title")}
+                </Text>
+                <Text
+                  className="mt-0.5 text-xs"
+                  style={{ color: colors.textSecondary }}
+                >
+                  {t("settings_toasts_desc")}
+                </Text>
+              </View>
+              <Switch
+                value={isToastsEnabled}
+                onValueChange={toggleToasts}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={colors.background}
+              />
+            </View>
+            {/* Sound effects */}
+            <View className="flex-row items-center justify-between px-4 py-4">
+              <View style={{ flex: 1, marginRight: 12 }}>
+                <Text
+                  className="text-sm font-semibold"
+                  style={{
+                    color: isToastsEnabled ? colors.text : colors.textSecondary,
+                  }}
+                >
+                  {t("settings_sound_title")}
+                </Text>
+              </View>
+              <Switch
+                value={isSoundEnabled}
+                onValueChange={toggleSound}
+                disabled={!isToastsEnabled}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={colors.background}
+              />
+            </View>
+          </View>
+        </View>
 
         {!isPersonalAccount && <LogoutSection onLogout={handleLogout} />}
 

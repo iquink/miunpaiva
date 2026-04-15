@@ -244,6 +244,17 @@ const translation = {
   no_user: "No user logged in",
   app_version: "Miunpäivä v1.0.0",
   made_with_love: "Made with ❤️ using React Native & Expo",
+  // Toast notifications
+  toast_level_up: "Level Up!",
+  toast_badge_unlocked: "New Badge!",
+  toast_goal_reached: "Goal Achieved!",
+  // Settings — Notifications & Feedback
+  settings_feedback_section: "Notifications & Feedback",
+  settings_toasts_title: "Pop-up notifications",
+  settings_toasts_desc: "Show toasts for levels and achievements",
+  settings_sound_title: "Sound effects",
+  // DevTools
+  dev_test_toast: "Test Global Toast",
   // Developer Mode
   enable_dev_mode_title: "Enable Developer Mode?",
   enable_dev_mode_message: "This unlocks the DevTools tab.",

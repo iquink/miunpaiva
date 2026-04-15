@@ -246,6 +246,17 @@ const translation = {
   no_user: "Ei kirjautunutta käyttäjää",
   app_version: "Miunpäivä v1.0.0",
   made_with_love: "Tehty ❤️:lla React Nativella & Expolla",
+  // Toast notifications
+  toast_level_up: "Taso nousi!",
+  toast_badge_unlocked: "Uusi merkki!",
+  toast_goal_reached: "Tavoite saavutettu!",
+  // Settings — Notifications & Feedback
+  settings_feedback_section: "Ilmoitukset ja palaute",
+  settings_toasts_title: "Ponnahdusilmoitukset",
+  settings_toasts_desc: "Näytä ilmoitukset tasoista ja saavutuksista",
+  settings_sound_title: "Äänitehosteet",
+  // DevTools
+  dev_test_toast: "Testaa ilmoitusta",
   // Developer Mode
   enable_dev_mode_title: "Ota kehittäjätila käyttöön?",
   enable_dev_mode_message: "Tämä avaa DevTools-välilehden.",

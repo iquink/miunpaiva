@@ -11,6 +11,8 @@ import "../global.css";
 SplashScreen.preventAutoHideAsync();
 import { useAuthStore } from "../store/authStore";
 import { useThemeStore } from "../store/themeStore";
+import { useSettingsStore } from "../store/settingsStore";
+import GlobalToast from "../components/ui/GlobalToast";
 import { useThemeColors } from "../hooks/useThemeColors";
 import { useDatabaseMigrations, db } from "../db";
 import { initI18n } from "../i18n";
@@ -33,6 +35,7 @@ export default function RootLayout() {
   } = useAuthStore();
   const { activeTheme, initialize: initTheme } = useThemeStore();
   const colors = useThemeColors();
+  const { initialize: initSettings } = useSettingsStore();
 
   // Database and i18n state
   const { success: migrationSuccess, error: migrationError } =
@@ -46,9 +49,10 @@ export default function RootLayout() {
     }
   }, [migrationError]);
 
-  // Initialize theme store
+  // Initialize theme store and settings store
   useEffect(() => {
     initTheme();
+    initSettings();
   }, []);
 
   // Initialize i18n and seed presets
@@ -143,6 +147,7 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
         </Stack>
+        <GlobalToast />
       </View>
     </GestureHandlerRootView>
   );

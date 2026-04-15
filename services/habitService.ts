@@ -13,6 +13,7 @@ import {
 } from "../db/schema";
 import { checkAchievements } from "./achievementService";
 import { checkSecretAchievements } from "./secretAchievementEngine";
+import { checkAndNotifyLevelUps } from "./rpgService";
 
 /**
  * Habit Service
@@ -141,6 +142,9 @@ export async function toggleBooleanHabitLog(
     checkSecretAchievements(userId, dateStr).catch((err) => {
       console.error("[SecretAchievements] Engine error:", err);
     });
+    checkAndNotifyLevelUps(userId).catch((err) => {
+      console.error("[RPG] Level-up check error:", err);
+    });
 
     return result;
   } catch (error) {
@@ -196,6 +200,9 @@ export async function updateCounterHabitLog(
     });
     checkSecretAchievements(userId, dateStr).catch((err) => {
       console.error("[SecretAchievements] Engine error:", err);
+    });
+    checkAndNotifyLevelUps(userId).catch((err) => {
+      console.error("[RPG] Level-up check error:", err);
     });
 
     return result;

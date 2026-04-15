@@ -1,7 +1,10 @@
 import { eq, and, sql } from "drizzle-orm";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import i18n from "i18next";
 import { db } from "../db";
 import { logs, habits } from "../db/schema";
 import { calculateLevelData, getRankKey } from "./helpers/rpgCalculations";
+import { useToastStore } from "../store/toastStore";
 export type { LevelData } from "./helpers/rpgCalculations";
 
 /**
@@ -71,5 +74,56 @@ export async function getUserRPGStats(
   } catch (error) {
     console.error("Error fetching RPG stats:", error);
     return [];
+  }
+}
+
+// Category emojis used in level-up toasts
+const CATEGORY_EMOJI: Record<string, string> = {
+  exercise: "💪",
+  daily_routines: "🌅",
+  daily_rhythm: "⏰",
+  nutrition: "🥗",
+  cleaning: "🧹",
+  responsibilities: "✅",
+  group_activities: "🎉",
+};
+
+function getCategoryEmoji(category: string): string {
+  const key = category.toLowerCase().replace(/\s+/g, "_");
+  return CATEGORY_EMOJI[key] ?? "⭐";
+}
+
+/**
+ * Compare current RPG stats with a persisted snapshot and fire toasts for
+ * any category that leveled up. Updates the snapshot afterwards.
+ * Safe to call fire-and-forget.
+ */
+export async function checkAndNotifyLevelUps(userId: number): Promise<void> {
+  try {
+    const snapshotKey = `rpg_levels_snapshot_${userId}`;
+    const rawSnapshot = await AsyncStorage.getItem(snapshotKey);
+    const snapshot: Record<string, number> = rawSnapshot
+      ? JSON.parse(rawSnapshot)
+      : {};
+
+    const currentStats = await getUserRPGStats(userId);
+
+    const newSnapshot: Record<string, number> = {};
+    for (const stat of currentStats) {
+      newSnapshot[stat.category] = stat.level;
+      const prevLevel = snapshot[stat.category] ?? 0;
+      if (stat.level > prevLevel && prevLevel > 0) {
+        useToastStore.getState().showToast({
+          icon: getCategoryEmoji(stat.category),
+          title: i18n.t("toast_level_up"),
+          description: `${stat.category} — Level ${stat.level}`,
+          tab: "levels",
+        });
+      }
+    }
+
+    await AsyncStorage.setItem(snapshotKey, JSON.stringify(newSnapshot));
+  } catch (error) {
+    console.error("[RPG] checkAndNotifyLevelUps error:", error);
   }
 }

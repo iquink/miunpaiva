@@ -1,5 +1,6 @@
 import { eq, and, sql, desc, gte } from "drizzle-orm";
 import { format, subDays, startOfDay } from "date-fns";
+import i18n from "i18next";
 import { db } from "../db";
 import {
   achievements,
@@ -9,6 +10,7 @@ import {
   habits,
   type AchievementCriterion,
 } from "../db/schema";
+import { useToastStore } from "../store/toastStore";
 
 /**
  * Achievement Engine Service (Refactored for Multi-Criteria)
@@ -52,7 +54,12 @@ export async function checkAchievements(userId: number): Promise<void> {
           userId,
           achievementId: achievement.id,
         });
-
+        useToastStore.getState().showToast({
+          icon: "🎯",
+          title: i18n.t("toast_goal_reached"),
+          description: achievement.title,
+          tab: "goals",
+        });
         console.log(`🎉 Achievement unlocked: ${achievement.title}`);
       }
     }

@@ -5,6 +5,7 @@ import * as Notifications from "expo-notifications";
 import { startOfToday } from "date-fns";
 import { useAuthStore } from "../store/authStore";
 import { useDevLogStore } from "../store/devLogStore";
+import { useToastStore } from "../store/toastStore";
 import {
   wipeDatabaseAndSignOut,
   seedMockLogs,
@@ -338,6 +339,15 @@ export function useDevTools() {
     );
   };
 
+  const handleTestToast = () => {
+    useToastStore.getState().showToast({
+      icon: "🏆",
+      title: "Test Badge",
+      description: "You did it!",
+      tab: "badges",
+    });
+  };
+
   return {
     habitCount,
     setHabitCount,
@@ -354,5 +364,6 @@ export function useDevTools() {
     handleClearAllNotifications,
     handleTestDeepLinkNotification,
     handleDisableDeveloperMode,
+    handleTestToast,
   };
 }

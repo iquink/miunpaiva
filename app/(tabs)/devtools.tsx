@@ -27,6 +27,7 @@ export default function DevToolsScreen() {
     handleClearAllNotifications,
     handleTestDeepLinkNotification,
     handleDisableDeveloperMode,
+    handleTestToast,
   } = useDevTools();
 
   return (
@@ -152,6 +153,18 @@ export default function DevToolsScreen() {
           label="Test Deep Link Notification (5s)"
           description="Schedules a notification for a random today's habit with a 5-second delay."
           onPress={handleTestDeepLinkNotification}
+        />
+
+        <Text
+          className="mb-3 mt-4 text-xs font-semibold uppercase tracking-widest"
+          style={{ color: colors.textSecondary }}
+        >
+          Toast System
+        </Text>
+        <DevActionButton
+          label="Test Global Toast"
+          description="Fires a dummy badge toast to verify the global toast system."
+          onPress={handleTestToast}
         />
 
         <DebugTerminal logs={logs} onClear={clearLogs} />
