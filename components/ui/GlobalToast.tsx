@@ -12,6 +12,7 @@ export default function GlobalToast() {
   const router = useRouter();
   const colors = useThemeColors();
   const currentToast = useToastStore((s) => s.currentToast);
+  const isVisible = useToastStore((s) => s.isVisible);
   const hideToast = useToastStore((s) => s.hideToast);
 
   const translateY = useRef(new Animated.Value(-120)).current;
@@ -19,9 +20,10 @@ export default function GlobalToast() {
 
   const player = useAudioPlayer(VICTORY_SOUND);
 
-  // Slide in when a toast appears, slide out when it clears
+  // Slide in when visible, slide out immediately when hidden (content stays
+  // during the 300ms exit window so the animation has something to render)
   useEffect(() => {
-    if (currentToast) {
+    if (isVisible && currentToast) {
       // Play sound if enabled
       if (useSettingsStore.getState().isSoundEnabled) {
         try {
@@ -59,7 +61,7 @@ export default function GlobalToast() {
         }),
       ]).start();
     }
-  }, [currentToast]);
+  }, [isVisible, currentToast]);
 
   const handlePress = () => {
     if (!currentToast) return;
@@ -75,7 +77,7 @@ export default function GlobalToast() {
 
   return (
     <Animated.View
-      pointerEvents={currentToast ? "auto" : "none"}
+      pointerEvents={isVisible ? "auto" : "none"}
       style={{
         position: "absolute",
         top: topInset,

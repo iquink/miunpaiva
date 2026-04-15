@@ -110,9 +110,12 @@ export async function checkAndNotifyLevelUps(userId: number): Promise<void> {
 
     const newSnapshot: Record<string, number> = {};
     for (const stat of currentStats) {
-      newSnapshot[stat.category] = stat.level;
-      const prevLevel = snapshot[stat.category] ?? 0;
-      if (stat.level > prevLevel && prevLevel > 0) {
+      // Default previous level to 1 — Level 1 is the starting point, not 0.
+      // Using 0 as default caused Level 2 toasts to be skipped on first run
+      // because prevLevel > 0 was false, and the snapshot would then save
+      // stat.level (e.g. 2) as the new baseline, permanently skipping level 2.
+      const prevLevel = snapshot[stat.category] ?? 1;
+      if (stat.level > prevLevel) {
         useToastStore.getState().showToast({
           icon: getCategoryEmoji(stat.category),
           title: i18n.t("toast_level_up"),
@@ -120,6 +123,7 @@ export async function checkAndNotifyLevelUps(userId: number): Promise<void> {
           tab: "levels",
         });
       }
+      newSnapshot[stat.category] = stat.level;
     }
 
     await AsyncStorage.setItem(snapshotKey, JSON.stringify(newSnapshot));

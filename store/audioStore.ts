@@ -73,6 +73,8 @@ interface AudioState {
   isPlayerPlaying: boolean;
   playerSound: AudioPlayer | null;
   playerTrackId: string | null;
+  // Active mode for Hub widget
+  activeMode: "mixer" | "player" | null;
   // Mixer actions
   setMixerVolume: (id: string, volume: number) => Promise<void>;
   toggleMixerPlayPause: () => void;
@@ -98,9 +100,10 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   isPlayerPlaying: false,
   playerSound: null,
   playerTrackId: null,
+  activeMode: null,
 
   setMixerVolume: async (id, volume) => {
-    const { mixerPlayers, mixerVolumes, isMixerPlaying } = get();
+    const { mixerPlayers, mixerVolumes, isMixerPlaying, playerSound } = get();
     const clampedVolume = Math.max(0, Math.min(1, volume));
 
     let player = mixerPlayers[id];
@@ -126,6 +129,9 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     }
 
     if (clampedVolume > 0 && isMixerPlaying) {
+      // Mixer is already playing — mute the player
+      playerSound?.pause();
+      set({ activeMode: "mixer", isPlayerPlaying: false });
       player.play();
     } else {
       player.pause();
@@ -133,21 +139,28 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   },
 
   toggleMixerPlayPause: () => {
-    const { isMixerPlaying, mixerPlayers, mixerVolumes } = get();
+    const { isMixerPlaying, mixerPlayers, mixerVolumes, playerSound } = get();
     const next = !isMixerPlaying;
-    set({ isMixerPlaying: next });
 
-    Object.entries(mixerPlayers).forEach(([id, player]) => {
-      if (next && (mixerVolumes[id] ?? 0) > 0) {
-        player.play();
-      } else {
-        player.pause();
-      }
-    });
+    if (next) {
+      // Turning ON — pause the player
+      playerSound?.pause();
+      set({
+        isMixerPlaying: true,
+        activeMode: "mixer",
+        isPlayerPlaying: false,
+      });
+      Object.entries(mixerPlayers).forEach(([id, player]) => {
+        if ((mixerVolumes[id] ?? 0) > 0) player.play();
+      });
+    } else {
+      set({ isMixerPlaying: false });
+      Object.values(mixerPlayers).forEach((player) => player.pause());
+    }
   },
 
   setPlayerTrack: async (id) => {
-    const { playerSound } = get();
+    const { playerSound, mixerPlayers } = get();
     const track = PLAYER_TRACKS[id];
     if (!track) return;
 
@@ -155,24 +168,41 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       playerSound.remove();
     }
 
+    // Pause all mixer sounds
+    Object.values(mixerPlayers).forEach((p) => p.pause());
+
     await ensureAudioMode();
     const newPlayer = createAudioPlayer(track.source);
     newPlayer.loop = true;
     newPlayer.play();
 
-    set({ playerSound: newPlayer, playerTrackId: id, isPlayerPlaying: true });
+    set({
+      playerSound: newPlayer,
+      playerTrackId: id,
+      isPlayerPlaying: true,
+      activeMode: "player",
+      isMixerPlaying: false,
+    });
   },
 
   togglePlayerPlayPause: () => {
-    const { playerSound, isPlayerPlaying } = get();
+    const { playerSound, isPlayerPlaying, mixerPlayers } = get();
     if (!playerSound) return;
     const next = !isPlayerPlaying;
+
     if (next) {
+      // Turning ON — pause all mixer sounds
+      Object.values(mixerPlayers).forEach((p) => p.pause());
       playerSound.play();
+      set({
+        isPlayerPlaying: true,
+        activeMode: "player",
+        isMixerPlaying: false,
+      });
     } else {
       playerSound.pause();
+      set({ isPlayerPlaying: false });
     }
-    set({ isPlayerPlaying: next });
   },
 
   globalTogglePlayPause: () => {
@@ -183,26 +213,43 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       mixerVolumes,
       playerSound,
       playerTrackId,
+      activeMode,
     } = get();
 
     if (isMixerPlaying || isPlayerPlaying) {
+      // Pause everything
       Object.values(mixerPlayers).forEach((p) => p.pause());
       playerSound?.pause();
       set({ isMixerPlaying: false, isPlayerPlaying: false });
     } else {
-      let didPlayMixer = false;
-      Object.entries(mixerPlayers).forEach(([id, player]) => {
-        if ((mixerVolumes[id] ?? 0) > 0) {
-          player.play();
-          didPlayMixer = true;
-        }
-      });
-      if (didPlayMixer) {
-        set({ isMixerPlaying: true });
-      }
-      if (playerTrackId && playerSound) {
+      // Resume based on last active mode
+      if (activeMode === "player" && playerTrackId && playerSound) {
         playerSound.play();
         set({ isPlayerPlaying: true });
+      } else if (activeMode === "mixer") {
+        let didPlay = false;
+        Object.entries(mixerPlayers).forEach(([id, player]) => {
+          if ((mixerVolumes[id] ?? 0) > 0) {
+            player.play();
+            didPlay = true;
+          }
+        });
+        if (didPlay) set({ isMixerPlaying: true });
+      } else {
+        // Fallback: play whatever is available
+        if (playerTrackId && playerSound) {
+          playerSound.play();
+          set({ isPlayerPlaying: true, activeMode: "player" });
+        } else {
+          let didPlay = false;
+          Object.entries(mixerPlayers).forEach(([id, player]) => {
+            if ((mixerVolumes[id] ?? 0) > 0) {
+              player.play();
+              didPlay = true;
+            }
+          });
+          if (didPlay) set({ isMixerPlaying: true, activeMode: "mixer" });
+        }
       }
     }
   },

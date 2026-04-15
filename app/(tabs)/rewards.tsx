@@ -71,6 +71,11 @@ export default function RewardsScreen() {
     }
   }, [activeTab, user?.id]);
 
+  // Reset "Add Goal" form when switching tabs
+  useEffect(() => {
+    setShowAddForm(false);
+  }, [activeTab]);
+
   // Also mark on re-focus while already on Badges tab
   useFocusEffect(
     useCallback(() => {

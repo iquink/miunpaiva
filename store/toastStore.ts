@@ -11,18 +11,20 @@ export interface ToastMessage {
 
 interface ToastState {
   currentToast: ToastMessage | null;
+  isVisible: boolean;
   queue: ToastMessage[];
 
   // Actions
   showToast: (msg: Omit<ToastMessage, "id">) => void;
   hideToast: () => void;
-  _processQueue: () => void;
+  processNext: () => void;
 }
 
-let _hideTimer: ReturnType<typeof setTimeout> | null = null;
+let _autoDismissTimer: ReturnType<typeof setTimeout> | null = null;
 
 export const useToastStore = create<ToastState>((set, get) => ({
   currentToast: null,
+  isVisible: false,
   queue: [],
 
   showToast: (msg) => {
@@ -34,31 +36,36 @@ export const useToastStore = create<ToastState>((set, get) => ({
     };
 
     set((state) => ({ queue: [...state.queue, toast] }));
-    get()._processQueue();
+    get().processNext();
+  },
+
+  processNext: () => {
+    if (get().isVisible) return;
+    if (get().queue.length === 0) return;
+
+    const nextToast = get().queue[0];
+    set((state) => ({
+      isVisible: true,
+      currentToast: nextToast,
+      queue: state.queue.slice(1),
+    }));
+
+    if (_autoDismissTimer) clearTimeout(_autoDismissTimer);
+    _autoDismissTimer = setTimeout(() => {
+      get().hideToast();
+    }, 3500);
   },
 
   hideToast: () => {
-    if (_hideTimer) {
-      clearTimeout(_hideTimer);
-      _hideTimer = null;
+    if (_autoDismissTimer) {
+      clearTimeout(_autoDismissTimer);
+      _autoDismissTimer = null;
     }
-    set((state) => {
-      const [, ...remaining] = state.queue;
-      return { currentToast: null, queue: remaining };
-    });
-    // Allow animation to finish before showing next
-    setTimeout(() => get()._processQueue(), 400);
-  },
-
-  _processQueue: () => {
-    const { currentToast, queue } = get();
-    if (currentToast || queue.length === 0) return;
-
-    const [next, ...remaining] = queue;
-    set({ currentToast: next, queue: remaining });
-
-    _hideTimer = setTimeout(() => {
-      get().hideToast();
-    }, 3500);
+    set({ isVisible: false });
+    // Wait for exit animation before clearing toast content and advancing queue
+    setTimeout(() => {
+      set({ currentToast: null });
+      get().processNext();
+    }, 300);
   },
 }));

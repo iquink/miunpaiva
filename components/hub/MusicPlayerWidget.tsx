@@ -15,6 +15,7 @@ export default function MusicPlayerWidget() {
     isMixerPlaying,
     isPlayerPlaying,
     playerTrackId,
+    activeMode,
     getActiveMixerCount,
     globalTogglePlayPause,
   } = useAudioStore();
@@ -24,11 +25,11 @@ export default function MusicPlayerWidget() {
   const hasContent = playerTrackId !== null || activeMixerCount > 0;
 
   let trackLabel: string;
-  if (playerTrackId) {
+  if (activeMode === "player" && playerTrackId) {
     trackLabel = t(
       PLAYER_TRACKS[playerTrackId]?.nameKey ?? "hub_no_track_selected",
     );
-  } else if (activeMixerCount > 0) {
+  } else if (activeMode === "mixer" && activeMixerCount > 0) {
     trackLabel = t("hub_active_sounds", { count: activeMixerCount });
   } else {
     trackLabel = t("hub_no_track_selected");
