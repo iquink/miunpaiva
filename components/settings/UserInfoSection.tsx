@@ -16,7 +16,7 @@ export default function UserInfoSection({
   userId,
   createdAt,
 }: UserInfoSectionProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(["settings", "common"]);
   const colors = useThemeColors(); // 2. Получаем текущую палитру
 
   return (

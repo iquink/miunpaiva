@@ -18,7 +18,7 @@ import EmptyState from "../../components/ui/EmptyState";
 import TimeSectionHeader from "../../components/habits/TimeSectionHeader";
 
 export default function DashboardScreen() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["tasks", "hub", "common"]);
   const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const dashboard = useDashboard(user?.id);
@@ -55,7 +55,10 @@ export default function DashboardScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
-      <ScreenHeader title={t("dashboard")} subtitle={t("dashboard_subtitle")} />
+      <ScreenHeader
+        title={t("tasks", { ns: "common" })}
+        subtitle={t("tasks_subtitle")}
+      />
 
       <DatePaginator
         selectedDate={dashboard.selectedDate}

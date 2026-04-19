@@ -14,7 +14,7 @@ export default function DangerZoneSection({
   onDeleteAccount,
   isDeleting,
 }: DangerZoneSectionProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(["settings", "common"]);
   const colors = useThemeColors();
 
   return (

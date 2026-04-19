@@ -8,7 +8,7 @@ import { useAudioStore, PLAYER_TRACKS } from "../../store/audioStore";
 const PLAYER_TRACK_ORDER = ["guitar1", "guitar2"];
 
 export default function PlayerPanel() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["relax", "common"]);
   const colors = useThemeColors();
   const {
     isPlayerPlaying,

@@ -16,7 +16,7 @@ export default function FeedbackSection({
   onToggleToasts,
   onToggleSound,
 }: Props) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["settings", "common"]);
   const colors = useThemeColors();
 
   return (

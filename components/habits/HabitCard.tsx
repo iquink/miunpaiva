@@ -32,7 +32,7 @@ export default function HabitCard({
   const [showValueModal, setShowValueModal] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
   const colors = useThemeColors();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["tasks", "common"]);
 
   const isBoolean = habit.type === "boolean";
   const isCounter = habit.type === "counter";

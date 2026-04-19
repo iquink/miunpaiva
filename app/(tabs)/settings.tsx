@@ -28,7 +28,7 @@ export default function SettingsScreen() {
   const { user, logout, isDeveloperMode, setDeveloperMode, setFirstLaunch } =
     useAuthStore();
   const isPersonalAccount = user?.passwordHash === DUMMY_PASSWORD;
-  const { t, i18n } = useTranslation("common");
+  const { t, i18n } = useTranslation(["settings", "common"]);
   const { colorScheme, setColorScheme } = useColorScheme();
   const [isDeleting, setIsDeleting] = useState(false);
   const { isToastsEnabled, isSoundEnabled, toggleToasts, toggleSound } =

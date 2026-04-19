@@ -32,7 +32,7 @@ interface Props {
 
 export default function RPGLevelsWidget({ topRpgStats }: Props) {
   const router = useRouter();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["hub", "common"]);
   const colors = useThemeColors();
 
   return (

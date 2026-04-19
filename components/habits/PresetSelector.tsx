@@ -31,7 +31,7 @@ export default function PresetSelector({
   onCategorySelect,
   onPresetSelect,
 }: PresetSelectorProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(["tasks", "common"]);
   const colors = useThemeColors();
 
   const filteredPresets = presets.filter((p) =>

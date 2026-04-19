@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function SecretCard({ item }: Props) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["rewards", "common"]);
   const colors = useThemeColors();
 
   const dateStr = new Date(item.timestamp).toLocaleDateString(undefined, {

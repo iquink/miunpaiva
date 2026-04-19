@@ -44,232 +44,28 @@ export const register = {
   error_default: "Tapahtui virhe",
 };
 
-// i18next default namespace (translation)
-const translation = {
-  // Tab names
+// i18next namespace: common
+// Vain jaetut avaimet: navigaationimet, yhteinen UI, globaalit virheet, kieliasetukset
+export const common = {
+  // Välilehtinavigoinnin nimet (_layout.tsx)
   dashboard: "Kojelauta",
   tasks: "Toiminnat",
-  achievements: "Saavutukset",
+  tab_rewards: "Saavutukset",
   settings: "Asetukset",
+  relax: "Rentoudu",
+  achievements: "Saavutukset",
 
-  // Dashboard
-  dashboard_subtitle: "Seuraa päivittäisiä toimintoja",
-  today: "Tänään",
-  no_habits: "Ei vielä toimintoja. Lisää ensimmäinen!",
-  add_habit: "Lisää toiminta",
-  new_habit: "Uusi toiminta",
-  habit_title: "Toiminnan nimi",
-  habit_description: "Kuvaus (valinnainen)",
-  habit_type: "Tyyppi",
-  habit_type_boolean: "Kyllä/Ei",
-  habit_type_counter: "Laskuri",
-  habit_unit: "Yksikkö (esim. km, toistot)",
-  habit_daily_goal: "Päivittäinen tavoite",
-  habit_type_hint:
-    "Täytä yksikkö/tavoite laskurille, jätä tyhjäksi yksinkertaiselle kyllä/ei",
+  // Jaetut toimintopainikkeet
   cancel: "Peruuta",
-  add: "Lisää",
-  create: "Luo",
   delete: "Poista",
-
-  // Presets
-  select_category: "Valitse kategoria",
-  select_preset: "Valitse valmis",
-  or_custom: "Tai luo oma toiminta:",
-  // Habit creation tabs
-  tab_choose_preset: "Valitse valmis",
-  tab_custom_task: "Oma toiminta",
-  // Time of day
-  time_of_day: "Vuorokaudenaika",
-  time_of_day_morning: "Aamu",
-  time_of_day_late_morning: "Aamupäivä",
-  time_of_day_afternoon: "Iltapäivä",
-  time_of_day_evening: "Ilta",
-  time_of_day_all_day: "Koko päivä",
-  // Time zone section headers (dashboard grouping)
-  time_zones: {
-    morning: "☀️ Aamu",
-    late_morning: "🌤️ Aamupäivä",
-    afternoon: "🌞 Iltapäivä",
-    evening: "🌙 Ilta",
-    all_day: "🕐 Koko päivä",
-  },
-  // Preset categories
-  cat_group_activities: "Ryhmätoiminta",
-  cat_exercise: "Liikunta",
-  cat_daily_routines: "Päivärutiinit",
-  cat_daily_rhythm: "Vuorokausirytmi",
-  cat_nutrition: "Ravitsemus",
-  cat_cleaning: "Siivous",
-  cat_responsibilities: "Vastuutehtävä",
-  // Preset items — Group Activities
-  preset_crafts: "Askartelu",
-  preset_woodwork: "Puutyöt",
-  preset_outdoor_activity: "Ulkoilu",
-  preset_walk: "Lenkki",
-  preset_singing: "Laulu",
-  preset_congregation: "Seurakunta",
-  preset_music: "Musiikki",
-  preset_bingo: "Bingo",
-  preset_art: "Taide",
-  preset_games: "Peli",
-  preset_relaxation: "Rentoutus",
-  preset_disco: "Disco",
-  preset_free_text: "Vapaamuotoinen teksti",
-  // Preset items — Exercise
-  preset_walking: "Kävely",
-  preset_gymnastics: "Jumppa",
-  preset_gym: "Kuntosali",
-  preset_running: "Juoksu",
-  // Preset items — Daily Routines
-  preset_make_bed: "Sängyn petaus",
-  preset_teeth_brush: "Hampaiden pesu",
-  preset_shower: "Suihku",
-  preset_sauna: "Sauna",
-  preset_medication: "Lääkkeiden otto",
-  preset_shaving: "Parran ajo",
-  preset_laundry: "Pyykinpesu",
-  // Preset items — Daily Rhythm
-  preset_bedtime: "Nukkumaan meno",
-  preset_wake_up: "Herätys",
-  preset_rest: "Lepo",
-  // Preset items — Nutrition
-  preset_breakfast: "Aamupalan syönti",
-  preset_lunch: "Lounaan syönti",
-  preset_dinner: "Päivällisen syönti",
-  preset_evening_snack: "Iltapalan syönti",
-  preset_treats: "Herkuttelu",
-  preset_hydration: "Nesteytys / veden juonti",
-  // Preset items — Cleaning
-  preset_room_cleaning: "Oman huoneen siivous",
-  preset_organizing: "Tavaroiden järjestely",
-  // Preset items — Responsibilities
-  preset_kitchen_duty: "Keittiö",
-  preset_cleaning_duty: "Siivous",
-  // Schedule/Frequency
-  schedule: "Aikataulu",
-  frequency: "Toistuminen",
-  daily: "Päivittäin",
-  weekly: "Viikoittain",
-  once: "Kertaluonteinen",
-  end_date: "Päättymispäivä",
-  end_date_optional: "Päättymispäivä (Valinnainen)",
-  target_date: "Tavoitepäivä",
-  repeat_days: "Toistopäivät",
-  select_weekdays: "Valitse viikonpäivät",
-  forever: "Ikuisesti",
-
-  // Weekdays (short)
-  weekday_sun: "Su",
-  weekday_mon: "Ma",
-  weekday_tue: "Ti",
-  weekday_wed: "Ke",
-  weekday_thu: "To",
-  weekday_fri: "Pe",
-  weekday_sat: "La",
-  // Achievements
-  achievements_subtitle: "Seuraa virstanpylväitäsi",
-  no_achievements: "Ei vielä saavutuksia. Luo ensimmäinen!",
-  unlocked: "Avattu",
-  locked: "Lukittu",
-  no_unlocked: "Ei vielä avattuja saavutuksia",
-  all_unlocked: "Kaikki saavutukset avattu!",
-  missed: "Ei enää saatavilla",
-  no_missed: "Ei menetettyjä saavutuksia",
-  new_achievement: "Uusi saavutus",
-  achievement_title: "Saavutuksen nimi",
-  achievement_description: "Kuvaus (valinnainen)",
-  icon: "Kuvake",
-  criteria_all_must_meet: "Kriteerit (Kaikkien täytyttävä)",
-  criterion_num: "Kriteeri {{num}}",
-  habit: "Toiminta",
-  select_habit: "Valitse toiminta",
-  rule_type: "Sääntötyyppi",
-  streak: "Putki",
-  total_count: "Kokonaismäärä",
-  sum_value: "Summaarvo",
-  target_value: "Tavoitearvo",
-  target_value_placeholder: "esim. 7",
-  days_period: "Päiväjakso",
-  days_period_placeholder: "Päivät (Tyhjä = Koko aika)",
-  add_criterion: "Lisää kriteeri",
-  criteria_count: "{{count}} kriteeriä",
-  criteria_count_to_complete: "{{count}} kriteeriä täytettävänä",
-  no_habits_available: "Ei toimintoja saatavilla",
-  close: "Sulje",
-  days: "päivää",
-  unknown_habit: "Tuntematon toiminta",
-
-  // RPG System
-  tab_my_goals: "Omat tavoitteet",
-  tab_rpg_ranks: "RPG-rankit",
-  rpg_subtitle: "Nouse tasolla suorittamalla tehtäviä",
-  no_rpg_stats:
-    "Ei vielä tilastoja. Aloita tehtävien suorittaminen noustaaksesi tasolla!",
-  rpg_completed_tasks: "suoritetut tehtävät",
-  rpg_rank: "Ranki",
-  rpg_level: "Taso",
-  rpg_progress_to_next: "Edistyminen seuraavalle tasolle",
-  loading: "Ladataan...",
-
-  // Settings
-  settings_subtitle: "Hallinnoi tiliäsi",
-  manage_account: "Hallinnoi tiliäsi",
-  account: "Tili",
-  account_info: "Tilin tiedot",
-  username: "Käyttäjänimi",
-  user_id: "Käyttäjätunnus",
-  created_at: "Jäsen alkaen",
-  member_since: "Jäsen alkaen",
-  language: "Kieli",
-  language_subtitle: "Valitse haluamasi kieli",
-  // Color theme selector
-  color_theme: "Väriteema",
-  theme_default: "Oletus",
-  theme_forest: "Metsä",
-  theme_ocean: "Meri",
-  theme_coffee: "Kahvi",
-  actions: "Toiminnot",
-  logout: "Kirjaudu ulos",
-  logout_confirm: "Haluatko varmasti kirjautua ulos?",
-  delete_account: "Poista tili",
-  delete_account_confirm: "Poista tili?",
-  delete_account_message:
-    "Tämä poistaa tilisi ja kaikki tiedot pysyvästi. Tätä ei voi perua.",
-  delete_account_warning:
-    "Tämä poistaa tilisi ja kaikki siihen liittyvät tiedot pysyvästi. Tätä toimintoa ei voi perua.",
-  delete_account_description: "Poista tilisi ja kaikki tiedot pysyvästi",
-  danger_zone: "Vaaravyöhyke",
-  deleting: "Poistetaan...",
-  account_deleted: "Tili poistettu onnistuneesti",
-  error_delete_account: "Tilin poistaminen epäonnistui",
-  no_user: "Ei kirjautunutta käyttäjää",
-  app_version: "Miunpäivä v1.0.0",
-  made_with_love: "Tehty ❤️:lla React Nativella & Expolla",
-  // Toast notifications
-  toast_level_up: "Taso nousi!",
-  toast_badge_unlocked: "Uusi merkki!",
-  toast_goal_reached: "Tavoite saavutettu!",
-  // Settings — Notifications & Feedback
-  settings_feedback_section: "Ilmoitukset ja palaute",
-  settings_toasts_title: "Ponnahdusilmoitukset",
-  settings_toasts_desc: "Näytä ilmoitukset tasoista ja saavutuksista",
-  settings_sound_title: "Äänitehosteet",
-  // DevTools
-  dev_test_toast: "Testaa ilmoitusta",
-  // Developer Mode
-  enable_dev_mode_title: "Ota kehittäjätila käyttöön?",
-  enable_dev_mode_message: "Tämä avaa DevTools-välilehden.",
-  danger_title: "⚠️ VAARA",
-  danger_message:
-    "Kehittäjätila mahdollistaa tuhoavat toiminnot kuten tietokannan tyhjennyksen. Voit menettää kaikki tiedot. Oletko aivan varma?",
-  enable: "Ota käyttöön",
-  dev_mode_enabled_title: "Kehittäjätila käytössä",
-  dev_mode_enabled_message: "DevTools-välilehti on nyt näkyvissä.",
   yes: "Kyllä",
   no: "Ei",
+  add: "Lisää",
+  create: "Luo",
+  close: "Sulje",
+  loading: "Ladataan...",
 
-  // Errors
+  // Globaalit virhe- / onnistumisviestit
   error: "Virhe",
   success: "Onnistui",
   error_title_required: "Anna toiminnan nimi",
@@ -285,25 +81,16 @@ const translation = {
   success_achievement_created: "Saavutus luotu!",
   success_habit_created: "Toiminta luotu!",
 
-  // Alerts
-  delete_achievement_title: "Poista saavutus",
-  delete_achievement_message: "Haluatko varmasti poistaa tämän saavutuksen?",
-  delete_habit_message: "Haluatko varmasti poistaa tämän toiminnan?",
-  logout_message: "Haluatko varmasti kirjautua ulos?",
+  // Ponnahdusilmoitukset (globaali toast-käsittelijä)
+  toast_level_up: "Taso nousi!",
+  toast_badge_unlocked: "Uusi merkki!",
+  toast_goal_reached: "Tavoite saavutettu!",
 
-  // Notifications
-  notif_enable_reminder: "Ota muistutus käyttöön",
-  notif_turn_on: "Ota muistutukset käyttöön",
-  notif_turn_off: "Poista muistutukset käytöstä",
-  error_notification_permission:
-    "Ota ilmoitukset käyttöön laitteen asetuksista",
+  // Kielet
+  lang_en: "English",
+  lang_fi: "Suomi",
 
-  // Habit Details Modal
-  habit_details: "Tiedot",
-  habit_done: "Merkitse tehdyksi",
-  habit_undo: "Peru",
-
-  // Auth
+  // Kirjautumisapu (perintö — myös login/register-nimiavaruuksissa)
   login: "Kirjaudu",
   register: "Rekisteröidy",
   password: "Salasana",
@@ -316,29 +103,239 @@ const translation = {
   error_register: "Tilin luominen epäonnistui",
   error_username_taken: "Käyttäjänimi on jo käytössä",
 
-  // Languages
-  lang_en: "English",
-  lang_fi: "Suomi",
-  // Relaxations
-  relax: "Rentoudu",
-  relax_subtitle:
-    "Valitse äänimaailma. Musiikki soi myös näytön ollessa pois päältä.",
-  relax_track_1_title: "Kesämetsä",
-  relax_track_1_description: "Lintujen laulu ja lehtien havina",
-  relax_track_1_artist: "Miunpäivä",
-  relax_track_2_title: "Syvä avaruus",
-  relax_track_2_description: "Pehmeä binauraalinen humina",
-  relax_track_2_artist: "Miunpäivä",
+  // Muut jaetut
+  days: "päivää",
+  unknown_habit: "Tuntematon toiminta",
+  no_habits_available: "Ei toimintoja saatavilla",
+  habit: "Toiminta",
 
-  // Activity Feed
+  // Sovelluksen metatiedot
+  app_version: "Miunpäivä v1.0.0",
+  made_with_love: "Tehty ❤️:lla React Nativella & Expolla",
+};
+
+// i18next namespace: hub
+// Kotinäkymän ja sen widgettien avaimet
+export const hub = {
+  hub: "Kotinäkymä",
+  hub_subtitle: "Päivän yhteenveto",
+  dashboard_subtitle: "Seuraa päivittäisiä toimintoja",
+  today: "Tänään",
+  hub_todays_progress: "Tänään tehty",
+  hub_completed_count: "{{current}} / {{total}} suoritettu",
+  hub_no_tasks_today: "Ei tehtäviä tänään.",
+  hub_all_tasks_done: "Kaikki tehtävät tehty — hienoa!",
+  hub_new_badges: "{{count}} uutta merkkiä!",
+  hub_badges_all_viewed: "Kaikki nähty!",
+  hub_badges_empty_state: "Suorita tapoja avataksesi salaisia merkkejä!",
+  hub_personal_goals: "Henkilökohtaiset tavoitteet",
+  hub_no_rpg_stats: "Suorita tapoja noustaksesi tasossa!",
+  hub_relaxing_ambient: "Rentouttava ambient",
+  hub_no_track_selected: "Ei mitään soimassa. Napauta valitaksesi.",
+  hub_secret_badges: "Salaiset merkit",
+  hub_rpg_levels: "RPG-tasot",
+  hub_relaxation: "Rentoutuminen",
+  hub_empty_goals: "Ei tavoitteita vielä. Luo ensimmäinen!",
+  hub_all_goals_done: "Kaikki tavoitteet saavutettu — upea suoritus!",
+  hub_goals_completed_count: "{{current}} / {{total}} tavoitetta saavutettu",
+  level_short: "Taso",
+  hub_active_sounds: "{{count}} ääni aktiivisena",
+};
+
+// i18next namespace: tasks
+// Toimintojen luomisen, muokkaamisen ja päivittäisen listan avaimet
+export const tasks = {
+  tasks_subtitle: "Seuraa päivittäisiä toimintoja",
+  new_habit: "Uusi toiminta",
+  no_habits: "Ei vielä toimintoja. Lisää ensimmäinen!",
+  add_habit: "Lisää toiminta",
+
+  // Lomakekentät
+  habit_title: "Toiminnan nimi",
+  habit_description: "Kuvaus (valinnainen)",
+  habit_type: "Tyyppi",
+  habit_type_boolean: "Kyllä/Ei",
+  habit_type_counter: "Laskuri",
+  habit_unit: "Yksikkö (esim. km, toistot)",
+  habit_daily_goal: "Päivittäinen tavoite",
+  habit_type_hint:
+    "Täytä yksikkö/tavoite laskurille, jätä tyhjäksi yksinkertaiselle kyllä/ei",
+
+  // Vakiomallit
+  select_category: "Valitse kategoria",
+  select_preset: "Valitse valmis",
+  or_custom: "Tai luo oma toiminta:",
+  tab_choose_preset: "Valitse valmis",
+  tab_custom_task: "Oma toiminta",
+
+  // Vuorokaudenaika
+  time_of_day: "Vuorokaudenaika",
+  time_of_day_morning: "Aamu",
+  time_of_day_late_morning: "Aamupäivä",
+  time_of_day_afternoon: "Iltapäivä",
+  time_of_day_evening: "Ilta",
+  time_of_day_all_day: "Koko päivä",
+  time_zones: {
+    morning: "☀️ Aamu",
+    late_morning: "🌤️ Aamupäivä",
+    afternoon: "🌞 Iltapäivä",
+    evening: "🌙 Ilta",
+    all_day: "🕐 Koko päivä",
+  },
+
+  // Kategoriat
+  cat_group_activities: "Ryhmätoiminta",
+  cat_exercise: "Liikunta",
+  cat_daily_routines: "Päivärutiinit",
+  cat_daily_rhythm: "Vuorokausirytmi",
+  cat_nutrition: "Ravitsemus",
+  cat_cleaning: "Siivous",
+  cat_responsibilities: "Vastuutehtävä",
+
+  // Vakiomallit — Ryhmätoiminta
+  preset_crafts: "Askartelu",
+  preset_woodwork: "Puutyöt",
+  preset_outdoor_activity: "Ulkoilu",
+  preset_walk: "Lenkki",
+  preset_singing: "Laulu",
+  preset_congregation: "Seurakunta",
+  preset_music: "Musiikki",
+  preset_bingo: "Bingo",
+  preset_art: "Taide",
+  preset_games: "Peli",
+  preset_relaxation: "Rentoutus",
+  preset_disco: "Disco",
+  preset_free_text: "Vapaamuotoinen teksti",
+
+  // Vakiomallit — Liikunta
+  preset_walking: "Kävely",
+  preset_gymnastics: "Jumppa",
+  preset_gym: "Kuntosali",
+  preset_running: "Juoksu",
+
+  // Vakiomallit — Päivärutiinit
+  preset_make_bed: "Sängyn petaus",
+  preset_teeth_brush: "Hampaiden pesu",
+  preset_shower: "Suihku",
+  preset_sauna: "Sauna",
+  preset_medication: "Lääkkeiden otto",
+  preset_shaving: "Parran ajo",
+  preset_laundry: "Pyykinpesu",
+
+  // Vakiomallit — Vuorokausirytmi
+  preset_bedtime: "Nukkumaan meno",
+  preset_wake_up: "Herätys",
+  preset_rest: "Lepo",
+
+  // Vakiomallit — Ravitsemus (korjattu natiivien puhujien palautteen perusteella)
+  preset_breakfast: "Aamupala",
+  preset_lunch: "Lounas",
+  preset_dinner: "Päivällinen",
+  preset_evening_snack: "Iltapala",
+  preset_treats: "Herkuttelu",
+  preset_hydration: "Veden juominen",
+
+  // Vakiomallit — Siivous
+  preset_room_cleaning: "Oman huoneen siivous",
+  preset_organizing: "Tavaroiden järjestely",
+
+  // Vakiomallit — Vastuutehtävä
+  preset_kitchen_duty: "Keittiö",
+  preset_cleaning_duty: "Siivous",
+
+  // Aikataulu / Toistuvuus
+  schedule: "Aikataulu",
+  frequency: "Toistuminen",
+  daily: "Päivittäin",
+  weekly: "Viikoittain",
+  once: "Kertaluonteinen",
+  end_date: "Päättymispäivä",
+  end_date_optional: "Päättymispäivä (Valinnainen)",
+  target_date: "Tavoitepäivä",
+  repeat_days: "Toistopäivät",
+  select_weekdays: "Valitse viikonpäivät",
+  forever: "Ikuisesti",
+
+  // Viikonpäivät (lyhyt)
+  weekday_sun: "Su",
+  weekday_mon: "Ma",
+  weekday_tue: "Ti",
+  weekday_wed: "Ke",
+  weekday_thu: "To",
+  weekday_fri: "Pe",
+  weekday_sat: "La",
+
+  // Toiminnon tiedot / toiminnot
+  habit_details: "Tiedot",
+  habit_done: "Merkitse tehdyksi",
+  habit_undo: "Peru",
+  delete_habit_message: "Haluatko varmasti poistaa tämän toiminnan?",
+
+  // Muistutukset
+  notif_enable_reminder: "Ota muistutus käyttöön",
+  notif_turn_on: "Ota muistutukset käyttöön",
+  notif_turn_off: "Poista muistutukset käytöstä",
+  error_notification_permission:
+    "Ota ilmoitukset käyttöön laitteen asetuksista",
+};
+
+// i18next namespace: rewards
+// Saavutusten, merkkien, RPG-tasojen ja tavoitteiden luomisen avaimet
+export const rewards = {
+  achievements_subtitle: "Seuraa virstanpylväitäsi",
+  no_achievements: "Ei vielä saavutuksia. Luo ensimmäinen!",
+  unlocked: "Avattu",
+  locked: "Lukittu",
+  no_unlocked: "Ei vielä avattuja saavutuksia",
+  all_unlocked: "Kaikki saavutukset avattu!",
+  missed: "Ei enää saatavilla",
+  no_missed: "Ei menetettyjä saavutuksia",
+  new_achievement: "Uusi saavutus",
+  achievement_title: "Saavutuksen nimi",
+  achievement_description: "Kuvaus (valinnainen)",
+  icon: "Kuvake",
+
+  // Kriteerirakentaja
+  criteria_all_must_meet: "Kriteerit (Kaikkien täytyttävä)",
+  criterion_num: "Kriteeri {{num}}",
+  select_habit: "Valitse toiminta",
+  rule_type: "Sääntötyyppi",
+  streak: "Putki",
+  total_count: "Suorituskerrat",
+  total_count_subtitle: "Kuinka monena päivänä/kertana suoritettu",
+  sum_value: "Kokonaisarvo",
+  sum_value_subtitle: "Käytetään laskureissa, esim. juotu vesimäärä yhteensä",
+  target_value: "Tavoitearvo",
+  target_value_placeholder: "esim. 7",
+  days_period: "Päiväjakso",
+  days_period_placeholder: "Päivät (Tyhjä = Koko aika)",
+  add_criterion: "Lisää kriteeri",
+  criteria_count: "{{count}} kriteeriä",
+  criteria_count_to_complete: "{{count}} kriteeriä täytettävänä",
+
+  // RPG-järjestelmä
+  tab_my_goals: "Omat tavoitteet",
+  tab_rpg_ranks: "RPG-rankit",
+  rpg_subtitle: "Nouse tasolla suorittamalla tehtäviä",
+  no_rpg_stats:
+    "Ei vielä tilastoja. Aloita tehtävien suorittaminen noustaaksesi tasolla!",
+  rpg_completed_tasks: "suoritetut tehtävät",
+  rpg_rank: "Ranki",
+  rpg_level: "Taso",
+  rpg_progress_to_next: "Edistyminen seuraavalle tasolle",
+
+  // Toimintasyöte / välilehdet
   tab_goals: "Omat tavoitteet",
-  tab_rewards: "Palkinnot",
   filter_rpg: "Tasot",
-  filter_secrets: "Salaiset merkit",
+  filter_secrets: "Palkinnot",
   no_rewards:
     "Ei vielä palkintoja. Suorita tehtäviä ansaitaksesi RPG-tasoja ja avataksesi salaisia merkkejä!",
 
-  // RPG Ranks
+  // Hälytykset
+  delete_achievement_title: "Poista saavutus",
+  delete_achievement_message: "Haluatko varmasti poistaa tämän saavutuksen?",
+
+  // RPG-arvonimet
   rpg_ranks: {
     novice: "Noviisi",
     apprentice: "Oppipoika",
@@ -350,7 +347,7 @@ const translation = {
     legend: "Legenda",
   },
 
-  // Secret Achievements
+  // Salaiset saavutukset
   secret_achievements: {
     aquaman: {
       title: "Aquaman",
@@ -424,8 +421,6 @@ const translation = {
       title: "Aktiivinen Päivä",
       description: "Ulkoilu, jumppa ja suihku yhtenä päivänä.",
     },
-
-    // ---- Tiered: Walking ----
     walker_1: {
       title: "Ensimmäinen askel",
       description: "Hieno alku! Suoritit ensimmäisen kävelysi.",
@@ -446,8 +441,6 @@ const translation = {
       title: "Maailmanvaeltaja",
       description: "100 kävelyä! Kiersit päiväntasaajan?",
     },
-
-    // ---- Tiered: Hydration ----
     water_1: {
       title: "Ensimmäinen siemaisu",
       description: "Nestytysmatka on alkanut.",
@@ -468,8 +461,6 @@ const translation = {
       title: "Meren mestari",
       description: "100 päivää! Aquaman ottaa muistiinpanoja.",
     },
-
-    // ---- Tiered: Medication ----
     meds_1: {
       title: "Aikataulussa",
       description: "Ensimmäinen lääke otettu ajoissa.",
@@ -490,8 +481,6 @@ const translation = {
       title: "Murtumaton",
       description: "100 kertaa! Täydellinen terveydenhoidon kuri.",
     },
-
-    // ---- Tiered: Room Cleaning ----
     clean_1: {
       title: "Siisti alku",
       description: "Huone siivottu ensimmäistä kertaa.",
@@ -512,8 +501,6 @@ const translation = {
       title: "Marie Kondo",
       description: "100 siivousta! Tämä tuottaa iloa.",
     },
-
-    // ---- Tiered: Bedtime ----
     sleep_1: {
       title: "Hyvää yötä",
       description: "Ensimmäinen nukkumaanmenorituaali suoritettu.",
@@ -535,39 +522,33 @@ const translation = {
       description: "100 yötä! Herää virkistyneenä joka päivä.",
     },
   },
+};
 
-  // Hub (Dashboard)
-  hub: "Kotinäkymä",
-  hub_subtitle: "Päivän yhteenveto",
-  hub_todays_progress: "Tänään tehty",
-  hub_completed_count: "{{current}} / {{total}} suoritettu",
-  hub_no_tasks_today: "Ei tehtäviä tänään.",
-  hub_all_tasks_done: "Kaikki tehtävät tehty — hienoa!",
-  hub_new_badges: "{{count}} uutta merkkiä!",
-  hub_badges_all_viewed: "Kaikki nähty!",
-  hub_badges_empty_state: "Suorita tapoja avataksesi salaisia merkkejä!",
-  hub_personal_goals: "Henkilökohtaiset tavoitteet",
-  hub_no_rpg_stats: "Suorita tapoja noustaksesi tasossa!",
-  hub_relaxing_ambient: "Rentouttava ambient",
-  hub_no_track_selected: "Ei mitään soimassa. Napauta valitaksesi.",
-  hub_secret_badges: "Salaiset merkit",
-  hub_rpg_levels: "RPG-tasot",
-  hub_relaxation: "Rentoutuminen",
-  hub_empty_goals: "Ei tavoitteita vielä. Luo ensimmäinen!",
-  hub_all_goals_done: "Kaikki tavoitteet saavutettu — upea suoritus!",
-  hub_goals_completed_count: "{{current}} / {{total}} tavoitetta saavutettu",
-  level_short: "Taso",
-  hub_active_sounds: "{{count}} ääni aktiivisena",
+// i18next namespace: relax
+// Äänikappaleiden, ambient-mikseerin ja musiikkisoittimen avaimet
+export const relax = {
+  relax_subtitle:
+    "Valitse äänimaailma. Musiikki soi myös näytön ollessa pois päältä.",
+  relax_track_1_title: "Kesämetsä",
+  relax_track_1_description: "Lintujen laulu ja lehtien havina",
+  relax_track_1_artist: "Miunpäivä",
+  relax_track_2_title: "Syvä avaruus",
+  relax_track_2_description: "Pehmeä binauraalinen humina",
+  relax_track_2_artist: "Miunpäivä",
 
-  // Relax screen tabs
-  tab_mixer: "Mikseri",
+  // Tilavalitsin (korjattu natiivien puhujien palautteen perusteella)
+  tab_mixer: "Taustaäänet",
   tab_music: "Musiikki",
 
-  // Mixer master button
+  // Tilamääritykset (uudet)
+  tab_mixer_desc: "Yhdistele useita ääniä haluamallasi tavalla",
+  tab_music_desc: "Kuuntele valmiita rentouttavia kappaleita",
+
+  // Mikseritoiminnot
   mixer_play: "Toista mikseri",
   mixer_pause: "Pysäytä mikseri",
 
-  // Mixer track names
+  // Mikserin kappalenimet
   track_rain: "Sade",
   track_fire: "Takkatuli",
   track_birds: "Linnut",
@@ -576,9 +557,69 @@ const translation = {
   track_bg_piano: "Piano",
   track_bg_piano2: "Piano II",
 
-  // Player track names
+  // Musiikkisoittimen kappalenimet
   track_guitar1: "Kesämetsä",
   track_guitar2: "Syvä avaruus",
 };
 
-export default translation;
+// i18next namespace: settings
+// Käyttäjäasetusten, tilinhallinnan ja teeman avaimet
+export const settings = {
+  settings_subtitle: "Hallinnoi tiliäsi",
+  manage_account: "Hallinnoi tiliäsi",
+  account: "Tili",
+  account_info: "Tilin tiedot",
+  username: "Käyttäjänimi",
+  user_id: "Käyttäjätunnus",
+  created_at: "Jäsen alkaen",
+  member_since: "Jäsen alkaen",
+  language: "Kieli",
+  language_subtitle: "Valitse haluamasi kieli",
+
+  // Väriteema
+  color_theme: "Väriteema",
+  theme_default: "Oletus",
+  theme_forest: "Metsä",
+  theme_ocean: "Meri",
+  theme_coffee: "Kahvi",
+
+  // Tilin toiminnot
+  actions: "Toiminnot",
+  logout: "Kirjaudu ulos",
+  logout_confirm: "Haluatko varmasti kirjautua ulos?",
+  logout_message: "Haluatko varmasti kirjautua ulos?",
+  delete_account: "Poista tili",
+  delete_account_confirm: "Poista tili?",
+  delete_account_message:
+    "Tämä poistaa tilisi ja kaikki tiedot pysyvästi. Tätä ei voi perua.",
+  delete_account_warning:
+    "Tämä poistaa tilisi ja kaikki siihen liittyvät tiedot pysyvästi. Tätä toimintoa ei voi perua.",
+  delete_account_description: "Poista tilisi ja kaikki tiedot pysyvästi",
+
+  // Tilin poistaminen (korjattu: aiemmin "Vaaravyöhyke")
+  danger_zone: "Tilin poistaminen",
+  deleting: "Poistetaan...",
+  account_deleted: "Tili poistettu onnistuneesti",
+  error_delete_account: "Tilin poistaminen epäonnistui",
+  no_user: "Ei kirjautunutta käyttäjää",
+
+  // Ilmoitukset ja palaute
+  settings_feedback_section: "Ilmoitukset ja palaute",
+  settings_toasts_title: "Ponnahdusilmoitukset",
+  settings_toasts_desc: "Näytä ilmoitukset tasoista ja saavutuksista",
+  settings_sound_title: "Äänitehosteet",
+
+  // Kehittäjätila
+  dev_test_toast: "Testaa ilmoitusta",
+  enable_dev_mode_title: "Ota kehittäjätila käyttöön?",
+  enable_dev_mode_message: "Tämä avaa DevTools-välilehden.",
+  danger_title: "⚠️ VAARA",
+  danger_message:
+    "Kehittäjätila mahdollistaa tuhoavat toiminnot kuten tietokannan tyhjennyksen. Voit menettää kaikki tiedot. Oletko aivan varma?",
+  enable: "Ota käyttöön",
+  dev_mode_enabled_title: "Kehittäjätila käytössä",
+  dev_mode_enabled_message: "DevTools-välilehti on nyt näkyvissä.",
+};
+
+// Oletusvientinä on common-nimiavaruus (yhteensopivuusaliase)
+export default common;

@@ -41,7 +41,7 @@ export default function HabitDetailsModal({
   onUpdateLog,
 }: HabitDetailsModalProps) {
   const colors = useThemeColors();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["tasks", "common"]);
 
   if (!habit) return null;
 

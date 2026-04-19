@@ -26,7 +26,7 @@ export default function ActionBottomSheet({
   onDetails,
 }: ActionBottomSheetProps) {
   const colors = useThemeColors();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["tasks", "common"]);
 
   // Pre-compute before render — keeps JSX declarative
   const notifTimeLabel = getNotificationTimeLabel(habit.timeOfDay);

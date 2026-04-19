@@ -22,7 +22,7 @@ export default function SecretBadgesWidget({
   unreadBadgesCount,
 }: Props) {
   const router = useRouter();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["hub", "common"]);
   const colors = useThemeColors();
 
   return (

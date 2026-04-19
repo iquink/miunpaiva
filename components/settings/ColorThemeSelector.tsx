@@ -30,7 +30,7 @@ export default function ColorThemeSelector() {
   // 2. Get current colors for styling the card
   const colors = useThemeColors();
   // 3. Translation helper
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(["settings", "common"]);
 
   return (
     <Card

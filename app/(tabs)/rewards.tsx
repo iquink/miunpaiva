@@ -17,7 +17,7 @@ import BadgesTabContent from "../../components/achievements/BadgesTabContent";
 import LevelsTabContent from "../../components/achievements/LevelsTabContent";
 
 export default function RewardsScreen() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["rewards", "common"]);
   const colors = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -102,7 +102,7 @@ export default function RewardsScreen() {
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScreenHeader
-        title={t("achievements")}
+        title={t("achievements", { ns: "common" })}
         subtitle={subtitleMap[activeTab]}
       />
 

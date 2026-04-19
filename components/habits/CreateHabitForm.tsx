@@ -74,7 +74,8 @@ export default function CreateHabitForm({
   onSubmit,
   onCancel,
 }: CreateHabitFormProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["tasks", "common"]);
+
   const colors = useThemeColors();
 
   // Tab: "preset" | "custom"
@@ -502,11 +503,11 @@ export default function CreateHabitForm({
 
         <View className="flex-row gap-2">
           <Button variant="secondary" className="flex-1" onPress={onCancel}>
-            {t("cancel")}
+            {t("cancel", { ns: "common" })}
           </Button>
 
           <Button className="flex-1" onPress={handleSubmit}>
-            {t("add")}
+            {t("add", { ns: "common" })}
           </Button>
         </View>
       </ScrollView>

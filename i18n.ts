@@ -3,27 +3,47 @@ import { initReactI18next } from "react-i18next";
 import * as Localization from "expo-localization";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import translationEn, {
+import commonEn, {
   login as loginEn,
   register as registerEn,
+  hub as hubEn,
+  tasks as tasksEn,
+  rewards as rewardsEn,
+  relax as relaxEn,
+  settings as settingsEn,
 } from "./locales/en";
-import translationFi, {
+import commonFi, {
   login as loginFi,
   register as registerFi,
+  hub as hubFi,
+  tasks as tasksFi,
+  rewards as rewardsFi,
+  relax as relaxFi,
+  settings as settingsFi,
 } from "./locales/fi";
 
 const LANGUAGE_KEY = "user_language";
 
 const resources = {
   en: {
-    translation: translationEn,
-    common: translationEn,
+    translation: commonEn, // backward-compat alias
+    common: commonEn,
+    hub: hubEn,
+    tasks: tasksEn,
+    rewards: rewardsEn,
+    relax: relaxEn,
+    settings: settingsEn,
     login: loginEn,
     register: registerEn,
   },
   fi: {
-    translation: translationFi,
-    common: translationFi,
+    translation: commonFi, // backward-compat alias
+    common: commonFi,
+    hub: hubFi,
+    tasks: tasksFi,
+    rewards: rewardsFi,
+    relax: relaxFi,
+    settings: settingsFi,
     login: loginFi,
     register: registerFi,
   },
@@ -57,7 +77,17 @@ export const initI18n = async () => {
     lng: initialLanguage,
     fallbackLng: "en",
     defaultNS: "common",
-    ns: ["common", "translation", "login", "register"],
+    ns: [
+      "common",
+      "translation",
+      "hub",
+      "tasks",
+      "rewards",
+      "relax",
+      "settings",
+      "login",
+      "register",
+    ],
     interpolation: {
       escapeValue: false, // React already escapes
     },

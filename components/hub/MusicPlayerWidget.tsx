@@ -8,7 +8,7 @@ import { useAudioStore, PLAYER_TRACKS } from "../../store/audioStore";
 
 export default function MusicPlayerWidget() {
   const router = useRouter();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["hub", "common"]);
   const colors = useThemeColors();
 
   const {

@@ -27,7 +27,7 @@ export default function CreateAchievementForm({
   onSubmit,
   onCancel,
 }: CreateAchievementFormProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["rewards", "common"]);
   const colors = useThemeColors();
 
   // Form state
@@ -175,11 +175,11 @@ export default function CreateAchievementForm({
 
         <View className="flex-row gap-2">
           <Button variant="secondary" className="flex-1" onPress={onCancel}>
-            {t("cancel")}
+            {t("cancel", { ns: "common" })}
           </Button>
 
           <Button className="flex-1" onPress={handleSubmit}>
-            {t("create")}
+            {t("create", { ns: "common" })}
           </Button>
         </View>
       </ScrollView>

@@ -40,7 +40,7 @@ const MIXER_ICONS: Record<
 };
 
 export default function MixerPanel() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["relax", "common"]);
   const colors = useThemeColors();
   const [slidingVolumes, setSlidingVolumes] = useState<Record<string, number>>(
     {},

@@ -25,7 +25,7 @@ export default function CriteriaBuilder({
   onUpdate,
   getUsedHabitIds,
 }: CriteriaBuilderProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(["rewards", "common"]);
   const colors = useThemeColors();
 
   const getRuleTypeLabel = (type: string) => {
@@ -38,6 +38,17 @@ export default function CriteriaBuilder({
         return t("sum_value");
       default:
         return type;
+    }
+  };
+
+  const getRuleTypeSubtitle = (type: string): string | null => {
+    switch (type) {
+      case "total_count":
+        return t("total_count_subtitle");
+      case "sum_value":
+        return t("sum_value_subtitle");
+      default:
+        return null;
     }
   };
 
@@ -113,6 +124,22 @@ export default function CriteriaBuilder({
                     >
                       {getRuleTypeLabel(type)}
                     </Text>
+                    {getRuleTypeSubtitle(type) ? (
+                      <Text
+                        className="text-center mt-0.5"
+                        style={{
+                          fontSize: 9,
+                          lineHeight: 12,
+                          color: isSelected
+                            ? colors.primary
+                            : colors.textSecondary,
+                          paddingHorizontal: 4,
+                        }}
+                        numberOfLines={2}
+                      >
+                        {getRuleTypeSubtitle(type)}
+                      </Text>
+                    ) : null}
                   </TouchableOpacity>
                 );
               })}

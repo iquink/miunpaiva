@@ -44,7 +44,7 @@ export default function GoalsTabContent({
   onAddAchievement,
   onCancelForm,
 }: Props) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["rewards", "common"]);
   const colors = useThemeColors();
 
   return (

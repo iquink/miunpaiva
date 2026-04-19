@@ -15,7 +15,7 @@ export default function PersonalGoalsWidget({
   completedGoals,
 }: Props) {
   const router = useRouter();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["hub", "common"]);
   const colors = useThemeColors();
 
   return (

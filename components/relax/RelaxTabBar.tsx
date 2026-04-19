@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function RelaxTabBar({ activeTab, onTabPress }: Props) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["relax", "common"]);
   const colors = useThemeColors();
 
   return (

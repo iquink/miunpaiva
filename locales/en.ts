@@ -44,20 +44,113 @@ export const register = {
   error_default: "An error occurred",
 };
 
-// i18next default namespace (translation)
-const translation = {
-  // Tab names
+// i18next namespace: common
+// Only truly shared keys: navigation labels, shared UI, global errors, language helpers
+export const common = {
+  // Tab navigation labels (used in _layout.tsx)
   dashboard: "Dashboard",
   tasks: "Tasks",
-  achievements: "Achievements",
+  tab_rewards: "Achievements",
   settings: "Settings",
+  relax: "Relax",
+  achievements: "Achievements",
 
-  // Dashboard
+  // Shared UI actions
+  cancel: "Cancel",
+  delete: "Delete",
+  yes: "Yes",
+  no: "No",
+  add: "Add",
+  create: "Create",
+  close: "Close",
+  loading: "Loading...",
+
+  // Global error / success
+  error: "Error",
+  success: "Success",
+  error_title_required: "Please enter a task title",
+  error_achievement_title_required: "Please enter an achievement title",
+  error_select_habit: "Please select a task for criterion {{num}}",
+  error_target_value: "Please enter a valid target value for criterion {{num}}",
+  error_load_habits: "Failed to load tasks",
+  error_load_achievements: "Failed to load achievements",
+  error_create_habit: "Failed to create task",
+  error_create_achievement: "Failed to create achievement",
+  error_delete_achievement: "Failed to delete achievement",
+  error_update_habit: "Failed to update task",
+  success_achievement_created: "Achievement created!",
+  success_habit_created: "Task created!",
+
+  // Toast notifications (used by global toast handler)
+  toast_level_up: "Level Up!",
+  toast_badge_unlocked: "New Badge!",
+  toast_goal_reached: "Goal Achieved!",
+
+  // Languages
+  lang_en: "English",
+  lang_fi: "Suomi",
+
+  // Auth helpers (legacy — also in login/register namespaces)
+  login: "Login",
+  register: "Register",
+  password: "Password",
+  login_button: "Login",
+  register_button: "Register",
+  no_account: "Don't have an account?",
+  have_account: "Already have an account?",
+  error_fill_fields: "Please fill in all fields",
+  error_login: "Invalid username or password",
+  error_register: "Failed to create account",
+  error_username_taken: "Username already taken",
+
+  // Misc shared
+  days: "days",
+  unknown_habit: "Unknown habit",
+  no_habits_available: "No tasks available",
+  habit: "Task",
+
+  // App meta
+  app_version: "Miunpäivä v1.0.0",
+  made_with_love: "Made with ❤️ using React Native & Expo",
+};
+
+// i18next namespace: hub
+// Keys for the Hub/index dashboard screen and its widgets
+export const hub = {
+  hub: "Hub",
+  hub_subtitle: "Your daily overview",
   dashboard_subtitle: "Track your daily tasks",
   today: "Today",
+  hub_todays_progress: "Today's Progress",
+  hub_completed_count: "{{current}} / {{total}} completed",
+  hub_no_tasks_today: "No tasks scheduled for today.",
+  hub_all_tasks_done: "All tasks done — great work!",
+  hub_new_badges: "{{count}} New Badges!",
+  hub_badges_all_viewed: "All caught up!",
+  hub_badges_empty_state: "Complete habits to unlock secret badges!",
+  hub_personal_goals: "Personal Goals",
+  hub_no_rpg_stats: "Complete habits to level up!",
+  hub_relaxing_ambient: "Relaxing Ambient",
+  hub_no_track_selected: "Nothing playing. Tap to select.",
+  hub_secret_badges: "Secret Badges",
+  hub_rpg_levels: "RPG Levels",
+  hub_relaxation: "Relaxation",
+  hub_empty_goals: "No goals yet. Create your first one!",
+  hub_all_goals_done: "All goals achieved — amazing!",
+  hub_goals_completed_count: "{{current}} / {{total}} goals achieved",
+  level_short: "Lv",
+  hub_active_sounds: "{{count}} active sound(s)",
+};
+
+// i18next namespace: tasks
+// Keys for habit creation, editing, and the daily task list
+export const tasks = {
+  tasks_subtitle: "Track your daily tasks",
+  new_habit: "New Task",
   no_habits: "No tasks yet. Add your first one!",
   add_habit: "Add Task",
-  new_habit: "New Task",
+
+  // Habit form fields
   habit_title: "Task title",
   habit_description: "Description (optional)",
   habit_type: "Type",
@@ -66,18 +159,14 @@ const translation = {
   habit_unit: "Unit (e.g., km, reps)",
   habit_daily_goal: "Daily Goal",
   habit_type_hint: "Fill unit/goal for counter, leave empty for simple yes/no",
-  cancel: "Cancel",
-  add: "Add",
-  create: "Create",
-  delete: "Delete",
 
-  // Presets
+  // Preset selector
   select_category: "Select Category",
   select_preset: "Select Preset",
   or_custom: "Or create custom task:",
-  // Habit creation tabs
   tab_choose_preset: "Choose Preset",
   tab_custom_task: "Custom Task",
+
   // Time of day
   time_of_day: "Time of Day",
   time_of_day_morning: "Morning",
@@ -85,7 +174,6 @@ const translation = {
   time_of_day_afternoon: "Afternoon",
   time_of_day_evening: "Evening",
   time_of_day_all_day: "All Day",
-  // Time zone section headers (dashboard grouping)
   time_zones: {
     morning: "☀️ Morning",
     late_morning: "🌤️ Late Morning",
@@ -93,6 +181,7 @@ const translation = {
     evening: "🌙 Evening",
     all_day: "🕐 All Day",
   },
+
   // Preset categories
   cat_group_activities: "Group Activities",
   cat_exercise: "Exercise",
@@ -101,6 +190,7 @@ const translation = {
   cat_nutrition: "Nutrition",
   cat_cleaning: "Cleaning",
   cat_responsibilities: "Responsibilities",
+
   // Preset items — Group Activities
   preset_crafts: "Crafts",
   preset_woodwork: "Woodwork",
@@ -115,11 +205,13 @@ const translation = {
   preset_relaxation: "Relaxation",
   preset_disco: "Disco",
   preset_free_text: "Free Text",
+
   // Preset items — Exercise
   preset_walking: "Walking",
   preset_gymnastics: "Gymnastics",
   preset_gym: "Gym",
   preset_running: "Running",
+
   // Preset items — Daily Routines
   preset_make_bed: "Make Bed",
   preset_teeth_brush: "Brush Teeth",
@@ -128,24 +220,29 @@ const translation = {
   preset_medication: "Take Medication",
   preset_shaving: "Shaving",
   preset_laundry: "Laundry",
+
   // Preset items — Daily Rhythm
   preset_bedtime: "Bedtime",
   preset_wake_up: "Wake Up",
   preset_rest: "Rest",
-  // Preset items — Nutrition
+
+  // Preset items — Nutrition (corrected per native speaker feedback)
   preset_breakfast: "Breakfast",
   preset_lunch: "Lunch",
   preset_dinner: "Dinner",
   preset_evening_snack: "Evening Snack",
   preset_treats: "Treats",
-  preset_hydration: "Drink Water",
+  preset_hydration: "Drinking Water",
+
   // Preset items — Cleaning
   preset_room_cleaning: "Clean Room",
   preset_organizing: "Organize Belongings",
+
   // Preset items — Responsibilities
   preset_kitchen_duty: "Kitchen Duty",
   preset_cleaning_duty: "Cleaning Duty",
-  // Schedule/Frequency
+
+  // Schedule / Frequency
   schedule: "Schedule",
   frequency: "Frequency",
   daily: "Daily",
@@ -166,7 +263,24 @@ const translation = {
   weekday_thu: "Thu",
   weekday_fri: "Fri",
   weekday_sat: "Sat",
-  // Achievements
+
+  // Habit details modal
+  habit_details: "Details",
+  habit_done: "Mark as Done",
+  habit_undo: "Undo",
+  delete_habit_message: "Are you sure you want to delete this habit?",
+
+  // Reminder notifications
+  notif_enable_reminder: "Enable Reminder",
+  notif_turn_on: "Turn On Reminders",
+  notif_turn_off: "Turn Off Reminders",
+  error_notification_permission:
+    "Please enable notifications in your device settings",
+};
+
+// i18next namespace: rewards
+// Keys for achievements, badges, RPG levels, and goal creation
+export const rewards = {
   achievements_subtitle: "Track your milestones",
   no_achievements: "No achievements yet. Create your first one!",
   unlocked: "Unlocked",
@@ -179,14 +293,17 @@ const translation = {
   achievement_title: "Achievement title",
   achievement_description: "Description (optional)",
   icon: "Icon",
+
+  // Criteria builder
   criteria_all_must_meet: "Criteria (All must be met)",
   criterion_num: "Criterion {{num}}",
-  habit: "Task",
   select_habit: "Select a task",
   rule_type: "Rule Type",
   streak: "Streak",
-  total_count: "Total Count",
-  sum_value: "Sum Value",
+  total_count: "Completion Count",
+  total_count_subtitle: "Number of times completed",
+  sum_value: "Total Accumulated Value",
+  sum_value_subtitle: "For counters, e.g., total amount of water",
   target_value: "Target Value",
   target_value_placeholder: "e.g., 7",
   days_period: "Days Period",
@@ -194,12 +311,8 @@ const translation = {
   add_criterion: "Add Criterion",
   criteria_count: "{{count}} criteria",
   criteria_count_to_complete: "{{count}} criteria to complete",
-  no_habits_available: "No tasks available",
-  close: "Close",
-  days: "days",
-  unknown_habit: "Unknown habit",
 
-  // RPG System
+  // RPG system
   tab_my_goals: "My Goals",
   tab_rpg_ranks: "RPG Ranks",
   rpg_subtitle: "Level up by completing tasks",
@@ -208,136 +321,20 @@ const translation = {
   rpg_rank: "Rank",
   rpg_level: "Level",
   rpg_progress_to_next: "Progress to next level",
-  loading: "Loading...",
 
-  // Settings
-  settings_subtitle: "Manage your account",
-  manage_account: "Manage your account",
-  account: "Account",
-  account_info: "Account Info",
-  username: "Username",
-  user_id: "User ID",
-  created_at: "Member since",
-  member_since: "Member since",
-  language: "Language",
-  language_subtitle: "Choose your preferred language",
-  // Color theme selector
-  color_theme: "Color Theme",
-  theme_default: "Default",
-  theme_forest: "Forest",
-  theme_ocean: "Ocean",
-  theme_coffee: "Coffee",
-  actions: "Actions",
-  logout: "Logout",
-  logout_confirm: "Are you sure you want to logout?",
-  delete_account: "Delete Account",
-  delete_account_confirm: "Delete Account?",
-  delete_account_message:
-    "This will permanently delete your account and all data. This cannot be undone.",
-  delete_account_warning:
-    "This will permanently delete your account and all associated data. This action cannot be undone.",
-  delete_account_description: "Permanently delete your account and all data",
-  danger_zone: "Danger Zone",
-  deleting: "Deleting...",
-  account_deleted: "Account deleted successfully",
-  error_delete_account: "Failed to delete account",
-  no_user: "No user logged in",
-  app_version: "Miunpäivä v1.0.0",
-  made_with_love: "Made with ❤️ using React Native & Expo",
-  // Toast notifications
-  toast_level_up: "Level Up!",
-  toast_badge_unlocked: "New Badge!",
-  toast_goal_reached: "Goal Achieved!",
-  // Settings — Notifications & Feedback
-  settings_feedback_section: "Notifications & Feedback",
-  settings_toasts_title: "Pop-up notifications",
-  settings_toasts_desc: "Show toasts for levels and achievements",
-  settings_sound_title: "Sound effects",
-  // DevTools
-  dev_test_toast: "Test Global Toast",
-  // Developer Mode
-  enable_dev_mode_title: "Enable Developer Mode?",
-  enable_dev_mode_message: "This unlocks the DevTools tab.",
-  danger_title: "⚠️ DANGER",
-  danger_message:
-    "Developer mode allows destructive actions like wiping the database. You could lose all data. Are you absolutely sure?",
-  enable: "Enable",
-  dev_mode_enabled_title: "Developer Mode Enabled",
-  dev_mode_enabled_message: "The DevTools tab is now visible.",
-  yes: "Yes",
-  no: "No",
-
-  // Errors
-  error: "Error",
-  success: "Success",
-  error_title_required: "Please enter a task title",
-  error_achievement_title_required: "Please enter an achievement title",
-  error_select_habit: "Please select a task for criterion {{num}}",
-  error_target_value: "Please enter a valid target value for criterion {{num}}",
-  error_load_habits: "Failed to load tasks",
-  error_load_achievements: "Failed to load achievements",
-  error_create_habit: "Failed to create task",
-  error_create_achievement: "Failed to create achievement",
-  error_delete_achievement: "Failed to delete achievement",
-  error_update_habit: "Failed to update task",
-  success_achievement_created: "Achievement created!",
-  success_habit_created: "Task created!",
+  // Activity feed / sub-tabs
+  tab_goals: "My Goals",
+  filter_rpg: "Levels",
+  filter_secrets: "Badges",
+  no_rewards:
+    "No rewards yet. Complete tasks to earn RPG levels and unlock secret badges!",
 
   // Alerts
   delete_achievement_title: "Delete Achievement",
   delete_achievement_message:
     "Are you sure you want to delete this achievement?",
-  delete_habit_message: "Are you sure you want to delete this habit?",
-  logout_message: "Are you sure you want to logout?",
 
-  // Notifications
-  notif_enable_reminder: "Enable Reminder",
-  notif_turn_on: "Turn On Reminders",
-  notif_turn_off: "Turn Off Reminders",
-  error_notification_permission:
-    "Please enable notifications in your device settings",
-
-  // Habit Details Modal
-  habit_details: "Details",
-  habit_done: "Mark as Done",
-  habit_undo: "Undo",
-
-  // Auth
-  login: "Login",
-  register: "Register",
-  password: "Password",
-  login_button: "Login",
-  register_button: "Register",
-  no_account: "Don't have an account?",
-  have_account: "Already have an account?",
-  error_fill_fields: "Please fill in all fields",
-  error_login: "Invalid username or password",
-  error_register: "Failed to create account",
-  error_username_taken: "Username already taken",
-
-  // Languages
-  lang_en: "English",
-  lang_fi: "Suomi",
-  // Relaxations
-  relax: "Relax",
-  relax_subtitle:
-    "Choose a sound accompaniment. Music will play even when the screen is off.",
-  relax_track_1_title: "Summer Forest",
-  relax_track_1_description: "Birdsong and rustling leaves",
-  relax_track_1_artist: "Miunpäivä",
-  relax_track_2_title: "Deep Space",
-  relax_track_2_description: "Soft binaural hum",
-  relax_track_2_artist: "Miunpäivä",
-
-  // Activity Feed
-  tab_goals: "My Goals",
-  tab_rewards: "Rewards",
-  filter_rpg: "Levels",
-  filter_secrets: "Secret Badges",
-  no_rewards:
-    "No rewards yet. Complete tasks to earn RPG levels and unlock secret badges!",
-
-  // RPG Ranks
+  // RPG rank titles
   rpg_ranks: {
     novice: "Novice",
     apprentice: "Apprentice",
@@ -349,7 +346,7 @@ const translation = {
     legend: "Legend",
   },
 
-  // Secret Achievements
+  // Secret achievement catalog
   secret_achievements: {
     aquaman: {
       title: "Aquaman",
@@ -420,8 +417,6 @@ const translation = {
       title: "Aktiivinen Päivä",
       description: "Went outdoors, exercised, and took a shower.",
     },
-
-    // ---- Tiered: Walking ----
     walker_1: {
       title: "First Step",
       description: "A great start! You completed your first walk.",
@@ -443,8 +438,6 @@ const translation = {
       title: "Globe Trotter",
       description: "100 walks! Did you just walk around the equator?",
     },
-
-    // ---- Tiered: Hydration ----
     water_1: { title: "First Sip", description: "Hydration journey started." },
     water_5: {
       title: "Stay Hydrated",
@@ -462,8 +455,6 @@ const translation = {
       title: "Ocean Master",
       description: "100 days! Aquaman is taking notes.",
     },
-
-    // ---- Tiered: Medication ----
     meds_1: {
       title: "On Track",
       description: "First medication taken on time.",
@@ -484,8 +475,6 @@ const translation = {
       title: "Unbreakable",
       description: "100 times! Perfect health discipline.",
     },
-
-    // ---- Tiered: Room Cleaning ----
     clean_1: {
       title: "Tidy Start",
       description: "Room cleaned for the first time.",
@@ -506,8 +495,6 @@ const translation = {
       title: "Marie Kondo",
       description: "100 cleanings! This sparks joy.",
     },
-
-    // ---- Tiered: Bedtime ----
     sleep_1: {
       title: "Good Night",
       description: "First bedtime routine completed.",
@@ -529,35 +516,29 @@ const translation = {
       description: "100 nights! Waking up refreshed every single day.",
     },
   },
+};
 
-  // Hub (Dashboard)
-  hub: "Hub",
-  hub_subtitle: "Your daily overview",
-  hub_todays_progress: "Today's Progress",
-  hub_completed_count: "{{current}} / {{total}} completed",
-  hub_no_tasks_today: "No tasks scheduled for today.",
-  hub_all_tasks_done: "All tasks done — great work!",
-  hub_new_badges: "{{count}} New Badges!",
-  hub_badges_all_viewed: "All caught up!",
-  hub_badges_empty_state: "Complete habits to unlock secret badges!",
-  hub_personal_goals: "Personal Goals",
-  hub_no_rpg_stats: "Complete habits to level up!",
-  hub_relaxing_ambient: "Relaxing Ambient",
-  hub_no_track_selected: "Nothing playing. Tap to select.",
-  hub_secret_badges: "Secret Badges",
-  hub_rpg_levels: "RPG Levels",
-  hub_relaxation: "Relaxation",
-  hub_empty_goals: "No goals yet. Create your first one!",
-  hub_all_goals_done: "All goals achieved — amazing!",
-  hub_goals_completed_count: "{{current}} / {{total}} goals achieved",
-  level_short: "Lv",
-  hub_active_sounds: "{{count}} active sound(s)",
+// i18next namespace: relax
+// Keys for audio tracks, ambient mixer, and music player
+export const relax = {
+  relax_subtitle:
+    "Choose a sound accompaniment. Music will play even when the screen is off.",
+  relax_track_1_title: "Summer Forest",
+  relax_track_1_description: "Birdsong and rustling leaves",
+  relax_track_1_artist: "Miunpäivä",
+  relax_track_2_title: "Deep Space",
+  relax_track_2_description: "Soft binaural hum",
+  relax_track_2_artist: "Miunpäivä",
 
-  // Relax screen tabs
-  tab_mixer: "Mixer",
+  // Mode tab labels (corrected per native speaker feedback)
+  tab_mixer: "Ambient Sounds",
   tab_music: "Music",
 
-  // Mixer master button
+  // Mode description texts (new)
+  tab_mixer_desc: "Mix multiple sounds together",
+  tab_music_desc: "Listen to relaxing tracks",
+
+  // Mixer controls
   mixer_play: "Play Mixer",
   mixer_pause: "Pause Mixer",
 
@@ -570,9 +551,69 @@ const translation = {
   track_bg_piano: "Piano",
   track_bg_piano2: "Piano II",
 
-  // Player track names
+  // Music player track names
   track_guitar1: "Summer Forest",
   track_guitar2: "Deep Space",
 };
 
-export default translation;
+// i18next namespace: settings
+// Keys for user preferences, account management, danger zone, theme
+export const settings = {
+  settings_subtitle: "Manage your account",
+  manage_account: "Manage your account",
+  account: "Account",
+  account_info: "Account Info",
+  username: "Username",
+  user_id: "User ID",
+  created_at: "Member since",
+  member_since: "Member since",
+  language: "Language",
+  language_subtitle: "Choose your preferred language",
+
+  // Color theme selector
+  color_theme: "Color Theme",
+  theme_default: "Default",
+  theme_forest: "Forest",
+  theme_ocean: "Ocean",
+  theme_coffee: "Coffee",
+
+  // Account actions
+  actions: "Actions",
+  logout: "Logout",
+  logout_confirm: "Are you sure you want to logout?",
+  logout_message: "Are you sure you want to logout?",
+  delete_account: "Delete Account",
+  delete_account_confirm: "Delete Account?",
+  delete_account_message:
+    "This will permanently delete your account and all data. This cannot be undone.",
+  delete_account_warning:
+    "This will permanently delete your account and all associated data. This action cannot be undone.",
+  delete_account_description: "Permanently delete your account and all data",
+
+  // Danger zone (corrected per native speaker feedback)
+  danger_zone: "Account Deletion",
+  deleting: "Deleting...",
+  account_deleted: "Account deleted successfully",
+  error_delete_account: "Failed to delete account",
+  no_user: "No user logged in",
+
+  // Notifications & Feedback
+  settings_feedback_section: "Notifications & Feedback",
+  settings_toasts_title: "Pop-up notifications",
+  settings_toasts_desc: "Show toasts for levels and achievements",
+  settings_sound_title: "Sound effects",
+
+  // Developer mode
+  dev_test_toast: "Test Global Toast",
+  enable_dev_mode_title: "Enable Developer Mode?",
+  enable_dev_mode_message: "This unlocks the DevTools tab.",
+  danger_title: "⚠️ DANGER",
+  danger_message:
+    "Developer mode allows destructive actions like wiping the database. You could lose all data. Are you absolutely sure?",
+  enable: "Enable",
+  dev_mode_enabled_title: "Developer Mode Enabled",
+  dev_mode_enabled_message: "The DevTools tab is now visible.",
+};
+
+// Default export is the common namespace (backward-compatible alias)
+export default common;

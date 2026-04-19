@@ -18,7 +18,7 @@ export default function BadgesTabContent({
   refreshing,
   onRefresh,
 }: Props) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["rewards", "common"]);
   const colors = useThemeColors();
 
   return (

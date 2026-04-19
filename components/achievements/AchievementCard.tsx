@@ -31,7 +31,7 @@ export default function AchievementCard({
   achievement,
   onLongPress,
 }: AchievementCardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(["rewards", "common"]);
   const colors = useThemeColors();
 
   const renderIcon = (slug: string, color: string, size: number) => {

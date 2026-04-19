@@ -8,7 +8,7 @@ import MixerPanel from "../../components/relax/MixerPanel";
 import PlayerPanel from "../../components/relax/PlayerPanel";
 
 export default function RelaxScreen() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["relax", "common"]);
   const colors = useThemeColors();
   const [activeTab, setActiveTab] = useState<"mixer" | "player">("mixer");
 
@@ -28,6 +28,13 @@ export default function RelaxScreen() {
       </View>
 
       <RelaxTabBar activeTab={activeTab} onTabPress={setActiveTab} />
+
+      <Text
+        className="text-center text-sm mb-3 px-6"
+        style={{ color: colors.textSecondary }}
+      >
+        {activeTab === "mixer" ? t("tab_mixer_desc") : t("tab_music_desc")}
+      </Text>
 
       {activeTab === "mixer" ? <MixerPanel /> : <PlayerPanel />}
     </View>

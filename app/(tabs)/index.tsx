@@ -13,7 +13,7 @@ import RPGLevelsWidget from "../../components/hub/RPGLevelsWidget";
 import MusicPlayerWidget from "../../components/hub/MusicPlayerWidget";
 
 export default function HubScreen() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["hub", "common"]);
   const colors = useThemeColors();
   const { user } = useAuthStore();
   const { todayTotal, todayCompleted, progressPercent } = useHubStats(user?.id);
