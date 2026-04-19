@@ -1,5 +1,6 @@
 import * as Notifications from "expo-notifications";
 import { and, eq } from "drizzle-orm";
+import i18n from "../i18n";
 import { db } from "../db";
 import { habits } from "../db/schema";
 import type { Habit } from "../db/schema";
@@ -56,9 +57,16 @@ export async function scheduleHabitNotification(
 ): Promise<string | null> {
   const { hour, minute } = TIME_MAP[habit.timeOfDay] ?? TIME_MAP.all_day;
 
+  const reminderTitle = i18n.t("notification_reminder_title", {
+    ns: "tasks",
+  });
+  const timeToDoPrefix = i18n.t("notification_time_to_do", { ns: "tasks" });
+
   const content: Notifications.NotificationContentInput = {
-    title: habit.title,
-    body: habit.description ?? "Time to complete your habit!",
+    title: `${reminderTitle}: ${habit.title}`,
+    body: habit.description
+      ? habit.description
+      : `${timeToDoPrefix} ${habit.title}`,
     data: { habitId: habit.id },
   };
 

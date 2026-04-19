@@ -43,6 +43,8 @@ export default function CriteriaBuilder({
 
   const getRuleTypeSubtitle = (type: string): string | null => {
     switch (type) {
+      case "streak":
+        return t("streak_subtitle");
       case "total_count":
         return t("total_count_subtitle");
       case "sum_value":
@@ -124,26 +126,18 @@ export default function CriteriaBuilder({
                     >
                       {getRuleTypeLabel(type)}
                     </Text>
-                    {getRuleTypeSubtitle(type) ? (
-                      <Text
-                        className="text-center mt-0.5"
-                        style={{
-                          fontSize: 9,
-                          lineHeight: 12,
-                          color: isSelected
-                            ? colors.primary
-                            : colors.textSecondary,
-                          paddingHorizontal: 4,
-                        }}
-                        numberOfLines={2}
-                      >
-                        {getRuleTypeSubtitle(type)}
-                      </Text>
-                    ) : null}
                   </TouchableOpacity>
                 );
               })}
             </View>
+            {getRuleTypeSubtitle(criterion.ruleType) ? (
+              <Text
+                className="mt-2 text-sm"
+                style={{ color: colors.textSecondary }}
+              >
+                {getRuleTypeSubtitle(criterion.ruleType)}
+              </Text>
+            ) : null}
           </View>
 
           <View className="mb-3">

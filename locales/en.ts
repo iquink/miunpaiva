@@ -276,6 +276,8 @@ export const tasks = {
   notif_turn_off: "Turn Off Reminders",
   error_notification_permission:
     "Please enable notifications in your device settings",
+  notification_reminder_title: "Reminder",
+  notification_time_to_do: "Don't forget!",
 };
 
 // i18next namespace: rewards
@@ -300,6 +302,7 @@ export const rewards = {
   select_habit: "Select a task",
   rule_type: "Rule Type",
   streak: "Streak",
+  streak_subtitle: "Completed on consecutive days",
   total_count: "Completion Count",
   total_count_subtitle: "Number of times completed",
   sum_value: "Total Accumulated Value",

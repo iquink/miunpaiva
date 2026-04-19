@@ -10,6 +10,7 @@ import {
   DUMMY_PASSWORD,
 } from "../../services/authService";
 import { changeLanguage } from "../../i18n";
+import { syncUserNotifications } from "../../services/notificationService";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import UserInfoSection from "../../components/settings/UserInfoSection";
 import LanguageSelector from "../../components/settings/LanguageSelector";
@@ -124,6 +125,9 @@ export default function SettingsScreen() {
 
   const handleChangeLanguage = async (lang: string) => {
     await changeLanguage(lang);
+    if (user) {
+      await syncUserNotifications(user.id);
+    }
   };
 
   if (!user) {

@@ -277,6 +277,8 @@ export const tasks = {
   notif_turn_off: "Poista muistutukset käytöstä",
   error_notification_permission:
     "Ota ilmoitukset käyttöön laitteen asetuksista",
+  notification_reminder_title: "Muistutus",
+  notification_time_to_do: "Älä unohda!",
 };
 
 // i18next namespace: rewards
@@ -301,6 +303,7 @@ export const rewards = {
   select_habit: "Valitse toiminta",
   rule_type: "Sääntötyyppi",
   streak: "Putki",
+  streak_subtitle: "Suoritettu peräkkäisinä päivinä",
   total_count: "Suorituskerrat",
   total_count_subtitle: "Kuinka monena päivänä/kertana suoritettu",
   sum_value: "Kokonaisarvo",
