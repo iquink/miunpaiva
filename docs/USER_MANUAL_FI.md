@@ -1,6 +1,6 @@
 # Käyttöohje — Pelillistetty tapatracker
 
-Tervetuloa omaan tapaseurantaasi! Tämä sovellus muuttaa terveellisten rutiinien rakentamisen palkitsevaksi peliksi. Jokainen suorittamasi tapa tuo kokemuspisteitä, avaa uusia palkintomerkkejä ja nostaa RPG-tilastojasi.
+Tervetuloa omaan tapaseurantaasi! Tämä sovellus muuttaa terveellisten rutiinien rakentamisen palkitsevaksi peliksi. Jokainen suorittamasi tapa tuo kokemuspisteitä, avaa uusia palkintomerkkejä ja nostaa Edistymisen tilastojasi.
 
 ---
 
@@ -80,7 +80,7 @@ Vedä toimintoluetteloa alaspäin päivittääksesi tiedot tietokannasta.
 
 ## 3. Saavutukset — Pelillistämisjärjestelmä
 
-**Saavutukset**-välilehti on pelin sydän. Siellä on kolme osiota, joihin pääset välilehtipalkin kautta: **Omat tavoitteet**, **Palkinnot** ja **Tasot**.
+**Saavutukset**-välilehti on pelin sydän. Siellä on kolme osiota, joihin pääset välilehtipalkin kautta: **Omat tavoitteet**, **Ansiomerkit** ja **Edistyminen**.
 
 ### Omat tavoitteet — Henkilökohtaiset saavutukset
 
@@ -99,22 +99,23 @@ Kun tavoite on saavutettu, se ilmestyy **Avattu**-osioon kultaisella hohdolla. T
 
 **Paina pitkään** mitä tahansa tavoitekorttia poistaaksesi sen.
 
-### Palkinnot — Salaiset saavutukset
 
-Salaiset palkintomerkit ovat yllätyspalkintoja, jotka ansaitset toistamalla tiettyjä valmiita tapoja. Et tiedä tarkalleen, miten ansaitset ne, ennen kuin teet sen — ne ilmestyvät automaattisesti, kun saavutat piilotetun virstanpylvään.
+### Ansiomerkit — Yllätyssaavutukset
+
+Ansiomerkit ovat yllätyspalkintoja, jotka ansaitset toistamalla tiettyjä valmiita tapoja. Et tiedä tarkalleen, miten ansaitset ne, ennen kuin teet sen — ne ilmestyvät automaattisesti, kun saavutat piilotetun virstanpylvään.
 
 Esimerkkejä:
 - Kävele riittävän monta kertaa ja ansaitset retkeilymerkkejä 🌳🧭🗺️
 - Käy kuntosalilla tarpeeksi usein saadaksesi kuntomerkkejä 💪
 - Suorita aamurutiinisi johdonmukaisesti saadaksesi vuorokausirytmimerkkejä ☀️
 
-Uudet, lukemattomat merkit näkyvät ilmoituspisteellä Saavutukset-välilehden kuvakkeessa. Palkinnot-osion avaaminen merkitsee ne kaikki nähdyiksi.
+Uudet, lukemattomat merkit näkyvät ilmoituspisteellä Saavutukset-välilehden kuvakkeessa. Ansiomerkit-osion avaaminen merkitsee ne kaikki nähdyiksi.
 
-### Tasot — RPG-tilastot
+### Edistyminen — Tilastot ja tasot
 
-Jokaisella tapakategorialla on oma **RPG-tilastonsa**, joka nousee, kun suoritat tapoja kyseisessä kategoriassa.
+Jokaisella tapakategorialla on oma **Edistymisen tilastonsa**, joka nousee, kun suoritat tapoja kyseisessä kategoriassa.
 
-**Tapakategoriat → RPG-tilastot:**
+**Tapakategoriat → Edistymisen tilastot:**
 | Kategoria | Tilasto |
 |---|---|
 | Liikunta | Voima |
@@ -207,11 +208,11 @@ Ympyrämäinen edistymisrengas, joka näyttää kuinka monta tämän päivän ta
 ### Henkilökohtaiset tavoitteet -widget
 Näyttää mukautettujen tavoitteidesi kokonaismäärän ja kuinka monta olet saavuttanut. Napauta hypätäksesi Omat tavoitteet -välilehdelle.
 
-### Salaiset merkit -widget
-Näyttää viimeksi ansaitsemasi merkit ja lukemattomien merkkien määrän. Napauta hypätäksesi Palkinnot-välilehdelle.
+### Ansiomerkit -widget
+Näyttää viimeksi ansaitsemasi merkit ja lukemattomien merkkien määrän. Napauta hypätäksesi Ansiomerkit-välilehdelle.
 
-### RPG-tasot -widget
-Näyttää 3 parasta RPG-tilastoasi (järjestettynä tason, sitten edistymisen mukaan). Napauta hypätäksesi Tasot-välilehdelle.
+### Edistyminen -widget
+Näyttää 3 parasta Edistymisen tilastoasi (järjestettynä tason, sitten edistymisen mukaan). Napauta hypätäksesi Edistyminen-välilehdelle.
 
 ### Musiikkisoitin -widget
 Nopea ohjain viimeksi aktiivisen äänilähteen (Taustaäänet tai Musiikki) toistamiseksi tai keskeyttämiseksi. Napauta vaihtaaksesi tilaa, tai käy Rentoudu-välilehdellä täyden ohjauksen saamiseksi.
@@ -248,7 +249,7 @@ Vaihda sovelluksen kieli **suomen** ja **englannin** välillä.
 
 **Käytä vuorokaudenaikoja.** Ajan jakson määrittäminen kullekin tavalle ryhmittelee ne Toiminnat-näytössä, jolloin aamutehtävät ja iltapäivätehtävät on helppo suorittaa järjestyksessä.
 
-**Rakenna putkia merkkien saamiseksi.** Monet salaiset merkit liittyvät tiettyihin valmiisiin tapoihin. Käytä sisäänrakennettuja malleja (Kävely, Kuntosali, Veden juominen jne.) avataksesi teemamerkkikokoelmia.
+**Rakenna putkia merkkien saamiseksi.** Monet Ansiomerkit liittyvät tiettyihin valmiisiin tapoihin. Käytä sisäänrakennettuja malleja (Kävely, Kuntosali, Veden juominen jne.) avataksesi teemamerkkikokoelmia.
 
 **Sekoita ääniä keskittymiseen.** Kokeile Sade 50 % + Piano 40 % työskennellessäsi. Taustaäänet muistaa äänenvoimakkuutesi istuntojen välillä.
 

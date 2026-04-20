@@ -127,13 +127,13 @@ export const hub = {
   hub_all_tasks_done: "Kaikki tehtävät tehty — hienoa!",
   hub_new_badges: "{{count}} uutta merkkiä!",
   hub_badges_all_viewed: "Kaikki nähty!",
-  hub_badges_empty_state: "Suorita tapoja avataksesi salaisia merkkejä!",
+  hub_badges_empty_state: "Suorita tapoja avataksesi kunniamerkkejä!",
   hub_personal_goals: "Henkilökohtaiset tavoitteet",
-  hub_no_rpg_stats: "Suorita tapoja noustaksesi tasossa!",
+  hub_no_rpg_stats: "Suorita tapoja nähdäksesi edistymisesi!",
   hub_relaxing_ambient: "Rentouttava ambient",
   hub_no_track_selected: "Ei mitään soimassa. Napauta valitaksesi.",
-  hub_secret_badges: "Salaiset merkit",
-  hub_rpg_levels: "RPG-tasot",
+  hub_secret_badges: "Kunniamerkit",
+  hub_rpg_levels: "Edistyminen",
   hub_relaxation: "Rentoutuminen",
   hub_empty_goals: "Ei tavoitteita vielä. Luo ensimmäinen!",
   hub_all_goals_done: "Kaikki tavoitteet saavutettu — upea suoritus!",
@@ -318,8 +318,8 @@ export const rewards = {
 
   // RPG-järjestelmä
   tab_my_goals: "Omat tavoitteet",
-  tab_rpg_ranks: "RPG-rankit",
-  rpg_subtitle: "Nouse tasolla suorittamalla tehtäviä",
+  tab_rpg_ranks: "Edistyminen",
+  rpg_subtitle: "Seuraa edistymistäsi suorittamalla tehtäviä",
   no_rpg_stats:
     "Ei vielä tilastoja. Aloita tehtävien suorittaminen noustaaksesi tasolla!",
   rpg_completed_tasks: "suoritetut tehtävät",
@@ -329,10 +329,10 @@ export const rewards = {
 
   // Toimintasyöte / välilehdet
   tab_goals: "Omat tavoitteet",
-  filter_rpg: "Tasot",
-  filter_secrets: "Palkinnot",
+  filter_rpg: "Edistyminen",
+  filter_secrets: "Kunniamerkit",
   no_rewards:
-    "Ei vielä palkintoja. Suorita tehtäviä ansaitaksesi RPG-tasoja ja avataksesi salaisia merkkejä!",
+    "Ei vielä saavutuksia. Suorita tehtäviä nähdäksesi edistymisesi ja avataksesi kunniamerkkejä!",
 
   // Hälytykset
   delete_achievement_title: "Poista saavutus",

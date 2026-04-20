@@ -76,9 +76,9 @@ export default function SettingsScreen() {
 
   const handleLogout = () => {
     Alert.alert(t("logout"), t("logout_confirm"), [
-      { text: t("cancel"), style: "cancel" },
+      { text: t("cancel", { ns: "common" }), style: "cancel" },
       {
-        text: t("logout"),
+        text: t("logout", { ns: "common" }),
         style: "destructive",
         onPress: async () => {
           await logout();
@@ -90,9 +90,9 @@ export default function SettingsScreen() {
 
   const handleDeleteAccount = () => {
     Alert.alert(t("delete_account"), t("delete_account_warning"), [
-      { text: t("cancel"), style: "cancel" },
+      { text: t("cancel", { ns: "common" }), style: "cancel" },
       {
-        text: t("delete"),
+        text: t("delete", { ns: "common" }),
         style: "destructive",
         onPress: async () => {
           if (!user) return;
@@ -143,7 +143,10 @@ export default function SettingsScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
-      <ScreenHeader title={t("settings")} subtitle={t("manage_account")} />
+      <ScreenHeader
+        title={t("settings", { ns: "common" })}
+        subtitle={t("manage_account")}
+      />
 
       <ScrollView className="flex-1 px-6 py-6">
         <UserInfoSection

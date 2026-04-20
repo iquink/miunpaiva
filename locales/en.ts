@@ -127,13 +127,13 @@ export const hub = {
   hub_all_tasks_done: "All tasks done — great work!",
   hub_new_badges: "{{count}} New Badges!",
   hub_badges_all_viewed: "All caught up!",
-  hub_badges_empty_state: "Complete habits to unlock secret badges!",
+  hub_badges_empty_state: "Complete habits to unlock badges!",
   hub_personal_goals: "Personal Goals",
-  hub_no_rpg_stats: "Complete habits to level up!",
+  hub_no_rpg_stats: "Complete habits to see your progress!",
   hub_relaxing_ambient: "Relaxing Ambient",
   hub_no_track_selected: "Nothing playing. Tap to select.",
-  hub_secret_badges: "Secret Badges",
-  hub_rpg_levels: "RPG Levels",
+  hub_secret_badges: "Badges",
+  hub_rpg_levels: "My progress",
   hub_relaxation: "Relaxation",
   hub_empty_goals: "No goals yet. Create your first one!",
   hub_all_goals_done: "All goals achieved — amazing!",
@@ -317,8 +317,8 @@ export const rewards = {
 
   // RPG system
   tab_my_goals: "My Goals",
-  tab_rpg_ranks: "RPG Ranks",
-  rpg_subtitle: "Level up by completing tasks",
+  tab_rpg_ranks: "Progress",
+  rpg_subtitle: "Track your progress by completing tasks",
   no_rpg_stats: "No stats yet. Start completing tasks to gain levels!",
   rpg_completed_tasks: "completed tasks",
   rpg_rank: "Rank",
@@ -327,10 +327,10 @@ export const rewards = {
 
   // Activity feed / sub-tabs
   tab_goals: "My Goals",
-  filter_rpg: "Levels",
+  filter_rpg: "Progress",
   filter_secrets: "Badges",
   no_rewards:
-    "No rewards yet. Complete tasks to earn RPG levels and unlock secret badges!",
+    "No achievements yet. Complete tasks to track your progress and unlock badges!",
 
   // Alerts
   delete_achievement_title: "Delete Achievement",

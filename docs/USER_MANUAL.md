@@ -1,6 +1,6 @@
 # User Manual — Gamified Habit Tracker
 
-Welcome to your personal habit tracker! This app turns building healthy routines into a rewarding game. Every habit you complete earns you experience points, unlocks secret badges, and levels up your RPG Stats.
+Welcome to your personal habit tracker! This app turns building healthy routines into a rewarding game. Every habit you complete earns you experience points, unlocks Badges, and levels up your Progress Stats.
 
 ---
 
@@ -8,8 +8,8 @@ Welcome to your personal habit tracker! This app turns building healthy routines
 
 1. [Getting Started](#1-getting-started)
 2. [Daily Tasks — Building Your Habits](#2-daily-tasks--building-your-habits)
-3. [Rewards — The Gamification System](#3-rewards--the-gamification-system)
-4. [Relax — Ambient Mixer & Music](#4-relax--ambient-mixer--music)
+3. [Achievements — The Gamification System](#3-achievements--the-gamification-system)
+4. [Relax — Ambient Sounds & Music](#4-relax--ambient-sounds--music)
 5. [Hub — Your Personal Dashboard](#5-hub--your-personal-dashboard)
 6. [Settings](#6-settings)
 7. [Tips & Tricks](#7-tips--tricks)
@@ -78,9 +78,9 @@ Pull down on the habits list to refresh data from the database.
 
 ---
 
-## 3. Rewards — The Gamification System
+## 3. Achievements — The Gamification System
 
-The **Rewards** tab is where the game lives. It has three sections accessible via the tab bar at the top: **Goals**, **Badges**, and **Levels**.
+The **Achievements** tab is where the game lives. It has three sections accessible via the tab bar at the top: **Goals**, **Badges**, and **Progress**.
 
 ### Goals — Custom Personal Achievements
 
@@ -99,22 +99,23 @@ Once a goal is achieved, it appears in the **Unlocked** section with a golden gl
 
 **Long-press** any goal card to delete it.
 
-### Badges — Secret Achievements
 
-Secret badges are surprise rewards you earn by repeating specific preset habits. You won't know exactly how to earn them until you do — they appear automatically when you hit a hidden milestone.
+### Badges — Milestone Achievements
+
+Badges are surprise achievements you earn by repeating specific preset habits. You won't know exactly how to earn them until you do — they appear automatically when you hit a hidden milestone.
 
 Examples:
 - Walk regularly enough times and you'll earn hiking badges 🌳🧭🗺️
 - Visit the gym often enough for fitness badges 💪
 - Complete your morning routines consistently for daily rhythm badges ☀️
 
-New, unread badges show up with a notification dot on the Rewards tab icon. Opening the Badges section marks them all as seen.
+New, unread badges show up with a notification dot on the Achievements tab icon. Opening the Badges section marks them all as seen.
 
-### Levels — RPG Stats
+### Progress — Leveling System
 
-Every habit category has its own **RPG Stat** that levels up as you complete habits in that category.
+Every habit category has its own **Progress Stat** that levels up as you complete habits in that category.
 
-**Habit Categories → RPG Stats:**
+**Habit Categories → Progress Stats:**
 | Category | Stat |
 |---|---|
 | Exercise | Strength |
@@ -143,19 +144,19 @@ Each stat card shows your current level, rank title, progress bar to the next le
 
 ### Celebratory Toasts
 
-Whenever you unlock something special — a goal, a badge, or a level-up — a **pop-up notification** (toast) slides in from the bottom of the screen. Tap it to jump straight to the relevant reward in the Rewards tab.
+Whenever you unlock something special — a goal, a badge, or a level-up — a **pop-up notification** (toast) slides in from the bottom of the screen. Tap it to jump straight to the relevant reward in the Achievements tab.
 
 You can control whether toasts appear and whether they play a sound in **Settings → Notifications & Feedback**.
 
 ---
 
-## 4. Relax — Ambient Mixer & Music
+## 4. Relax — Ambient Sounds & Music
 
-The **Relax** tab is your personal soundscape. Use it for focus, meditation, or winding down. It has two modes selectable at the top: **Mixer** and **Music**.
+The **Relax** tab is your personal soundscape. Use it for focus, meditation, or winding down. It has two modes selectable at the top: **Ambient Sounds** and **Music**.
 
-### Mixer — Ambient Soundscape
+### Ambient Soundscape
 
-The **Ambient Mixer** lets you blend up to 7 ambient sound loops simultaneously:
+The **Ambient Sounds** lets you blend up to 7 ambient sound loops simultaneously:
 
 | Sound | Icon |
 |---|---|
@@ -185,7 +186,7 @@ Currently available:
 - Guitar Piece 1
 - Guitar Piece 2
 
-> **Mutual Exclusion:** Starting a Music track automatically pauses the Ambient Mixer, and starting the Mixer automatically pauses Music — only one audio mode plays at a time.
+> **Mutual Exclusion:** Starting a Music track automatically pauses the Ambient Sounds, and starting the Ambient Sounds automatically pauses Music — only one audio mode plays at a time.
 
 ### Mini Player on Hub
 
@@ -203,14 +204,14 @@ A circular progress ring showing how many of today's habits you've completed vs.
 ### Personal Goals Widget
 Shows your total custom goals and how many you've unlocked. Tap to jump to the Goals tab.
 
-### Secret Badges Widget
+### Badges Widget
 Displays your most recently earned badges and the count of unread ones. Tap to jump to the Badges tab.
 
-### RPG Levels Widget
-Shows your top 3 RPG Stat levels (sorted by level, then progress). Tap to jump to the Levels tab.
+### Progress Widget
+Shows your top 3 Progress Stat levels (sorted by level, then progress). Tap to jump to the Progress tab.
 
 ### Music Player Widget
-A quick control to play or pause your last active audio source (Ambient Mixer or Music Player). Tap to toggle, or visit the Relax tab for full controls.
+A quick control to play or pause your last active audio source (Ambient Sounds or Music Player). Tap to toggle, or visit the Relax tab for full controls.
 
 ---
 
@@ -244,9 +245,9 @@ Switch the app language between **English** and **Finnish**.
 
 **Use Time of Day.** Assigning a time slot to each habit groups them in the Tasks screen, making it easy to work through morning habits, then afternoon habits in order.
 
-**Build streaks for badges.** Many secret badges are tied to specific preset habits. Use the built-in presets (Walking, Gym, Hydration, etc.) to unlock themed badge collections.
+**Build streaks for badges.** Many Badges are tied to specific preset habits. Use the built-in presets (Walking, Gym, Hydration, etc.) to unlock themed badge collections.
 
-**Mix audio for focus.** Try Rain at 50% + Piano at 40% while working. The Ambient Mixer remembers your volumes between sessions.
+**Mix audio for focus.** Try Rain at 50% + Piano at 40% while working. The Ambient Sounds remembers your volumes between sessions.
 
 **Check the Hub every morning.** The Daily Progress ring is a powerful visual motivator — seeing it fill up throughout the day encourages you to complete "just one more."
 
@@ -263,7 +264,7 @@ Open **Settings → Notifications & Feedback** and make sure **Pop-up Toasts** i
 Toasts require Toasts to be enabled first. In **Settings → Notifications & Feedback**, verify both **Pop-up Toasts** and **Sound Effects** are on. Also check your device's media volume.
 
 **Audio doesn't play in the Relax tab.**
-Tap the **Play** button at the top of the Mixer panel. If you recently switched from Music to Mixer (or vice versa), the previous mode was automatically paused — just tap Play again.
+Tap the **Play** button at the top of the Ambient Sounds panel. If you recently switched from Music to Ambient Sounds (or vice versa), the previous mode was automatically paused — just tap Play again.
 
 **My habits from yesterday don't appear today.**
 Only habits scheduled for today's date and frequency appear. Use the date arrows at the top of the Tasks screen to navigate back to the correct day.
