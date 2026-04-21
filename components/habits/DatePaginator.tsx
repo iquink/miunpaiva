@@ -50,7 +50,7 @@ export default function DatePaginator({
           style={{ color: colors.primary }}
         >
           {dateStr === todayStr
-            ? t("today")
+            ? t("today", { ns: "hub" })
             : format(selectedDate, "eeeeee dd.MM.yyyy", { locale: fi })}
         </Text>
       </TouchableOpacity>

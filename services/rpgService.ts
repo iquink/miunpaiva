@@ -119,7 +119,7 @@ export async function checkAndNotifyLevelUps(userId: number): Promise<void> {
         useToastStore.getState().showToast({
           icon: getCategoryEmoji(stat.category),
           title: i18n.t("toast_level_up", { ns: "common" }),
-          description: `${i18n.t(stat.category, { ns: "tasks" })} → ${i18n.t("level_short", { ns: "tasks" })} ${stat.level}`,
+          description: `${i18n.t(stat.category, { ns: "tasks" })} → ${i18n.t("level_short", { ns: "hub" })} ${stat.level}`,
           tab: "levels",
         });
       }

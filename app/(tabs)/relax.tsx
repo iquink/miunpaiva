@@ -23,7 +23,7 @@ export default function RelaxScreen() {
           className="ml-3 text-2xl font-bold"
           style={{ color: colors.text }}
         >
-          {t("relax")}
+          {t("relax", { ns: "common" })}
         </Text>
       </View>
 

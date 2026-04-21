@@ -167,7 +167,7 @@ export default function RPGStatsList({ userId }: RPGStatsListProps) {
                   marginBottom: 2,
                 }}
               >
-                {t("rpg_level")}
+                {t("rpg_level", { ns: "rewards" })}
               </Text>
               <Text
                 style={{

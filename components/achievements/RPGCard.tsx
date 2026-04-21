@@ -31,10 +31,10 @@ export default function RPGCard({ item }: Props) {
             className="text-[15px] font-semibold"
             style={{ color: colors.text }}
           >
-            {t(item.category)}
+            {t(item.category, { ns: "tasks" })}
           </Text>
           <Text className="text-xs" style={{ color: colors.textSecondary }}>
-            {`${t("level_short")} ${item.level}`}
+            {`${t("rpg_level", { ns: "rewards" })} ${item.level}`}
           </Text>
         </View>
 

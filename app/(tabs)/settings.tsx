@@ -50,12 +50,12 @@ export default function SettingsScreen() {
     if (tapCountRef.current >= 5) {
       tapCountRef.current = 0;
       Alert.alert(t("enable_dev_mode_title"), t("enable_dev_mode_message"), [
-        { text: t("no"), style: "cancel" },
+        { text: t("no", { ns: "common" }), style: "cancel" },
         {
-          text: t("yes"),
+          text: t("yes", { ns: "common" }),
           onPress: () => {
             Alert.alert(t("danger_title"), t("danger_message"), [
-              { text: t("cancel"), style: "cancel" },
+              { text: t("cancel", { ns: "common" }), style: "cancel" },
               {
                 text: t("enable"),
                 style: "destructive",
@@ -78,7 +78,7 @@ export default function SettingsScreen() {
     Alert.alert(t("logout"), t("logout_confirm"), [
       { text: t("cancel", { ns: "common" }), style: "cancel" },
       {
-        text: t("logout", { ns: "common" }),
+        text: t("logout", { ns: "settings" }),
         style: "destructive",
         onPress: async () => {
           await logout();

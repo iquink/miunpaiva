@@ -85,7 +85,7 @@ export default function CriteriaBuilder({
               className="mb-2 text-sm font-medium"
               style={{ color: colors.text }}
             >
-              {t("habit")}
+              {t("habit", { ns: "common" })}
             </Text>
             <HabitSelector
               habits={userHabits}
