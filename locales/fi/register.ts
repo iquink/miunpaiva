@@ -1,0 +1,30 @@
+// i18next namespace: register
+export const register = {
+  title: "Luo tili",
+  subtitle: "Aloita tapojen seuranta",
+  username_label: "Käyttäjänimi",
+  username_placeholder: "Valitse käyttäjänimi",
+  password_label: "Salasana",
+  password_placeholder: "Luo salasana (väh. 6 merkkiä)",
+  confirm_password_label: "Vahvista salasana",
+  confirm_password_placeholder: "Vahvista salasanasi",
+  button: "Rekisteröidy",
+  button_personal: "Aloita",
+  loading: "Luodaan tiliä...",
+  have_account: "Onko sinulla jo tili?",
+  sign_in: "Kirjaudu sisään",
+  back: "Takaisin",
+  choose_title: "Tervetuloa!",
+  choose_subtitle: "Miten käytät tätä laitetta?",
+  personal_device_mode: "Henkilökohtainen laite",
+  personal_device_subtitle: "Vain sinulle – ei salasanaa tarvita",
+  shared_device_mode: "Jaettu laite",
+  shared_device_subtitle: "Useita käyttäjiä – turvallinen kirjautuminen",
+  error_fill_fields: "Täytä kaikki kentät",
+  error_username_only: "Syötä käyttäjänimi",
+  error_password_match: "Salasanat eivät täsmää",
+  error_failed: "Rekisteröinti epäonnistui",
+  error_default: "Tapahtui virhe",
+};
+
+export default register;

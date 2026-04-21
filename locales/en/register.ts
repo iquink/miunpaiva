@@ -1,0 +1,30 @@
+// i18next namespace: register
+export const register = {
+  title: "Create Account",
+  subtitle: "Start your habit tracking journey",
+  username_label: "Username",
+  username_placeholder: "Choose a username",
+  password_label: "Password",
+  password_placeholder: "Create a password (min 6 characters)",
+  confirm_password_label: "Confirm Password",
+  confirm_password_placeholder: "Confirm your password",
+  button: "Sign Up",
+  button_personal: "Get Started",
+  loading: "Creating Account...",
+  have_account: "Already have an account?",
+  sign_in: "Sign In",
+  back: "Back",
+  choose_title: "Welcome!",
+  choose_subtitle: "How will you use this device?",
+  personal_device_mode: "Personal Device",
+  personal_device_subtitle: "Just for you – no password needed",
+  shared_device_mode: "Shared Device",
+  shared_device_subtitle: "Multiple users – secure login",
+  error_fill_fields: "Please fill in all fields",
+  error_username_only: "Please enter a username",
+  error_password_match: "Passwords do not match",
+  error_failed: "Registration Failed",
+  error_default: "An error occurred",
+};
+
+export default register;
